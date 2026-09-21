@@ -1,0 +1,189 @@
+{
+  "format": 1,
+  "build_id": "sha256:d68a79238c92500a56d45f5664b44f730abcc3ebfd70eeba8a489842458bb46b",
+  "ksor_version": "0.0.60",
+  "okf": {
+    "version": "0.2",
+    "commit": "ad30107c31c06aec8a7d5636e0d1058118604e6f",
+    "spec_sha256": "26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101"
+  },
+  "source_commit": "f96e9e45877233ff1a7d037e2302d61abf0567b3",
+  "dirty": true,
+  "as_of": "2026-09-21T19:59:57.146Z",
+  "drafts": "hidden",
+  "instance_sha256": "dc6544320df5525bd9d2773f272cca522d2ab04e89e27ceb1ecf2b5781f7525b",
+  "policy_sha256": "b1bfb30888527d4e42b54c533274885cbafa343617bc1c2d6f4365fa4f7a0106",
+  "people_sha256": "43d7344466e45ef37b03e8be9e9614af50615abd512eca0b54240ab835d137f4",
+  "ledger_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "ledger_entries": [],
+  "audiences": {
+    "registry": [],
+    "viewers": {
+      "public": [
+        "public"
+      ]
+    }
+  },
+  "documents": [
+    {
+      "path": "foundations/decadal-survey/liao-micro-partial-gravity-fires.md",
+      "sha256": "c2a045cd9293d8503abd5d51b3d1a9fd9e17906404819438eb6fabc4e51afbcd",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "foundations/decadal-survey/miller-spacecraft-materials-fire-safety.md",
+      "sha256": "79f988e53d56d64ce5c957ac32131a69fb95e804b488809bb06e25db435be3c3",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "foundations/decadal-survey/thriving-in-space.md",
+      "sha256": "591a9153b439507f02b693dc1a6dba6aaa6cee80842c2436d6e889dabd6d9d31",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "foundations/nasa-std-6001b.md",
+      "sha256": "14bedd74a3b2aedb40f172b348d883b11fce69fe451c468c246cc59746846b95",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "investigations/droplet-combustion/flex.md",
+      "sha256": "1dd4781d77d76903b2bcb02a8c6933a0912274dec6948828930952518e3f8991",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "investigations/gaseous-flames/acme.md",
+      "sha256": "e1c30f8d3de13367cb4bc079afb6fcbf105b2c3a1255832e870e7068638ffbed",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "investigations/solid-fuel/bass-ii.md",
+      "sha256": "dbe32387de23a500fa929393566b5495800c9c9d65d90deae3153eac2009f211",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "investigations/solid-fuel/saffire.md",
+      "sha256": "c6c0f410fde67aeb81536f397c4798819ed5b5ee69cc24f838ffcd40dc70366a",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    }
+  ],
+  "companions": [
+    {
+      "path": "foundations/decadal-survey/liao-micro-partial-gravity-fires.summary.md",
+      "sha256": "b365a89c725d2f8be677c6c1ff1358b0a382c42d810d1bd79d0bbcb2b25f2094"
+    },
+    {
+      "path": "foundations/decadal-survey/miller-spacecraft-materials-fire-safety.summary.md",
+      "sha256": "1a898868701068d43e221821e9d7423cd17fcd915d62a4daa96c87d8ee1f1d16"
+    },
+    {
+      "path": "foundations/decadal-survey/thriving-in-space.summary.md",
+      "sha256": "9f828e5e9efcca0e4e0c2ef84200abdd7bf8938c8bc52966f6b0a534a34b10bd"
+    },
+    {
+      "path": "foundations/nasa-std-6001b.summary.md",
+      "sha256": "9d9111fafbc6db63b1dc8e4052d82a1cd8513ed2c841f63b52d7bf8b3087a721"
+    },
+    {
+      "path": "investigations/droplet-combustion/flex.summary.md",
+      "sha256": "5b99830e0f81cecede67b863b316a2c3a356e414d694676a5bfec6ad5419ed56"
+    },
+    {
+      "path": "investigations/gaseous-flames/acme.summary.md",
+      "sha256": "0cc5739f065475987e23dbad236de99962eb9a1b0b2a1928040c10ba694ac3ef"
+    },
+    {
+      "path": "investigations/solid-fuel/bass-ii.summary.md",
+      "sha256": "5b5be751d6de08b0f6028163cf7f18e0cab6a5aa49b627a10e8290445625900e"
+    },
+    {
+      "path": "investigations/solid-fuel/saffire.summary.md",
+      "sha256": "12946e284bcf94ee7e96253ba91571555127604c3714eabf6a019c43c0bf168e"
+    }
+  ],
+  "assets": [],
+  "indexes": [
+    {
+      "path": "foundations/decadal-survey/index.md",
+      "sha256": "6b9b9382f841af74b92036739c6251eca23e3d1b52945324d966f12824af111a"
+    },
+    {
+      "path": "foundations/index.md",
+      "sha256": "05daf046b2751bebc62284aabc12ea1f374d250384b794985401cf560fc76c90"
+    },
+    {
+      "path": "index.md",
+      "sha256": "f381420dfbe0e6bf3000178bbd2b9f9922fd135fc568e59fb9aec3560313d296"
+    },
+    {
+      "path": "investigations/droplet-combustion/index.md",
+      "sha256": "0a9073e1d58c7eeb2dd73fc2a79d4942e854887eda869489a2d9e70632eab7bb"
+    },
+    {
+      "path": "investigations/gaseous-flames/index.md",
+      "sha256": "993568878bba6177cfaa861301b86d3797f2baa504f4d88900a7de257fd7abb2"
+    },
+    {
+      "path": "investigations/index.md",
+      "sha256": "9b0cfbd38b960f3c8a71f84df16192bc93fbcd230e668d932c3423c14906b2f1"
+    },
+    {
+      "path": "investigations/solid-fuel/index.md",
+      "sha256": "a02ce3fc3b614ffc3bcbd67d5f755927a7862260436b1f594e7605006c212c37"
+    }
+  ],
+  "bundles": [
+    {
+      "viewer": "public",
+      "sha256": "8cccf54ceaed015d2b1c4d9a56b0a80afc16aafd655d9e88983135a458ff58e3",
+      "files": 23
+    }
+  ]
+}
