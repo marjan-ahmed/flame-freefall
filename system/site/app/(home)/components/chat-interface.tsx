@@ -2,6 +2,8 @@
 
 import type { ReactElement } from "react";
 
+import Link from "next/link";
+
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 
 /**
@@ -93,7 +95,23 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
 
   return (
     <div className="flex h-screen w-full flex-col">
-      <ChatKit control={control} className="h-full w-full" />
+      <ChatKit control={control} className="min-h-0 flex-1" />
+      {/* The assistant answers from — and cites — the governed record, but
+          nothing on this screen otherwise says that record is browsable on
+          its own. This strip is the human path to it: verify a citation,
+          or just read past what a chat answer summarized (user's call,
+          2026-09-22). */}
+      {/* Plain gray/white, not the site's --ksor-cover-* tokens — those flip
+          with the site's dark mode, but the chat above is forced light
+          (2026-09-22), and this strip sits directly under it. */}
+      <div className="flex shrink-0 items-center justify-center border-t border-gray-200 bg-gray-50 px-4 py-2 text-xs">
+        <Link
+          href="/docs"
+          className="text-[#1d4ed8] underline-offset-2 hover:underline"
+        >
+          Browse the governed record — every cited source, in full →
+        </Link>
+      </div>
     </div>
   );
 }
