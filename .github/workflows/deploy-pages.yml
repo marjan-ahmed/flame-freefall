@@ -36,7 +36,7 @@ jobs:
           # NEXT_PUBLIC_* only then, never at request time — this IS a
           # static export). Points at the deployed chatkit backend, not
           # localhost.
-          NEXT_PUBLIC_CHATKIT_API_URL: https://flame-freefall-chatkit.vercel.app/chatkit
+          NEXT_PUBLIC_CHATKIT_API_URL: https://flame-freefall-site.vercel.app/chatkit
           NEXT_PUBLIC_CHATKIT_DOMAIN_KEY: production
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
