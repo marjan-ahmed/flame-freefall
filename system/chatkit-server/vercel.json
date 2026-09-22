@@ -1,0 +1,18 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pip install -e .. && pip install asyncpg python-dotenv",
+  "devCommand": "uv run uvicorn main:app --reload --port 8000",
+  "installCommand": "pip install -e .. && pip install asyncpg python-dotenv",
+  "framework": null,
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 60,
+      "runtime": "python3.12"
+    }
+  },
+  "routes": [
+    { "src": "/chatkit/(.*)", "dest": "/api/index.py" },
+    { "src": "/chatkit", "dest": "/api/index.py" },
+    { "src": "/health", "dest": "/api/index.py" }
+  ]
+}

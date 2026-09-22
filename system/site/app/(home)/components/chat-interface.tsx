@@ -7,16 +7,16 @@ import { ChatKit, useChatKit } from "@openai/chatkit-react";
 /**
  * `api.url` points at the Python ChatKit backend in `system/chatkit-server`
  * (FastAPI + openai-chatkit + openai-agents, answering via Groq's
- * openai/gpt-oss-120b) — run separately with
- * `uv run uvicorn main:app --reload --port 8000` from that directory. Dev
- * only: an absolute localhost URL, not a Next.js route, since the site is
- * statically exported and can't host a live backend itself.
+ * openai/gpt-oss-120b). In production, this is set via NEXT_PUBLIC_CHATKIT_API_URL.
+ * For local development, it defaults to http://localhost:8000/chatkit.
  */
 export function ChatInterface({ title }: { title: string }): ReactElement {
+  const apiUrl = process.env.NEXT_PUBLIC_CHATKIT_API_URL || "http://localhost:8000/chatkit";
+  const domainKey = process.env.NEXT_PUBLIC_CHATKIT_DOMAIN_KEY || "local-dev";
   const { control } = useChatKit({
     api: {
-      url: "http://localhost:8000/chatkit",
-      domainKey: "local-dev",
+      url: apiUrl,
+      domainKey: domainKey,
       // Required when composer.attachments is enabled. two_phase: the
       // backend hands back an upload URL (AttachmentStore.create_attachment),
       // the browser PUTs the bytes there, then the attachment id is attached

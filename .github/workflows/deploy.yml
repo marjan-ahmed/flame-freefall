@@ -1,0 +1,117 @@
+# GitHub Actions workflow for deploying Flame in Freefall
+# 
+# Deploys:
+# - Static Next.js site → GitHub Pages
+# - ChatKit server → Vercel (separate project)
+# - ksor serve → Fly.io (via flyctl)
+#
+# Required secrets (set in GitHub repo settings):
+# - VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID (for chatkit-server)
+# - FLY_API_TOKEN (for ksor serve)
+# - GROQ_API_KEY, HF_TOKEN, DATABASE_URL, KSOR_DB_URL
+# - KSOR_SNAPSHOT_KEYS
+# - NEXT_PUBLIC_CHATKIT_API_URL, NEXT_PUBLIC_CHATKIT_DOMAIN_KEY
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # ─── Build & deploy static site to GitHub Pages ───
+  build-site:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: system/site/package-lock.json
+
+      - name: Install dependencies
+        working-directory: system/site
+        run: npm ci
+
+      - name: Build site
+        working-directory: system/site
+        env:
+          # Pass production env vars to the build
+          NEXT_PUBLIC_CHATKIT_API_URL: ${{ secrets.NEXT_PUBLIC_CHATKIT_API_URL }}
+          NEXT_PUBLIC_CHATKIT_DOMAIN_KEY: ${{ secrets.NEXT_PUBLIC_CHATKIT_DOMAIN_KEY }}
+        run: npm run build
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: system/site/out
+
+  deploy-site:
+    name: Deploy to GitHub Pages
+    needs: build-site
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ─── Deploy ChatKit server to Vercel ───
+  deploy-chatkit:
+    name: Deploy ChatKit server to Vercel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel
+        working-directory: system/chatkit-server
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          # Production environment variables
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          HANDBOOK_MCP_URL: ${{ secrets.HANDBOOK_MCP_URL }}
+          ATTACHMENT_BASE_URL: ${{ secrets.ATTACHMENT_BASE_URL }}
+          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
+        run: |
+          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          vercel build --prod --token=$VERCEL_TOKEN
+          vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+  # ─── Deploy ksor serve to Fly.io ───
+  deploy-ksor:
+    name: Deploy ksor serve to Fly.io
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          # Production environment variables
+          KSOR_AUTH: disabled-public
+          KSOR_DB_URL: ${{ secrets.KSOR_DB_URL }}
+          KSOR_SNAPSHOT_KEYS: ${{ secrets.KSOR_SNAPSHOT_KEYS }}
+        run: |
+          fly deploy --config fly.toml --remote-only

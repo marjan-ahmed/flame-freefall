@@ -10,4 +10,5 @@ dependencies = [
     "openai-chatkit>=1.6.5",
     "python-dotenv>=1.2.3",
     "uvicorn[standard]>=0.53.0",
+    "asyncpg>=0.29.0",
 ]

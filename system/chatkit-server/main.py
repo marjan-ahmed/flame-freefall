@@ -57,7 +57,7 @@ from fastapi.responses import StreamingResponse
 from openai.types.responses import EasyInputMessageParam
 
 from comparison_widget import show_comparison
-from store import InMemoryChatKitStore
+from postgres_store import PostgresChatKitStore
 
 # ONE .env at the repo root — same convention system/site/next.config.mjs
 # uses, so the Groq key set up earlier is already in the right place.
@@ -135,9 +135,10 @@ model = OpenAIChatCompletionsModel(model=_providers[0][1], openai_client=chat_cl
 # see AGENTS.md "Serving to agents"). search/outline/read over the actual
 # corpus, cited retrieval rather than the model's own (ungrounded) knowledge.
 # Connected once at FastAPI startup (see lifespan below), not per-request.
+handbook_mcp_url = os.environ.get("HANDBOOK_MCP_URL", "http://127.0.0.1:8080/mcp")
 handbook_mcp = MCPServerStreamableHttp(
     name="handbook",
-    params={"url": "http://127.0.0.1:8080/mcp"},
+    params={"url": handbook_mcp_url},
     cache_tools_list=True,
 )
 
@@ -326,6 +327,10 @@ async def _uniquify_fake_item_ids(
 uploaded_files: dict[str, bytes] = {}
 
 
+# Base URL for attachment uploads - configurable via env for production
+attachment_base_url = os.environ.get("ATTACHMENT_BASE_URL", "http://127.0.0.1:8000")
+
+
 class InMemoryAttachmentStore(AttachmentStore[dict]):
     """Two-phase upload: create_attachment hands back a URL this same
     process serves (POST /chatkit/upload/{id}); the browser PUTs/POSTs the
@@ -339,7 +344,7 @@ class InMemoryAttachmentStore(AttachmentStore[dict]):
             name=input.name,
             mime_type=input.mime_type,
             upload_descriptor=AttachmentUploadDescriptor(
-                url=f"http://127.0.0.1:8000/chatkit/upload/{attachment_id}",
+                url=f"{attachment_base_url}/chatkit/upload/{attachment_id}",
                 method="POST",
             ),
         )
@@ -428,7 +433,14 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         await self.store.save_thread(thread, context=context)
 
 
-server = FlameFreefallChatKitServer(store=InMemoryChatKitStore(), attachment_store=attachment_store)
+# Initialize Postgres store (falls back to in-memory if DB not configured)
+def _make_store():
+    if os.environ.get("KSOR_DB_URL") or os.environ.get("DATABASE_URL"):
+        return PostgresChatKitStore()
+    return InMemoryChatKitStore()
+
+
+server = FlameFreefallChatKitServer(store=_make_store(), attachment_store=attachment_store)
 
 
 @asynccontextmanager
@@ -437,12 +449,15 @@ async def lifespan(_app: FastAPI):
         yield
 
 
+# CORS origins - configurable via env for production
+cors_origins = os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
+
 app = FastAPI(lifespan=lifespan)
 
 # The Next.js dev server runs on a different port — a different origin.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
