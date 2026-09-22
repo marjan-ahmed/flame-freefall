@@ -2,7 +2,7 @@
   <img src="system/site/app/icon.png" width="88" alt="Flame in Freefall" />
 </p>
 
-<h1 align="center">Flame in Freefall</h1>
+<h1 align="center">Flame Freefall</h1>
 
 <p align="center">
   A governed, citation-backed record of NASA's microgravity combustion research —
