@@ -446,7 +446,19 @@ server = FlameFreefallChatKitServer(store=_make_store(), attachment_store=attach
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    async with handbook_mcp:
+    # A hard failure to connect here used to crash the ENTIRE app at boot
+    # (every request, including /health, 500ing with FUNCTION_INVOCATION_FAILED)
+    # whenever the MCP door was unreachable — e.g. HANDBOOK_MCP_URL unset/
+    # defaulting to localhost in a serverless environment, or ksor serve
+    # briefly asleep on a free-tier host. Confirmed live 2026-09-22. A chat
+    # that never needs a tool call (a greeting, "who are you") has no reason
+    # to depend on the corpus door being up — only an actual tool call
+    # should fail, and only for that one request.
+    try:
+        async with handbook_mcp:
+            yield
+    except Exception as exc:
+        print(f"[handbook-mcp] connect failed at startup, continuing without corpus tools: {exc}")
         yield
 
 
