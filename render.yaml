@@ -5,9 +5,10 @@
 # public bind).
 #
 # Deploy: Render dashboard -> New -> Blueprint -> connect this repo. Render
-# reads this file and creates the service; you'll be prompted for the two
-# `sync: false` secrets (same values as your local .env) since Blueprints
-# never store secret values in the repo.
+# reads this file and creates the service; you'll be prompted for the
+# `sync: false` secrets (same values as your local .env, except
+# KSOR_SNAPSHOT_KEYS — generate a fresh one with `openssl rand -hex 32`,
+# it's not in .env) since Blueprints never store secret values in the repo.
 #
 # Free-tier tradeoff: the service sleeps after 15 min idle and takes a few
 # seconds to wake on the next request — fine for a door only hit when
@@ -26,4 +27,11 @@ services:
       - key: KSOR_DB_URL
         sync: false
       - key: GEMINI_API_KEY
+        sync: false
+      # Without this, a search's snapshot pin is unverifiable across
+      # restarts/redeploys (ephemeral per-process key) — read silently
+      # drops to the active generation instead of the one that was
+      # searched. ksor's own deploying.md flags this as a soft failure
+      # with no error and no log line, so it's easy to miss.
+      - key: KSOR_SNAPSHOT_KEYS
         sync: false
