@@ -158,40 +158,58 @@ handbook_mcp = MCPServerStreamableHttp(
 # live 2026-09-22: a 8067-token request got a 413). Keep every knob small:
 # short instructions, k=2 on search, a low token_budget on read, capped
 # output, and a short history window (below).
+BASE_INSTRUCTIONS = (
+    "Assistant for Flame in Freefall (NASA microgravity combustion: "
+    "BASS-II, SAFFIRE, FLEX, ACME; fire-safety standards).\n\n"
+    "Greetings, thanks, and chit-chat ('hi', 'who are you', 'thanks') get "
+    "a direct reply — NEVER call a tool for these, there is nothing to "
+    "look up.\n\n"
+)
+
+# Told to the model ONLY while handbook_mcp is actually connected (mirrors
+# assistant.mcp_servers below) — telling the model these tools exist when
+# they aren't actually registered makes it try to call them anyway, which
+# the Chat Completions API rejects outright ("attempted to call tool
+# 'search' which was not in request.tools") and crashes the whole turn,
+# not just the tool call (confirmed live 2026-09-22, MCP door unreachable).
+WITH_TOOLS_INSTRUCTIONS = BASE_INSTRUCTIONS + (
+    "For anything that actually asks about the corpus, ground the answer "
+    "in the handbook MCP tools, not general knowledge — but call a tool "
+    "only when the question needs it, and only once per distinct fact "
+    "you're missing, not speculatively. Keep tool calls small: search "
+    "with k=2, read with token_budget<=600 and a specific heading rather "
+    "than a whole document. Say so if the record doesn't cover "
+    "something. Be concise.\n\n"
+    "HARD BUDGET: at most 2 tool calls per investigation you mention "
+    "(one outline or search, one read), and never repeat a call you "
+    "already made. If you hit that budget and still don't have a fact, "
+    "use '—' for it rather than searching again — going over this budget "
+    "causes a real failure (rate limit), not just a slower answer.\n\n"
+    "When the question compares 2+ investigations (flame spread rate, "
+    "O2%, pressure, gravity, geometry), you MUST call show_comparison — "
+    "do this even if you only found some of the facts, passing '—' for "
+    "whatever you didn't find. NEVER write a markdown table, bullet "
+    "list, or any other manual side-by-side layout comparing "
+    "investigations — that is what show_comparison is for, and writing "
+    "one yourself is a mistake, not just a style choice."
+)
+
+WITHOUT_TOOLS_INSTRUCTIONS = BASE_INSTRUCTIONS + (
+    "The corpus search connection is temporarily unavailable — you have NO "
+    "way to look anything up right now. Say so plainly for any question "
+    "that needs the corpus (do not guess or answer from general knowledge "
+    "as if it were the record), and suggest trying again shortly."
+)
+
 assistant = Agent(
     name="Flame in Freefall assistant",
-    instructions=(
-        "Assistant for Flame in Freefall (NASA microgravity combustion: "
-        "BASS-II, SAFFIRE, FLEX, ACME; fire-safety standards).\n\n"
-        "Greetings, thanks, and chit-chat ('hi', 'who are you', 'thanks') get "
-        "a direct reply — NEVER call a tool for these, there is nothing to "
-        "look up.\n\n"
-        "For anything that actually asks about the corpus, ground the answer "
-        "in the handbook MCP tools, not general knowledge — but call a tool "
-        "only when the question needs it, and only once per distinct fact "
-        "you're missing, not speculatively. Keep tool calls small: search "
-        "with k=2, read with token_budget<=600 and a specific heading rather "
-        "than a whole document. Say so if the record doesn't cover "
-        "something. Be concise.\n\n"
-        "HARD BUDGET: at most 2 tool calls per investigation you mention "
-        "(one outline or search, one read), and never repeat a call you "
-        "already made. If you hit that budget and still don't have a fact, "
-        "use '—' for it rather than searching again — going over this budget "
-        "causes a real failure (rate limit), not just a slower answer.\n\n"
-        "When the question compares 2+ investigations (flame spread rate, "
-        "O2%, pressure, gravity, geometry), you MUST call show_comparison — "
-        "do this even if you only found some of the facts, passing '—' for "
-        "whatever you didn't find. NEVER write a markdown table, bullet "
-        "list, or any other manual side-by-side layout comparing "
-        "investigations — that is what show_comparison is for, and writing "
-        "one yourself is a mistake, not just a style choice."
-    ),
+    instructions=WITHOUT_TOOLS_INSTRUCTIONS,
     model=model,
     model_settings=ModelSettings(
         extra_body={"reasoning_format": "hidden"},
         max_tokens=400,
     ),
-    mcp_servers=[handbook_mcp],
+    mcp_servers=[],
     tools=[show_comparison],
 )
 
@@ -468,10 +486,12 @@ async def lifespan(_app: FastAPI):
     try:
         async with handbook_mcp:
             assistant.mcp_servers = [handbook_mcp]
+            assistant.instructions = WITH_TOOLS_INSTRUCTIONS
             yield
     except Exception as exc:
         print(f"[handbook-mcp] connect failed at startup, continuing without corpus tools: {exc}")
         assistant.mcp_servers = []
+        assistant.instructions = WITHOUT_TOOLS_INSTRUCTIONS
         yield
 
 
