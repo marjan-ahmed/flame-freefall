@@ -37,7 +37,15 @@ jobs:
           # static export). Points at the deployed chatkit backend, not
           # localhost.
           NEXT_PUBLIC_CHATKIT_API_URL: https://flame-freefall-site.vercel.app/chatkit
-          NEXT_PUBLIC_CHATKIT_DOMAIN_KEY: production
+          # chatkit.js (OpenAI's CDN-loaded widget) validates this against an
+          # org-level domain allowlist for any non-localhost domain — a wrong
+          # or placeholder value makes the widget silently fail to init on
+          # the real GitHub Pages domain (confirmed live 2026-09-22). Issued
+          # for https://marjan-ahmed.github.io at
+          # https://platform.openai.com/settings/organization/security/domain-allowlist.
+          # Not a secret — it ends up in the public JS bundle either way, so
+          # it's committed here rather than tucked behind a repo Variable.
+          NEXT_PUBLIC_CHATKIT_DOMAIN_KEY: domain_pk_6ab2b44f43988194baaf6eb47e6d4b3e07b6a6661deab903
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: system/site/out

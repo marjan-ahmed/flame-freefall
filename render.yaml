@@ -1,0 +1,29 @@
+# Render Blueprint for ksor serve (the MCP door) — a free-tier alternative
+# to Fly.io that needs no payment method on file. Uses the same root
+# Dockerfile Fly's fly.toml points at (see that file's own comments for
+# what the image does and why KSOR_AUTH=disabled-public is required on a
+# public bind).
+#
+# Deploy: Render dashboard -> New -> Blueprint -> connect this repo. Render
+# reads this file and creates the service; you'll be prompted for the two
+# `sync: false` secrets (same values as your local .env) since Blueprints
+# never store secret values in the repo.
+#
+# Free-tier tradeoff: the service sleeps after 15 min idle and takes a few
+# seconds to wake on the next request — fine for a door only hit when
+# someone's actually chatting, not fine if you need guaranteed low latency.
+
+services:
+  - type: web
+    name: flame-freefall-ksor
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /ready
+    envVars:
+      - key: KSOR_AUTH
+        value: disabled-public
+      - key: KSOR_DB_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
