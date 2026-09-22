@@ -94,24 +94,20 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
   });
 
   return (
-    <div className="flex h-screen w-full flex-col">
-      <ChatKit control={control} className="min-h-0 flex-1" />
+    <div className="relative flex h-screen w-full flex-col">
       {/* The assistant answers from — and cites — the governed record, but
-          nothing on this screen otherwise says that record is browsable on
-          its own. This strip is the human path to it: verify a citation,
-          or just read past what a chat answer summarized (user's call,
-          2026-09-22). */}
-      {/* Plain gray/white, not the site's --ksor-cover-* tokens — those flip
-          with the site's dark mode, but the chat above is forced light
-          (2026-09-22), and this strip sits directly under it. */}
-      <div className="flex shrink-0 items-center justify-center border-t border-gray-200 bg-gray-50 px-4 py-2 text-xs">
-        <Link
-          href="/docs"
-          className="text-[#1d4ed8] underline-offset-2 hover:underline"
-        >
-          Browse the governed record — every cited source, in full →
-        </Link>
-      </div>
+          nothing else on this screen says that record is browsable on its
+          own. Floated over ChatKit's own header, top-left (user's call,
+          2026-09-22) — plain colors, not the site's --ksor-cover-* tokens,
+          since those flip with the site's dark mode and the chat below is
+          forced light. */}
+      <Link
+        href="/docs"
+        className="absolute left-3 top-3 z-10 rounded-full border border-gray-200 bg-white/90 px-3 py-1 text-xs font-medium text-[#1d4ed8] shadow-sm backdrop-blur hover:underline"
+      >
+        System of Record
+      </Link>
+      <ChatKit control={control} className="h-full w-full" />
     </div>
   );
 }
