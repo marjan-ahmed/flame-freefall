@@ -1,0 +1,13 @@
+[project]
+name = "chatkit-server"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.141.1",
+    "openai>=3.17.0",
+    "openai-agents>=0.22.3",
+    "openai-chatkit>=1.6.5",
+    "python-dotenv>=1.2.3",
+    "uvicorn[standard]>=0.53.0",
+]

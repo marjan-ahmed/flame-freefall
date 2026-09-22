@@ -1,12 +1,18 @@
-import { HomeLayout } from "fumadocs-ui/layouts/home";
+import Script from "next/script";
 
-import { baseOptions } from "@/lib/layout.shared";
-
-// The front door stands ALONE: a navbar with the record's name, search and the
-// theme switch, and nothing else. It wore the full docs chrome briefly
-// (2026-08-22) so the sidebar was present from the first second; the owner's
-// call is that a landing page should land — the sidebar belongs to the record's
-// pages, and `Open the record` is the door to them.
+// The root `/` is a full-screen ChatKit interface, not the record's cover: no
+// navbar, no search, no theme switch, no docs chrome — a deliberate product
+// choice (2026-09-22), overriding the front-door design this route group
+// carried before. The chatkit.js web component is loaded only here, not in
+// the root layout, since nothing outside this route uses it.
 export default function Layout({ children }: LayoutProps<"/">) {
-  return <HomeLayout {...baseOptions()}>{children}</HomeLayout>;
+  return (
+    <>
+      <Script
+        src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"
+        strategy="afterInteractive"
+      />
+      {children}
+    </>
+  );
 }
