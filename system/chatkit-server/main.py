@@ -58,6 +58,7 @@ from openai.types.responses import EasyInputMessageParam
 
 from comparison_widget import show_comparison
 from postgres_store import PostgresChatKitStore
+from store import InMemoryChatKitStore
 
 # ONE .env at the repo root — same convention system/site/next.config.mjs
 # uses, so the Groq key set up earlier is already in the right place.

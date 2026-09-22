@@ -100,7 +100,7 @@ async def _init_schema(pool: asyncpg.Pool) -> None:
 def _serialize_thread_status(status: ThreadStatus) -> dict[str, Any]:
     """Serialize ThreadStatus to JSON."""
     if hasattr(status, 'model_dump'):
-        return status.model_dump()
+        return status.model_dump(mode="json")
     return {"active": {}}
 
 
@@ -123,21 +123,31 @@ def _serialize_thread(thread: ThreadMetadata) -> dict[str, Any]:
 
 
 def _deserialize_thread(row: asyncpg.Record) -> ThreadMetadata:
-    """Deserialize ThreadMetadata from database row."""
+    """Deserialize ThreadMetadata from database row.
+
+    asyncpg has no type codec registered for jsonb here, so jsonb columns
+    come back as raw JSON text, not parsed dicts — json.loads() them before
+    use (matches the write side, which deliberately writes json.dumps()
+    strings without a codec too).
+    """
     return ThreadMetadata(
         id=row["id"],
         title=row["title"],
         created_at=row["created_at"],
-        status=_deserialize_thread_status(row["status"]),
-        metadata=row["metadata"],
+        status=_deserialize_thread_status(json.loads(row["status"])),
+        metadata=json.loads(row["metadata"]),
     )
 
 
 def _serialize_item(item: ThreadItem) -> dict[str, Any]:
     """Serialize ThreadItem to dict for database."""
-    # Use model_dump if available, otherwise manually serialize
+    # mode="json" is required, not cosmetic: every ThreadItem carries a
+    # `created_at: datetime`, and plain model_dump() leaves that as a raw
+    # datetime object, which json.dumps() below rejects with a TypeError on
+    # every single save. mode="json" coerces datetimes/enums to their
+    # JSON-safe (str) form first.
     if hasattr(item, 'model_dump'):
-        data = item.model_dump()
+        data = item.model_dump(mode="json")
     else:
         data = dict(item)
     return {
@@ -152,11 +162,13 @@ def _serialize_item(item: ThreadItem) -> dict[str, Any]:
 
 def _deserialize_item(row: asyncpg.Record) -> ThreadItem:
     """Deserialize ThreadItem from database row."""
-    # Reconstruct the item from the content JSON
-    content = row["content"]
+    # Reconstruct the item from the content JSON. row["content"] is raw JSON
+    # text (no asyncpg codec registered for jsonb) — parse it before
+    # treating it as a dict, or the item-assignment below raises TypeError.
+    content = json.loads(row["content"])
     content["id"] = row["id"]
     content["created_at"] = content.get("created_at", row["created_at"].isoformat())
-    content["metadata"] = content.get("metadata", row["metadata"])
+    content["metadata"] = content.get("metadata") or json.loads(row["metadata"])
     
     item_type = row["type"]
     if item_type == "user_message":
@@ -217,20 +229,21 @@ def _serialize_attachment(attachment: Attachment) -> dict[str, Any]:
 
 
 def _deserialize_attachment(row: asyncpg.Record) -> Attachment:
-    """Deserialize Attachment from database row."""
+    """Deserialize Attachment from database row. row["metadata"] is raw JSON
+    text (no asyncpg jsonb codec registered) — json.loads() before use."""
     if row["type"] == "file":
         return FileAttachment(
             id=row["id"],
             name=row["name"],
             mime_type=row["mime_type"],
-            metadata=row["metadata"],
+            metadata=json.loads(row["metadata"]),
         )
     elif row["type"] == "image":
         return ImageAttachment(
             id=row["id"],
             name=row["name"],
             mime_type=row["mime_type"],
-            metadata=row["metadata"],
+            metadata=json.loads(row["metadata"]),
         )
     else:
         raise ValueError(f"Unknown attachment type: {row['type']}")
