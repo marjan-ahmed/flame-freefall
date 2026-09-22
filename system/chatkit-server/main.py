@@ -416,22 +416,26 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         await title_task
 
     async def _maybe_update_thread_title(self, thread: ThreadMetadata, context: dict) -> None:
-        if thread.title is not None:
-            return
-        items_page = await self.store.load_thread_items(
-            thread.id, after=None, limit=6, order="desc", context=context
-        )
-        if not items_page.data:
-            return
+        # Whole body guarded, not just the LLM call — a Postgres hiccup here
+        # (e.g. Neon waking from idle) must never surface anywhere; this is
+        # cosmetic background work, run as a fire-and-forget task and
+        # awaited only to prevent an orphaned task, never something a chat
+        # response's success should depend on (confirmed live 2026-09-22).
         try:
+            if thread.title is not None:
+                return
+            items_page = await self.store.load_thread_items(
+                thread.id, after=None, limit=6, order="desc", context=context
+            )
+            if not items_page.data:
+                return
             title = await generate_short_title(items_page.data)
+            if not title:
+                return
+            thread.title = title
+            await self.store.save_thread(thread, context=context)
         except Exception as exc:
-            print(f"[thread-title] generation failed: {exc}")
-            return
-        if not title:
-            return
-        thread.title = title
-        await self.store.save_thread(thread, context=context)
+            print(f"[thread-title] update failed: {exc}")
 
 
 # Initialize Postgres store (falls back to in-memory if DB not configured)
@@ -454,11 +458,20 @@ async def lifespan(_app: FastAPI):
     # that never needs a tool call (a greeting, "who are you") has no reason
     # to depend on the corpus door being up — only an actual tool call
     # should fail, and only for that one request.
+    # Catching the connect failure alone wasn't enough — the assistant still
+    # listed handbook_mcp in mcp_servers, and Runner.run_streamed calls
+    # get_mcp_tools() on every run (to enumerate tools for the model)
+    # regardless of whether the turn needs one, which throws "Server not
+    # initialized" on an unconnected server — turning EVERY message into a
+    # stream.error, not just tool-needing ones (confirmed live 2026-09-22).
+    # The assistant only gets the tool once it actually has a live session.
     try:
         async with handbook_mcp:
+            assistant.mcp_servers = [handbook_mcp]
             yield
     except Exception as exc:
         print(f"[handbook-mcp] connect failed at startup, continuing without corpus tools: {exc}")
+        assistant.mcp_servers = []
         yield
 
 

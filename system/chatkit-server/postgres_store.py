@@ -39,7 +39,25 @@ async def get_pool() -> asyncpg.Pool:
             raise RuntimeError(
                 "KSOR_DB_URL or DATABASE_URL environment variable not set"
             )
-        _pool = await asyncpg.create_pool(dsn, min_size=1, max_size=10)
+        _pool = await asyncpg.create_pool(
+            dsn,
+            min_size=0,
+            max_size=10,
+            # KSOR_DB_URL is Neon's POOLED (pgbouncer, transaction-mode)
+            # endpoint — asyncpg's server-side prepared-statement cache is
+            # incompatible with transaction pooling (a cached statement can
+            # get reused against a different backend connection than the one
+            # that prepared it) and surfaced here as an intermittent
+            # asyncpg.exceptions.ProtocolViolationError("Authentication
+            # timed out") under concurrent access (confirmed live
+            # 2026-09-22). This is the standard asyncpg+pgbouncer fix.
+            statement_cache_size=0,
+            # Neon's compute suspends when idle; the first connection after
+            # a while can take a few seconds to wake it, well past asyncpg's
+            # default connect timeout under load.
+            timeout=30,
+            command_timeout=30,
+        )
         await _init_schema(_pool)
     return _pool
 
