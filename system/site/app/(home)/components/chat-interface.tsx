@@ -97,13 +97,13 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
     <div className="relative flex h-screen w-full flex-col">
       {/* The assistant answers from — and cites — the governed record, but
           nothing else on this screen says that record is browsable on its
-          own. Floated over ChatKit's own header, top-left (user's call,
-          2026-09-22) — plain colors, not the site's --ksor-cover-* tokens,
-          since those flip with the site's dark mode and the chat below is
-          forced light. */}
+          own. Top-right, left of ChatKit's own native history/new-chat
+          icons — offset far enough (right-20) to clear that icon cluster
+          rather than sit under it (user's call, 2026-09-22). Text only, no
+          border/pill/background — a plain underlined link, ChatGPT-style. */}
       <Link
         href="/docs"
-        className="absolute left-3 top-3 z-10 rounded-full border border-gray-200 bg-white/90 px-3 py-1 text-xs font-medium text-[#1d4ed8] shadow-sm backdrop-blur hover:underline"
+        className="absolute right-20 top-4 z-10 text-sm text-gray-900 underline underline-offset-4 hover:text-black"
       >
         System of Record
       </Link>
