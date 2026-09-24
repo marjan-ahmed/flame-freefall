@@ -138,7 +138,7 @@ every coding agent working in this repository reads that file first.
                  │  Vercel — chat backend             │    (1,948 PSI test   (normalize, join       (20 PSI tables,
                  │  flame-freefall-site.vercel.app    │     records)          report tables,         reports,
                  │  FastAPI · openai-agents SDK       │                       verify extractions)    workbooks)
-                 │  Groq (gpt-oss-120b) → HF fallback │
+                 │  gpt-oss → qwen → HF fallback      │
                  │  5 PSI tools → ChatKit widgets     │
                  └────────────────┬─────────────────┘
                                   │ MCP: search · read  (narrative questions)
@@ -198,12 +198,14 @@ service redeploys and fails independently of the others. See
   no model call. The static **Test-data explorer** (`/explore`) runs the same query
   in the browser; a TypeScript twin of the Python query is held to the same golden
   test cases.
-- **Resilient by design.** Multi-provider LLM fallback (Groq → Hugging Face) on
-  rate limits, a temporarily unreachable MCP door degrades the assistant to
-  "I can't look that up right now" instead of crashing the chat, and a single
-  failed search/read call mid-conversation forces that same honest abstention in
-  code — the model's own text is overridden, never left to answer from training
-  knowledge instead.
+- **Resilient by design.** Multi-provider LLM fallback (two Groq-hosted models,
+  then Hugging Face) on rate limits, a temporarily unreachable MCP door
+  degrades the assistant to "I can't look that up right now" instead of
+  crashing the chat, and a single failed search/read call mid-conversation
+  forces that same honest abstention in code — the model's own text is
+  overridden, never left to answer from training knowledge instead. If every
+  provider is exhausted at once, the chat says so plainly instead of showing a
+  raw error.
 - **File attachments, conversation history, auto-titled threads.**
 
 ## The corpus
