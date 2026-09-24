@@ -26,52 +26,84 @@
 
 ## The problem
 
-NASA's microgravity combustion program has run BASS-II, SAFFIRE, FLEX, and ACME as
-separate investigations, each reporting flame spread rate, oxygen concentration,
-pressure, gravity level, and burn geometry in its own narrative PDF — with no shared
-schema between them. Nothing is missing; it just isn't comparable without a person
-re-reading four documents and re-typing the numbers into one table by hand. That work
-already happens today, inside active NASA-funded research.
+NASA has run microgravity combustion investigations for two decades (BASS, BASS-II,
+SAFFIRE, FLEX, CFI, ACME, SPICE, SAME and more), and the data sits in NASA's Physical
+Sciences Informatics (PSI) archive. Each investigation was published separately:
+different teams, table layouts, units and years, with no shared schema. Nothing is
+missing, but nothing is comparable either. Answering "what do all of these experiments
+say about 15% O₂, 10 cm/s, PMMA?" means a person reading report after report and
+re-typing numbers into one table by hand, and that work happens today inside active
+NASA-funded research.
 
-This project turns that comparison into a five-second chat message, and keeps every
-number traceable back to the sentence it came from.
+This project turns that question into a five-second chat message. The answer comes
+with every test run at those conditions, the ones that come close, and what nobody has
+tested, and every number traces back to its PSI table line or report page.
 
 ## What this is
 
-Two things, built as one product:
+Three things, built as one product:
 
-- **A System of Record.** `knowledge/` holds eight governed markdown documents — every
-  numeric claim traces to a verbatim quote from its source PDF, gaps are recorded as
-  open questions rather than filled by inference, and nothing publishes without a
-  `draft → stable` approval carrying a named approver and a timestamp.
-- **A research assistant.** A full-screen chat interface that answers exclusively by
-  calling tools against that record over the [Model Context Protocol](https://modelcontextprotocol.io) —
-  never from the model's own training data — and renders a structured side-by-side
-  card instead of prose the moment a question compares two or more investigations.
+- **A unified test-run table.** 20 PSI experimental tables from 19 investigations,
+  normalized into 1,950 records (1,402 individual tests, 435 SPICE test points, and
+  daily summaries, per-fuel summaries and planned envelopes). The original cell is
+  kept beside every normalized value. 433 records are cross-checked against NASA
+  report tables. The 8 cases where a PSI table and a report disagree are flagged, with
+  both values kept, never silently resolved.
+- **A System of Record.** `knowledge/` holds 20 governed markdown documents covering
+  every investigation, report, table and workbook. Every number in them is checked
+  against its source's text, gaps are recorded as open questions rather than filled by
+  inference, and nothing publishes without a `draft → stable` approval carrying a named
+  approver and a timestamp.
+- **A research assistant.** A full-screen chat that answers only through tools, never
+  from the model's own training data. Test-data questions render **interactive
+  widgets** in the conversation: an evidence list, a gap map, a side-by-side
+  comparison, per-test details and results charts. Their buttons let you steer without
+  retyping. Narrative questions go to the governed record over the
+  [Model Context Protocol](https://modelcontextprotocol.io).
 
 > [!NOTE]
-> This is not a wrapped LLM with a system prompt telling it to "be accurate." The
-> assistant has no access to the corpus text at all until it calls a tool; what it
-> can say is bounded by what that tool call returns.
+> This is not a wrapped LLM with a system prompt telling it to "be accurate." Every
+> number on screen comes from the data inside a widget; the model only writes a short
+> summary of what the tool returned and is told never to retype or merge values. An
+> empty result ("no test at these conditions") is shown as an answer, not papered
+> over.
 
 ## For NASA researchers
 
-- Ask in plain language — *"What did BASS-II find about flame spread over solid
-  fuel?"* — and get an answer with its source cited.
-- Ask a comparison question and get a table (spread rate, O₂%, pressure, gravity,
-  geometry) instead of four PDFs to cross-reference yourself.
-- Every answer traces back to a document you can open and verify — the **"System of
-  Record"** link in the chat header goes straight to the governed corpus.
+- Ask by conditions: *"What do all the experiments say about PMMA burning at 15% O₂
+  with a 10 cm/s flow?"* The answer is in tiers:
+  - **At conditions**: every test that reports all of your conditions within tolerance.
+  - **Partial**: tests that match what they report but are silent on one of your
+    conditions (e.g. BASS-II rod tests at ~15% O₂ whose flow isn't recorded in cm/s).
+  - **Nearest**: the closest remaining tests, with what each one measured.
+- **Gap map**: a grid of O₂ × flow (or pressure) bands, shaded by how many tests were
+  run in each cell. Empty cells are conditions nobody has tested; your target is
+  outlined.
+- **Compare investigations**: one column per investigation, showing the O₂, flow and
+  pressure ranges it covered, whether your target falls inside them, and the range of
+  its measured results.
+- **Details** on any test: every condition with its original cell, every result, and
+  its sources (PSI file and line, or NASA report table and page).
+- **Results chart**: e.g. flame spread rate against flow, one line per test that swept
+  its flow.
+- Narrative questions (*"What does NASA-STD-6001B require?"*) are answered from the
+  governed record with citations. The chat header links to the **System of Record** and
+  the **Test-data explorer**, a browsable page for the same data.
 
 ## For evaluators and judges
 
 - **[Try it live](https://marjan-ahmed.github.io/flame-freefall/)** — no setup, no
   login.
-- What's actually novel here isn't the chat UI — it's that the assistant is
-  *architecturally* incapable of answering from anywhere but the governed record: no
-  MCP tool result, no fact. The corpus itself carries a formal governance model
-  (audiences, approval authorities, an append-only takedown ledger) that a wiki or a
-  shared doc doesn't have.
+- What's actually novel isn't the chat UI. It's three things:
+  - **The data.** 19 investigations' tables normalized into one queryable record,
+    with the raw cell kept beside every value.
+  - **Honest answers.** Match, partial and near tiers with explicit coverage gaps, so
+    "nobody has tested this" is an answer, and source disagreements are shown, not
+    hidden.
+  - **Architecture over prompting.** The assistant can't state a number the data
+    didn't return, because numbers live in the widgets, not in the model's prose.
+- The corpus carries a formal governance model (audiences, approval authorities, an
+  append-only takedown ledger) that a wiki or a shared doc doesn't have.
 - Three independently deployed services, wired together over HTTP and MCP — see
   [Architecture](#architecture) below.
 
@@ -91,16 +123,19 @@ every coding agent working in this repository reads that file first.
                                   ▼
                  ┌──────────────────────────────────┐
                  │  GitHub Pages — static export      │   Next.js 16 · React 19
-                 │  marjan-ahmed.github.io/            │   ChatKit UI + record pages
-                 │  flame-freefall/                    │
+                 │  marjan-ahmed.github.io/            │   ChatKit UI, record pages,
+                 │  flame-freefall/                    │   /explore (same query, in-browser)
                  └────────────────┬─────────────────┘
-                                  │ POST /chatkit
+                                  │ POST /chatkit  (messages + widget button actions)
                                   ▼
-                 ┌──────────────────────────────────┐
-                 │  Vercel — chat backend             │   FastAPI · openai-agents SDK
-                 │  flame-freefall-site.vercel.app    │   Groq (gpt-oss-120b), HF fallback
+                 ┌──────────────────────────────────┐    data/runs.json ◄── system/psi-ingest ◄── psi-data/raw
+                 │  Vercel — chat backend             │    (1,950 PSI test   (normalize, join       (20 PSI tables,
+                 │  flame-freefall-site.vercel.app    │     records)          report tables,         reports,
+                 │  FastAPI · openai-agents SDK       │                       verify extractions)    workbooks)
+                 │  Groq (gpt-oss-120b), HF fallback  │
+                 │  5 PSI tools → ChatKit widgets     │
                  └────────────────┬─────────────────┘
-                                  │ MCP: search · read   (+ local query_test_runs over data/runs.json)
+                                  │ MCP: search · read  (narrative questions)
                                   ▼
                  ┌──────────────────────────────────┐
                  │  Vercel — MCP door (ksor serve)    │   Node.js · @panaversity/ksor
@@ -114,7 +149,7 @@ every coding agent working in this repository reads that file first.
                                   ▲
                                   │ ksor ingest (offline, from source)
                  ┌──────────────────────────────────┐
-                 │  knowledge/  — the governed record  │   8 documents, plain markdown
+                 │  knowledge/  — the governed record  │   20 documents, plain markdown
                  └──────────────────────────────────┘
 ```
 
@@ -149,11 +184,14 @@ service redeploys and fails independently of the others. See
   report text before it is used. Where the PSI table and a report disagree
   (8 cases, e.g. Saffire-1 thickness 0.37 cm vs 0.37 mm), both values are kept
   and flagged — never silently resolved.
-- **Evidence, not generated numbers.** The copilot's `query_test_runs` tool renders
-  a card where every value carries its PSI file line or report table; the model
-  only writes the summary around it. The static **Test-data explorer** (`/explore`)
-  runs the same query in the browser, with a coverage map of tested vs untested
-  conditions.
+- **Evidence in widgets, not generated numbers.** Five tools render ChatKit
+  widgets: evidence list, gap map, side-by-side comparison, test details and
+  results chart. Every value carries its PSI file line or report table, and the
+  model only writes a short summary around it. Widget buttons ("Gap map",
+  "Compare investigations", "Details"…) are answered by the server directly, with
+  no model call. The static **Test-data explorer** (`/explore`) runs the same query
+  in the browser; a TypeScript twin of the Python query is held to the same golden
+  test cases.
 - **Resilient by design.** Multi-provider LLM fallback (Groq → Hugging Face) on
   rate limits, and a temporarily unreachable MCP door degrades the assistant to
   "I can't look that up right now" instead of crashing the chat.
@@ -163,14 +201,26 @@ service redeploys and fails independently of the others. See
 
 | Geometry class | Investigations | Documents |
 | --- | --- | --- |
-| Solid fuel | BASS-II, SAFFIRE (incl. Saffire VI) | `knowledge/investigations/solid-fuel/` |
-| Droplet combustion | FLEX | `knowledge/investigations/droplet-combustion/` |
-| Gaseous flames | ACME | `knowledge/investigations/gaseous-flames/` |
-| Foundations *(no geometry class — narrative context)* | NASA-STD-6001B; Liao, Miller and "Thriving in Space" (decadal-survey research priorities) | `knowledge/foundations/` |
+| Solid fuel | BASS-II, SAFFIRE (incl. Saffire VI); *drafts:* BASS, BASS-II requirements | `knowledge/investigations/solid-fuel/` |
+| Droplet combustion | FLEX; *drafts:* FLEX-2, CFI | `knowledge/investigations/droplet-combustion/` |
+| Gaseous flames | ACME; *drafts:* ACME BRE, ACME s-Flame, SPICE | `knowledge/investigations/gaseous-flames/` |
+| Smoke / aerosol *(heated, non-burning samples)* | *drafts:* SAME, SAME-R | `knowledge/investigations/smoke-aerosol/` |
+| Foundations *(no geometry class, narrative context)* | NASA-STD-6001B; Liao, Miller and "Thriving in Space" (decadal-survey research priorities) | `knowledge/foundations/` |
+| Data sources *(no geometry class)* | *drafts:* the PSI archive, all 20 experimental tables, the summary and matrix workbooks | `knowledge/data-sources/` |
 
 Folder layout encodes comparability: two investigations are only honestly
-comparable if they share a geometry class, so that's how the record is organized —
+comparable if they share a geometry class, so that's how the record is organized,
 not by publication date or program name.
+
+8 documents are approved (`stable`) and published. The 12 *drafts* cite every other
+report, table and workbook in `psi-data/raw/`, each checked against its source's
+text. They wait for the owner's review before they publish, and until then they
+appear only in local previews, marked as drafts.
+
+The test data itself lives in `psi-data/`, which has its own
+[README](psi-data/README.md): `raw/` holds the files exactly as downloaded from PSI,
+`derived/` the generated run table, report extractions and inventory, and
+`extracted/` the report values pulled per test.
 
 ## Deployment
 
@@ -208,6 +258,12 @@ uv run pytest            # ingest invariants: every row accounted for, every val
 cd system/chatkit-server
 uv sync
 uv run uvicorn main:app --reload --port 8000    # the chat backend
+GROQ_API_KEY=dummy uv run pytest                # query + widget tests (no network)
+```
+
+```sh
+npm --prefix system/site run test:psi           # the in-browser query matches the Python one
+npm run check                                   # the record's format checker (what CI runs)
 ```
 
 ```sh
