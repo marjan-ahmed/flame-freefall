@@ -35,6 +35,7 @@ from chatkit.server import ChatKitServer, StreamingResult
 from chatkit.store import AttachmentStore
 from chatkit.types import (
     SyncCustomActionResponse,
+    AssistantMessageContent,
     AssistantMessageItem,
     Attachment,
     AttachmentCreateParams,
@@ -42,6 +43,7 @@ from chatkit.types import (
     CustomTask,
     FileAttachment,
     ThreadItemAddedEvent,
+    ThreadItemDoneEvent,
     ThreadItemUpdatedEvent,
     ThreadMetadata,
     ThreadStreamEvent,
@@ -152,8 +154,23 @@ class FallbackAsyncOpenAI:
 
 # Primary/fallback are both Groq-hosted (separate quota buckets per Caveat
 # 5, confirmed real Groq model ids via GET /openai/v1/models, not guessed).
-GROQ_PRIMARY_MODEL_ID = "qwen/qwen3.8-27b"
-GROQ_FALLBACK_MODEL_ID = "openai/gpt-oss-120b"
+#
+# Caveat 6: qwen/qwen3.8-27b briefly WAS primary (2026-09-24) to dodge
+# gpt-oss-120b's exhausted daily quota, but its rate limit is on INPUT
+# tokens per MINUTE (ITPM), not tokens per day, and its limit (7000) is
+# smaller than gpt-oss-120b's TPM (8000) that this app's whole token budget
+# (BASE_INSTRUCTIONS length, search k=2, read token_budget, history window
+# -- see notes above the Agent definition) was actually sized around.
+# Confirmed live in production logs: real requests with a tool result in
+# them run 7000-13000+ input tokens, so qwen 413'd on nearly every non-trivial
+# turn ("Request too large... on input tokens per minute (ITPM): Limit
+# 7000"), fell through gpt-oss-120b (still exhausted from the day before)
+# to HF (still out of monthly credits), and EVERY turn hit the
+# every-provider-exhausted fallback -- confirmed via Vercel runtime logs,
+# not guessed. gpt-oss-120b is primary again; qwen tried second (cheap, and
+# its tight ITPM means it still helps on genuinely small turns), HF last.
+GROQ_PRIMARY_MODEL_ID = "openai/gpt-oss-120b"
+GROQ_FALLBACK_MODEL_ID = "qwen/qwen3.8-27b"
 HF_MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"
 
 _groq_keys = [os.environ["GROQ_API_KEY"]]
@@ -772,13 +789,20 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
             # while generating the assistant's response," indistinguishable
             # from a real bug. Same "degrade honestly, never crash the chat"
             # guarantee TOOL_FAILURE_ABSTENTION_TEXT already gives search/read
-            # failures, extended to a full model-call failure.
+            # failures, extended to a full model-call failure. Streamed as a
+            # plain assistant message, not a Card -- this is a normal chat
+            # reply the user should be able to read like any other answer,
+            # not a distinct widget component (the widgets are reserved for
+            # actual PSI evidence/data, per the user's own feedback).
             print(f"[respond] every model provider failed: {exc!r}")
-            async for event in stream_widget(
-                thread, Card(children=[Text(value=MODEL_UNAVAILABLE_TEXT, size="sm")]), None,
-                lambda item_type: self.store.generate_item_id(item_type, thread, context)
-            ):
-                yield event
+            yield ThreadItemDoneEvent(
+                item=AssistantMessageItem(
+                    id=self.store.generate_item_id("message", thread, context),
+                    thread_id=thread.id,
+                    content=[AssistantMessageContent(text=MODEL_UNAVAILABLE_TEXT, annotations=[])],
+                    created_at=datetime.now(),
+                )
+            )
         await title_task
 
     async def _maybe_update_thread_title(self, thread: ThreadMetadata, context: dict) -> None:
