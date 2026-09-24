@@ -112,6 +112,25 @@ generated and committed; never hand-edit them.
   values, or writing button labels; each rule came from a live error. Groq's
   free tier allows 8000 tokens per minute, so tool replies stay small (a test
   enforces the size of `compact()`).
+- **Not everything belongs in the system prompt.** An instruction is a
+  request, not a guarantee — it will be followed inconsistently across
+  models, fallbacks, and repeated calls to the same model. Before adding or
+  editing any instruction in `main.py` (`BASE_INSTRUCTIONS`,
+  `WITH_TOOLS_INSTRUCTIONS`, `WITHOUT_TOOLS_INSTRUCTIONS`) or a tool's
+  `description_override`/`_reply()` text in `psi_tools.py`, ask: *if the
+  model silently ignored this exact sentence on some fraction of calls,
+  would anything actually break?* If yes, it needs a code-level guarantee,
+  not better wording — a citation, id, unit conversion, aggregate, tier
+  label, or set-difference the model is told to state or compute is a
+  candidate for moving into `psi_query.py`/`psi_widgets.py` (precomputed
+  into the tool's payload) or into a `RunHooks`/`on_tool_end` callback that
+  renders from the tool's own JSON, independent of what the model's text
+  says — the pattern already proven for narrative citations (`_cite_sources`
+  in `main.py`) and for `cite_run_ids=False` on tools whose payload carries
+  no per-run id. Prompt text stays fine for genuinely linguistic choices:
+  prose length, tone, which 2-3 results to mention, whether a caveat reads
+  well. It is not fine for anything with a right answer a human could check
+  against source data.
 - **`psi-data/raw/matrices/BASS Test Matrix 050213.xlsx` contains
   credentials.** It is gitignored and no tool ever opens it.
 - **ChatKit widgets** use the directly-constructed classes (deprecated but

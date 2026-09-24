@@ -62,6 +62,7 @@ from chatkit.widgets import Caption, Card, Markdown, Text
 from psi_tools import TOOLS as PSI_TOOLS
 from postgres_store import PostgresChatKitStore
 from store import InMemoryChatKitStore
+from turn_guard import TurnGuard
 
 # ONE .env at the repo root — same convention system/site/next.config.mjs
 # uses, so the Groq key set up earlier is already in the right place.
@@ -364,7 +365,10 @@ class ToolCallVisibilityHooks(RunHooks):
         result_preview = str(result)[:500]
         print(f"[tool-call] END   {tool.name} -> {result_preview}")
         if tool.name in ("search", "read"):
-            await self._cite_sources(ctx, tool.name, result)
+            data = self._parse_tool_json(result)
+            await self._cite_sources(ctx, tool.name, data)
+            if failure := ctx._guard.record_tool_result(tool.name, data):
+                print(f"[tool-health] {tool.name} failed: {failure}")
         if ctx.workflow_item is None:
             return
         call_id = getattr(context, "tool_call_id", None)
@@ -380,35 +384,37 @@ class ToolCallVisibilityHooks(RunHooks):
             )
         )
 
-    async def _cite_sources(self, ctx: AgentContext, tool_name: str, result) -> None:
-        """Stream a clickable source link straight from search/read's own
-        JSON -- see the comment above DOCS_BASE_URL for why this is code,
-        not another prompt instruction."""
+    def _parse_tool_json(self, result) -> dict | None:
+        """search/read return their JSON payload as {"text": "<json>"} (an MCP
+        tool-call result); parse it once so both citation streaming and the
+        failure check below read the same object."""
         text = result.get("text") if isinstance(result, dict) else None
         if not text:
-            return
+            return None
         try:
             data = json.loads(text)
         except (TypeError, ValueError):
+            return None
+        return data if isinstance(data, dict) else None
+
+    async def _cite_sources(self, ctx: AgentContext, tool_name: str, data: dict | None) -> None:
+        """Stream a clickable source link straight from search/read's own
+        JSON -- see the comment above DOCS_BASE_URL for why this is code,
+        not another prompt instruction."""
+        if not data:
             return
-        cited: set[str] = getattr(ctx, "_cited_stable_ids", None)
-        if cited is None:
-            cited = set()
-            ctx._cited_stable_ids = cited  # type: ignore[attr-defined]
         links: list[tuple[str, str]] = []
         if tool_name == "search" and data.get("ok"):
             for hit in data.get("hits", []):
                 prov = hit.get("provenance") or {}
                 stable_id = prov.get("stable_id")
-                if not stable_id or stable_id in cited:
+                if not ctx._guard.should_cite(stable_id):
                     continue
-                cited.add(stable_id)
                 links.append((_doc_title(hit.get("slug") or prov.get("slug"), hit.get("slug") or ""), _doc_url(stable_id)))
         elif tool_name == "read":
             prov = data.get("provenance") or {}
             stable_id = prov.get("stable_id")
-            if stable_id and stable_id not in cited:
-                cited.add(stable_id)
+            if ctx._guard.should_cite(stable_id):
                 links.append((data.get("title") or _doc_title(prov.get("slug"), prov.get("slug") or ""), _doc_url(stable_id)))
         if not links:
             return
@@ -448,6 +454,70 @@ async def _uniquify_fake_item_ids(
             if real_id is None:
                 real_id = f"msg_{uuid.uuid4().hex[:24]}"
             event.item.id = real_id
+        yield event
+
+
+# Fixed, code-authored line the user sees when a search/read call genuinely
+# failed this turn (ctx._guard.should_override_reply()) -- WITH_TOOLS_INSTRUCTIONS
+# already asks the model to write something like this itself, but an
+# instruction is a request, not a guarantee (confirmed live 2026-09-24: the
+# model answered from training knowledge instead, labeled as a "general
+# explanation", after a failed search). Keep in sync with the tone of that
+# prompt instruction but never rely on the model reproducing it.
+TOOL_FAILURE_ABSTENTION_TEXT = (
+    "The record couldn't be checked just now — the search or read call to it "
+    "failed. I can't give a grounded answer to this question at the moment; "
+    "please try again shortly."
+)
+
+
+async def _guard_response_text(
+    ctx: AgentContext, events: AsyncIterator[ThreadStreamEvent],
+) -> AsyncIterator[ThreadStreamEvent]:
+    """Two guarantees a prompt instruction alone cannot make, both enforced
+    from signals ctx._guard (turn_guard.TurnGuard) already computed during
+    the run -- the same "render from code, not from what the model says"
+    principle the citation cards above already use. This function's own job
+    is ONLY the chatkit wire-event matching; all classification logic lives
+    in TurnGuard.
+
+    1. If ctx._guard.should_override_reply() is set (a search/read call
+       genuinely failed this turn), every piece of the model's own final
+       text is swapped for TOOL_FAILURE_ABSTENTION_TEXT. on_tool_end always
+       runs before the model's follow-up text is generated in the same
+       turn, so by the time any assistant-message text event reaches this
+       wrapper the flag, if it's going to be set at all, already is --
+       there is no race.
+
+    2. Otherwise, if query_test_runs ran this turn, the model's finished
+       text is checked for a cited run id that isn't in the payload it was
+       given. Unlike case 1 this is left as a loud server-log warning
+       rather than a text edit: surgically removing one fabricated citation
+       from a token stream that already reached the client is a much
+       larger change to this streaming path than swapping the whole
+       message, so detection stops here for now rather than risking the
+       success path."""
+    replaced_indices: set[int] = set()
+    async for event in events:
+        update = getattr(event, "update", None)
+        utype = getattr(update, "type", None)
+        if utype == "assistant_message.content_part.text_delta":
+            if ctx._guard.should_override_reply():
+                idx = update.content_index
+                if idx not in replaced_indices:
+                    replaced_indices.add(idx)
+                    update.delta = TOOL_FAILURE_ABSTENTION_TEXT
+                else:
+                    update.delta = ""
+        elif utype == "assistant_message.content_part.done":
+            if ctx._guard.should_override_reply():
+                update.content.text = TOOL_FAILURE_ABSTENTION_TEXT
+            else:
+                fabricated = ctx._guard.check_citations(update.content.text or "")
+                if fabricated:
+                    print(f"[citation-check] fabricated run id(s) in reply, not present in "
+                          f"query_test_runs payload: {sorted(fabricated)} (valid ids this turn: "
+                          f"{sorted(ctx._guard.valid_run_ids)})")
         yield event
 
 
@@ -634,6 +704,7 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         input_items = await converter.to_agent_input(items_page.data)
 
         agent_context = AgentContext(thread=thread, store=self.store, request_context=context)
+        agent_context._guard = TurnGuard()  # type: ignore[attr-defined]
         result = Runner.run_streamed(assistant, input_items, context=agent_context, hooks=tool_call_hooks)
 
         # Started before the main stream, awaited after: title generation
@@ -643,7 +714,9 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         # and chatkit's own protocol layer emits the ThreadUpdatedEvent the
         # client's history list picks up.
         title_task = asyncio.create_task(self._maybe_update_thread_title(thread, context))
-        async for event in _uniquify_fake_item_ids(stream_agent_response(agent_context, result)):
+        async for event in _guard_response_text(
+            agent_context, _uniquify_fake_item_ids(stream_agent_response(agent_context, result))
+        ):
             yield event
         await title_task
 

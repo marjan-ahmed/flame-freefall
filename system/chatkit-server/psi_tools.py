@@ -94,13 +94,22 @@ async def query_test_runs(
     repeat = _is_repeat(ctx, "query", q)
     if not repeat:
         await ctx.context.stream_widget(psi_widgets.evidence_widget(q, result, site=_site(ctx)))
+    payload = psi_query.compact(result)
+    # The model is asked below to cite run ids inline in its prose; nothing
+    # validates it got the id right (unlike the widget, which is rendered
+    # from this same payload by code, not retyped). Record every id this
+    # payload actually contains so main.py's response-text guard can check
+    # the model's citations against it after the turn completes.
+    ctx.context._guard.record_valid_run_ids(
+        {v["id"] for tier in ("match", "partial", "near") for v in payload.get(tier, [])}
+    )
     return _reply(repeat, "Reply in at most 90 words: (1) how many tests match all conditions, say plainly if none; "
                           "(2) how many are partial and which condition they don't report; "
                           "(3) if matches > 0, cite 2–3 representative run ids with their measured values exactly as "
                           "listed — never merge two runs into one approximate number; "
                           "(4) conflicts if any. The widget already has buttons; do not write button labels or "
                           "bracketed links in your reply. Do NOT list all matching runs — the widget shows them.",
-                  psi_query.compact(result))
+                  payload)
 
 
 @function_tool(
@@ -131,10 +140,10 @@ async def show_gap_map(
         await ctx.context.stream_widget(psi_widgets.gap_map_widget(q, y_axis))
     return _reply(repeat, "Reply in at most 70 words: how many cells have tests, whether the target cell is tested "
                           "(and by which investigations), and one notable gap. tested_cells lists EVERY cell that has "
-                          "a test; any cell not in it is untested. Only name a region as untested if none of its "
-                          "cells appear in tested_cells, and never describe a region you have not checked against it. "
-                          "Do not restate individual cell counts — the widget shows every one; speak in O2 / flow ranges.",
-                  summary)
+                          "a test; untested_bands lists every untested region directly — name gaps from that list, "
+                          "not by inference. Do not restate individual cell counts — the widget shows every one; "
+                          "speak in O2 / flow ranges.",
+                  summary, cite_run_ids=False)
 
 
 @function_tool(

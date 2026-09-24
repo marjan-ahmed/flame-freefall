@@ -449,6 +449,16 @@ def gap_map_summary(q: dict, y_axis: str = "flow_cm_s") -> dict:
         f"O2 {_bin_label(*O2_BINS[x], x == 0, x == nb - 1)} %": len(ids)
         for x, ids in sorted(d["unreported"].items()) if ids
     }
+    # Precomputed the same way as tested_cells, not left for the model to
+    # infer by absence. Seen live 2026-09-24: given only tested_cells, the
+    # model still called a region untested that actually had tests in a
+    # different cell of the same band it wasn't checking carefully.
+    out["untested_bands"] = [
+        f"O2 {_bin_label(*O2_BINS[x], x == 0, x == nb - 1)} % / {y_name} "
+        f"{_bin_label(*ybins[y], y == 0, y == len(ybins) - 1)} {_unit(y_axis)}"
+        for x in range(nb) for y in range(len(ybins))
+        if not d["grid"].get((x, y))
+    ]
     return out
 
 
