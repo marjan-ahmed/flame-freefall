@@ -149,3 +149,17 @@ export function dashboardTotals(): DashboardTotals {
 export function geometryClasses(): string[] {
   return [...new Set(psiInvestigations().map((i: Investigation) => i.geometry_class))].sort();
 }
+
+export type CoverageGap = { geometryClass: string; label: string };
+
+/** Geometry classes with NO O2%/pressure data at all (empty heatmap row) and
+ * that never register as covered near any named mission atmosphere — the
+ * single fact worth surfacing before a reader scans the full grid, not
+ * buried as one gap chip among many. Computed, not hand-listed, so it stays
+ * correct as investigations are added. */
+export function totalCoverageGaps(heatmaps: ClassHeatmap[], readiness: ReadinessSummary[]): CoverageGap[] {
+  return heatmaps
+    .filter((h) => h.reportedRuns === 0)
+    .filter((h) => readiness.every((r) => !r.classes.find((c) => c.geometryClass === h.geometryClass)?.covered))
+    .map((h) => ({ geometryClass: h.geometryClass, label: h.label }));
+}

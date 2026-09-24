@@ -12,6 +12,7 @@ import {
   dashboardTotals,
   geometryHeatmaps,
   missionReadinessSummary,
+  totalCoverageGaps,
 } from "@/lib/dashboard-data";
 import { appDescription, appTitle } from "@/lib/shared";
 
@@ -68,13 +69,14 @@ export default function HomePage(): ReactElement {
   const heatmaps = geometryHeatmaps();
   const markers = atmosphereMarkers();
   const readiness = missionReadinessSummary();
+  const totalGaps = totalCoverageGaps(heatmaps, readiness);
 
   return (
     <>
       <Hero />
       <NumberStrip totals={totals} />
       <Destinations />
-      <EvidenceSection heatmaps={heatmaps} markers={markers} readiness={readiness} />
+      <EvidenceSection heatmaps={heatmaps} markers={markers} readiness={readiness} totalGaps={totalGaps} />
       <TrustSection />
       <ClosingCta description={appDescription} />
     </>
@@ -116,8 +118,8 @@ function Hero(): ReactElement {
 function NumberStrip({ totals }: { totals: ReturnType<typeof dashboardTotals> }): ReactElement {
   const stats: { n: number; label: string }[] = [
     { n: totals.investigations, label: "investigations" },
-    { n: totals.tests, label: "individual tests" },
-    { n: totals.runs, label: "run records" },
+    { n: totals.runs, label: "run-table rows, every granularity" },
+    { n: totals.tests, label: "of those, single-test rows" },
     { n: totals.withOutcomes, label: "with measured results" },
     { n: totals.reportConfirmed, label: "report-confirmed" },
     { n: totals.conflicts, label: "conflicts flagged, not hidden" },
@@ -204,10 +206,12 @@ function EvidenceSection({
   heatmaps,
   markers,
   readiness,
+  totalGaps,
 }: {
   heatmaps: ReturnType<typeof geometryHeatmaps>;
   markers: ReturnType<typeof atmosphereMarkers>;
   readiness: ReturnType<typeof missionReadinessSummary>;
+  totalGaps: ReturnType<typeof totalCoverageGaps>;
 }): ReactElement {
   return (
     <section className="border-y border-border/60 bg-muted/20">
@@ -219,6 +223,17 @@ function EvidenceSection({
           &ldquo;will likely require the retest of many materials.&rdquo; Below is what the PSI data actually covers
           near each proposed atmosphere — computed from the 1,948-record test table, not estimated.
         </p>
+
+        {totalGaps.length > 0 ? (
+          <div className="ksor-caution mt-6 rounded-lg border border-l-4 px-4 py-3 text-sm">
+            <span className="font-medium">
+              {totalGaps.map((g) => g.label).join(" and ")}: zero coverage, full stop.
+            </span>{" "}
+            No run in {totalGaps.length === 1 ? "that class" : "those classes"} reports both O₂% and pressure — not
+            at conditions, not partial, not near, at any of the three mission atmospheres below. That gap sits
+            inside the grid underneath; it deserves to be read before it, not inside it.
+          </div>
+        ) : null}
 
         <div className="mt-8 rounded-none border border-border bg-card">
           <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
