@@ -94,3 +94,11 @@ def test_compare_resolves_investigation_families():
     names = {r["name"] for r in w.compare_data(q, ["SAFFIRE", "BASS-II"])}
     assert {"SAFFIRE-1", "SAFFIRE-2", "BASS-II"} <= names and "BASS" not in names
     assert {r["name"] for r in w.compare_data(q, ["BASS"])} == {"BASS"}
+
+
+def test_gap_map_summary_lists_every_tested_cell():
+    # seen live: with only counts, the model called high-O2/high-flow PMMA
+    # untested although SAFFIRE VI tests sit there
+    s = w.gap_map_summary({"fuel_family": "PMMA"})
+    assert len(s["tested_cells"]) == s["cells_with_tests"]
+    assert any(c.startswith("O2 30–35 % / flow 20–30") and "SAFFIRE IV–VI" in c for c in s["tested_cells"])

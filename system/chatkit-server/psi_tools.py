@@ -83,7 +83,9 @@ async def query_test_runs(
         await ctx.context.stream_widget(psi_widgets.evidence_widget(q, result))
     return _reply(repeat, "Reply in at most 90 words: (1) how many tests match all conditions, say plainly if none; "
                           "(2) how many are partial and which condition they don't report; (3) the nearest test with "
-                          "its values; (4) conflicts if any. Mention the buttons (Gap map, Compare) only if useful.",
+                          "its values; (4) conflicts if any. Give each run its own value exactly as listed — never "
+                          "merge two runs into one approximate number. The widget already has buttons; do not write "
+                          "button labels or bracketed links in your reply.",
                   psi_query.compact(result))
 
 
@@ -113,8 +115,12 @@ async def show_gap_map(
     repeat = _is_repeat(ctx, f"gap:{y_axis}", q)
     if not repeat:
         await ctx.context.stream_widget(psi_widgets.gap_map_widget(q, y_axis))
-    return _reply(repeat, "Reply in at most 60 words: how much of the condition space has tests, whether the target "
-                          "cell is tested (and by which investigations), and the most notable gap.", summary)
+    return _reply(repeat, "Reply in at most 70 words: how many cells have tests, whether the target cell is tested "
+                          "(and by which investigations), and one notable gap. tested_cells lists EVERY cell that has "
+                          "a test; any cell not in it is untested. Only name a region as untested if none of its "
+                          "cells appear in tested_cells, and never describe a region you have not checked against it. "
+                          "Do not restate individual cell counts — the widget shows every one; speak in O2 / flow ranges.",
+                  summary)
 
 
 @function_tool(
