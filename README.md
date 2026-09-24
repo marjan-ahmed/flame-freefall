@@ -100,7 +100,7 @@ every coding agent working in this repository reads that file first.
                  │  Vercel — chat backend             │   FastAPI · openai-agents SDK
                  │  flame-freefall-site.vercel.app    │   Groq (gpt-oss-120b), HF fallback
                  └────────────────┬─────────────────┘
-                                  │ MCP: search · read · show_comparison
+                                  │ MCP: search · read   (+ local query_test_runs over data/runs.json)
                                   ▼
                  ┌──────────────────────────────────┐
                  │  Vercel — MCP door (ksor serve)    │   Node.js · @panaversity/ksor
@@ -131,9 +131,29 @@ service redeploys and fails independently of the others. See
 - **Cited, tool-grounded retrieval.** The assistant calls `search`/`read` over MCP;
   the chat UI shows each tool call live (name, arguments, status) as it happens —
   nothing is hidden behind a spinner.
-- **Cross-investigation comparison, structured.** Ask to compare two or more
-  investigations and a purpose-built widget renders the facts side by side; the
-  model is instructed to never fake this with a markdown table.
+- **One table of every test, queried by conditions.** `system/psi-ingest`
+  normalizes 20 NASA PSI experimental tables (19 investigations) into 1,950
+  records — 1,402 individual tests, 435 SPICE test points, 100 daily summaries,
+  5 per-fuel report summaries, 8 planned envelopes — keeping the original cell
+  beside every normalized value.
+  Ask for "15 % O₂, 10 cm/s, PMMA" and get the tests run there, the tests that
+  report only some of those conditions, the nearest tests, and which
+  investigations never covered the target. An empty match is an answer, not a gap
+  papered over.
+- **Cross-checked against NASA reports.** 433 records carry report data: per-test
+  tables the governed documents reproduce (BASS-II Tables 5.1 and 7.1, Saffire
+  Table I and IV–VI, FLEX Table IX), plus values extracted straight from the
+  converted report PDFs (`uv run psi-extract`: BASS-II Appendix A flow direction
+  and observations for all 126 tests, SPICE smoke-point ranges per fuel, SAME-R
+  sample temperatures). Every extracted value is checked verbatim against the
+  report text before it is used. Where the PSI table and a report disagree
+  (8 cases, e.g. Saffire-1 thickness 0.37 cm vs 0.37 mm), both values are kept
+  and flagged — never silently resolved.
+- **Evidence, not generated numbers.** The copilot's `query_test_runs` tool renders
+  a card where every value carries its PSI file line or report table; the model
+  only writes the summary around it. The static **Test-data explorer** (`/explore`)
+  runs the same query in the browser, with a coverage map of tested vs untested
+  conditions.
 - **Resilient by design.** Multi-provider LLM fallback (Groq → Hugging Face) on
   rate limits, and a temporarily unreachable MCP door degrades the assistant to
   "I can't look that up right now" instead of crashing the chat.
@@ -175,6 +195,13 @@ curl https://flamefreefall-sor.vercel.app/ready        # door ↔ database
 ```sh
 npm install
 npm run dev              # the record, at http://localhost:3000
+```
+
+```sh
+cd system/psi-ingest
+uv run psi-extract       # converted report text → psi-data/extracted/report-outcomes.csv (verbatim, paged)
+uv run psi-ingest        # psi-data/raw + knowledge/ + extracted → psi-data/derived/*.json (and the copilot's copy)
+uv run pytest            # ingest invariants: every row accounted for, every value keeps its raw cell
 ```
 
 ```sh

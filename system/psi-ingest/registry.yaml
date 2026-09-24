@@ -1,0 +1,145 @@
+# Investigation registry — identity metadata only, never science values.
+#
+# `full_name` is filled ONLY where a governed knowledge/ document states it;
+# otherwise it is null and the short name stands alone. Report citations are
+# never written here: `ksor_doc` + `source_id` point at a knowledge document's
+# own `sources:` frontmatter, which the ingest reads at run time (so a
+# citation's title and URL have exactly one home — the record).
+#
+# `geometry_class` reuses the corpus's comparability classes (AGENTS.md):
+# two investigations are only directly comparable within one class.
+
+investigations:
+  bass:
+    name: BASS
+    full_name: Burning and Suppression of Solids
+    psi_id: PSI-26
+    geometry_class: solid-fuel
+    ksor_doc: knowledge/investigations/solid-fuel/bass-ii
+    source_id: bass-ii-tm-2021
+  bass-ii:
+    name: BASS-II
+    full_name: Burning and Suppression of Solids-II
+    psi_id: PSI-25
+    geometry_class: solid-fuel
+    ksor_doc: knowledge/investigations/solid-fuel/bass-ii
+    source_id: bass-ii-tm-2021
+  saffire-1:
+    name: SAFFIRE-1
+    full_name: Spacecraft Fire Experiment (Saffire-I)
+    psi_id: PSI-98
+    geometry_class: solid-fuel
+    ksor_doc: knowledge/investigations/solid-fuel/saffire
+    source_id: saffire-results-2017
+  saffire-2:
+    name: SAFFIRE-2
+    full_name: Spacecraft Fire Experiment (Saffire-II)
+    psi_id: PSI-99
+    geometry_class: solid-fuel
+    ksor_doc: knowledge/investigations/solid-fuel/saffire
+    source_id: saffire-results-2017
+  saffire-3:
+    name: SAFFIRE-3
+    full_name: Spacecraft Fire Experiment (Saffire-III)
+    psi_id: PSI-100
+    geometry_class: solid-fuel
+    ksor_doc: knowledge/investigations/solid-fuel/saffire
+    source_id: null
+  saffire-iv-vi:
+    name: SAFFIRE IV–VI
+    full_name: Spacecraft Fire Experiment (Saffire IV–VI)
+    psi_id: null
+    geometry_class: solid-fuel
+    ksor_doc: knowledge/investigations/solid-fuel/saffire
+    source_id: saffire-vi-ices-2024
+  flex:
+    name: FLEX
+    full_name: Flame Extinguishment Experiment
+    psi_id: PSI-69
+    geometry_class: droplet-combustion
+    ksor_doc: knowledge/investigations/droplet-combustion/flex
+    source_id: flex-tp-2015
+  flex-2:
+    name: FLEX-2
+    full_name: null
+    psi_id: PSI-68
+    geometry_class: droplet-combustion
+    ksor_doc: null
+    source_id: null
+  cfi:
+    name: CFI
+    full_name: null
+    psi_id: PSI-39
+    geometry_class: droplet-combustion
+    ksor_doc: null
+    source_id: null
+  cfi-g:
+    name: CFI-G
+    full_name: null
+    psi_id: PSI-159
+    geometry_class: gaseous-flames
+    ksor_doc: null
+    source_id: null
+  acme-flame-design:
+    name: ACME Flame Design
+    full_name: Flame Design (ACME)
+    psi_id: PSI-10
+    geometry_class: gaseous-flames
+    ksor_doc: knowledge/investigations/gaseous-flames/acme
+    source_id: acme-ps-03403
+  acme-bre:
+    name: ACME BRE
+    full_name: Burning Rate Emulator (ACME)
+    psi_id: PSI-20
+    geometry_class: gaseous-flames
+    ksor_doc: knowledge/investigations/gaseous-flames/acme
+    source_id: acme-ps-03403
+  acme-cld:
+    name: ACME CLD Flame
+    full_name: Coflow Laminar Diffusion Flame (ACME)
+    psi_id: PSI-21
+    geometry_class: gaseous-flames
+    ksor_doc: knowledge/investigations/gaseous-flames/acme
+    source_id: acme-ps-03403
+  acme-efield:
+    name: ACME E-FIELD Flames
+    full_name: Electric-Field Effects on Laminar Diffusion Flames (ACME)
+    psi_id: PSI-22
+    geometry_class: gaseous-flames
+    ksor_doc: knowledge/investigations/gaseous-flames/acme
+    source_id: acme-ps-03403
+  acme-s-flame:
+    name: ACME s-Flame
+    full_name: Structure and Response of Spherical Diffusion Flames (ACME)
+    psi_id: PSI-23
+    geometry_class: gaseous-flames
+    ksor_doc: knowledge/investigations/gaseous-flames/acme
+    source_id: acme-ps-03403
+  spice:
+    name: SPICE
+    full_name: null
+    psi_id: PSI-107
+    geometry_class: gaseous-flames
+    ksor_doc: null
+    source_id: null
+  slice:
+    name: SLICE
+    full_name: null
+    psi_id: PSI-106
+    geometry_class: gaseous-flames
+    ksor_doc: null
+    source_id: null
+  same:
+    name: SAME
+    full_name: null
+    psi_id: PSI-102
+    geometry_class: smoke-aerosol
+    ksor_doc: null
+    source_id: null
+  same-r:
+    name: SAME-R
+    full_name: null
+    psi_id: PSI-101
+    geometry_class: smoke-aerosol
+    ksor_doc: null
+    source_id: null
