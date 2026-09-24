@@ -205,6 +205,11 @@ def to_mm(m: Measure | None, default_unit: str | None = None) -> Measure | None:
 def to_atm(m: Measure | None, from_unit: str) -> Measure | None:
     if m is None or not m.usable:
         return m
+    # An absolute pressure of zero is vacuum, where nothing burns: FLEX-114
+    # prints "0" mmHg in both the PSI table and the report, yet burned 18.9 s.
+    # Refused as a value (raw kept), never "corrected".
+    if (m.max or 0) <= 0:
+        return Measure(raw=m.raw, unit="atm", flags=m.flags + ["suspect_value", "zero_absolute_pressure"])
     u = (m.unit or from_unit).lower()
     factor = PRESSURE_TO_ATM.get(u)
     if factor is None:
@@ -212,7 +217,7 @@ def to_atm(m: Measure | None, from_unit: str) -> Measure | None:
     if factor == 1.0:
         m.unit = "atm"
         return m
-    return m.scaled(factor, "atm")
+    return m.scaled(factor, "atm", f"converted_from_{u}")
 
 
 def text(raw: object) -> str | None:

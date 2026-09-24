@@ -57,6 +57,10 @@ QUANTITY_LABEL = {
     "spread_extent": "Spread extent", "final_co2_pct": "Final CO₂", "final_co_ppm": "Final CO",
     "peak_burner_temp_c": "Peak burner temperature", "observation": "Observation", "end_mode": "End mode",
     "test_end": "Test end", "ignited": "Ignited", "hot_ignition": "Hot ignition",
+    "burn_time_hot_flame": "Hot-flame burn time (unit not stated)", "reignitions": "Re-ignitions",
+    "extinction_diameter_cool": "Extinction diameter (cool flame)", "tem_particles_counted_unaged": "TEM particles counted (unaged)",
+    "tem_particles_counted_aged": "TEM particles counted (aged)", "smoke_points_observed": "Smoke points observed",
+    "comment": "Comment", "flame_color": "Flame color", "cool_flame": "Cool flame",
 }
 GRANULARITY_LABEL = {"day": "daily summary", "summary": "per-fuel summary", "envelope": "planned envelope"}
 PALETTE = ["#dc2626", "#2563eb", "#16a34a", "#d97706", "#7c3aed", "#0891b2", "#db2777", "#65a30d", "#ea580c", "#4f46e5"]
@@ -172,7 +176,7 @@ def _cite_line(v: dict) -> str:
     return "Source: " + " · ".join(dict.fromkeys(out))
 
 
-def _run_item(v: dict) -> Col:
+def _run_item(v: dict, q: dict | None = None, expanded: bool = False) -> Col:
     badges = [Badge(label=v["investigation"], color="secondary", size="sm")]
     if v["granularity"] in GRANULARITY_LABEL:
         badges.append(Badge(label=GRANULARITY_LABEL[v["granularity"]], color="warning", size="sm"))
@@ -181,10 +185,16 @@ def _run_item(v: dict) -> Col:
     lines = [
         Row(gap=2, align="center", wrap="wrap", children=[
             Text(value=v["label"], weight="semibold", size="sm"), *badges, Box(flex=1),
-            # A unique key per button: a card holds many Details buttons that are
-            # otherwise identical, and the client tracks loading per component.
-            Button(key=f"details:{v['id']}", label="Details", size="xs", variant="ghost",
-                   onClickAction=ActionConfig(type="psi.test", payload={"id": v["id"]}, handler="server")),
+            # Details expands the record IN PLACE: a sync action (streaming=False)
+            # answered by main.py sync_action(), which returns this same card with
+            # the row opened (ChatKit's documented way to update the clicked
+            # widget). As a streaming action it appended a new card at the end of
+            # the chat and left the clicked button loading (seen live 2026-09-24).
+            Button(key=f"details:{v['id']}", label="Hide details" if expanded else "Details", size="xs",
+                   variant="soft" if expanded else "ghost",
+                   onClickAction=ActionConfig(type="psi.expand", handler="server", streaming=False,
+                                              loadingBehavior="self",
+                                              payload={"q": q or {}, "id": v["id"], "open": not expanded})),
         ]),
         Caption(value=_axis_line(v), size="sm"),
     ]
@@ -192,6 +202,11 @@ def _run_item(v: dict) -> Col:
     if shown:
         lines.append(Caption(value="Result: " + "; ".join(shown), size="sm", color="emphasis"))
     lines.append(Caption(value=_cite_line(v), size="sm", color="tertiary"))
+    if expanded:
+        run = next((r for r in psi_query.load()[0] if r["id"] == v["id"]), None)
+        if run is not None:
+            lines.append(Col(gap=1, padding=2, radius="md", border={"size": 1, "color": "subtle"},
+                             children=detail_sections(run)))
     return Col(gap=1, padding={"y": 1}, children=lines)
 
 
@@ -207,7 +222,7 @@ def _coverage_line(c: dict) -> str:
     return f"{c['investigation']} ({c['runs']}): " + "; ".join(parts) if parts else f"{c['investigation']} ({c['runs']} records)"
 
 
-def evidence_widget(q: dict, result: dict | None = None, site: str | None = None) -> Card:
+def evidence_widget(q: dict, result: dict | None = None, site: str | None = None, expanded: str | None = None) -> Card:
     result = result or psi_query.query(q)
     counts = result["counts"]
     children = [
@@ -230,7 +245,7 @@ def evidence_widget(q: dict, result: dict | None = None, site: str | None = None
             continue
         more = (counts[tier] if tier != "near" else counts["near_pool"]) - len(rows)
         children += [Divider(spacing=2), Text(value=TIER_TITLE[tier], size="sm", weight="semibold"),
-                     *[_run_item(v) for v in rows]]
+                     *[_run_item(v, q, expanded == v["id"]) for v in rows]]
         if more > 0:
             children.append(Caption(value=f"+ {more} more (ask to narrow the conditions, or open the full list in the Explorer)",
                                     color="tertiary"))
@@ -467,13 +482,19 @@ def compare_data(q: dict, investigations: list[str] | None = None) -> list[dict]
                 m = o.get("measure")
                 if m and m.get("min") is not None:
                     results[o["quantity"]].append(m)
-        top = sorted(results.items(), key=lambda kv: -len(kv[1]))[:2]
+        # Scientific priority first (spread rate, burning rate, extinction…),
+        # then frequency. By frequency alone CFI's headline result was its
+        # re-ignition count rather than its burning rates (seen 2026-09-24).
+        rank = {qn: i for i, qn in enumerate(psi_query.OUTCOME_PRIORITY)}
+        top = sorted(results.items(), key=lambda kv: (rank.get(kv[0], 99), -len(kv[1])))[:2]
         rows.append({
             "id": inv_id, "name": inv["name"], "geometry_class": inv["geometry_class"], "records": len(rs),
             "match": tier_counts[inv_id]["match"], "partial": tier_counts[inv_id]["partial"],
             "axes": axes,
             "results": [{"quantity": qn, "min": min(m["min"] for m in ms), "max": max(m["max"] for m in ms),
                          "unit": ms[0].get("unit"), "n": len(ms)} for qn, ms in top],
+            "fuels": [f for f, _ in Counter((r["conditions"].get("fuel_family") or {}).get("value") or "unassigned"
+                                            for r in rs).most_common(4)],
             "conflicts": sum(len(r.get("conflicts", [])) for r in rs),
             "citation": (inv.get("citation") or {}).get("title") or (f"NASA PSI {inv['psi_id']}" if inv["psi_id"] else None),
         })
@@ -500,6 +521,7 @@ def compare_widget(q: dict, investigations: list[str] | None = None) -> Card:
             Title(value=x["name"], size="sm"),
             Badge(label=GEOMETRY_LABEL.get(x["geometry_class"], x["geometry_class"]), color="secondary", size="sm"),
             Caption(value=f"{x['records']} records · {x['match']} at conditions · {x['partial']} partial", size="sm"),
+            Caption(value="Fuels: " + ", ".join(x["fuels"]), size="sm"),
             _range_line("O₂", x["axes"]["o2_pct"], "%", "o2_pct" in q),
             _range_line("Flow", x["axes"]["flow_cm_s"], "cm/s", "flow_cm_s" in q),
             _range_line("Pressure", x["axes"]["pressure_atm"], "atm", "pressure_atm" in q),
@@ -547,6 +569,13 @@ CONDITION_LABEL = {
     "oxidizer_stream_o2_pct": "Oxidizer-stream O₂", "fuel_fraction_pct": "Fuel fraction",
     "flow_setting_air": "Air display (panel)", "flow_setting_fan": "Fan display (panel)",
     "sample_temperature_c": "Sample temperature", "nozzle_diameter_mm": "Nozzle diameter", "pi": "PI",
+    "n2_pct": "N₂", "co2_pct": "CO₂", "he_pct": "He", "identifier": "Identifier", "fiber_supported": "Fiber-supported",
+    "flame_type": "Flame type", "test_type": "Test type", "fuel_flow_mg_s": "Fuel flow", "oxidizer_flow_mg_s": "Oxidizer flow",
+    "ambient_fuel_pct": "Ambient fuel fraction", "stoich_mixture_fraction": "Stoichiometric mixture fraction",
+    "adiabatic_flame_temp_k": "Adiabatic flame temperature", "ignition_power_w": "Igniter power",
+    "ignition_time_s": "Igniter on-time", "flow_restrictor": "Flow restrictor", "sides_burning": "Sides burning",
+    "burner_diameter_mm": "Burner diameter", "e_field_polarity": "E-field polarity", "gmt_day": "GMT day",
+    "test_number": "Test number",
 }
 HIDDEN_FLAGS = ("from_source", "confirmed_by")
 
@@ -568,22 +597,10 @@ def _cond_text(c: dict) -> str:
     return val + extra + (f"  [{', '.join(f.replace('_', ' ') for f in flags)}]" if flags else "")
 
 
-def test_widget(run_id: str, site: str | None = None) -> Card:
-    runs, invs = psi_query.load()
-    run = next((r for r in runs if r["id"] == run_id), None)
-    if run is None:
-        return Card(children=[Text(value=f"No test with id {run_id}.")])
-    inv = invs[run["investigation"]]
-    head = [Badge(label=inv["name"], color="secondary")]
-    if run["granularity"] in GRANULARITY_LABEL:
-        head.append(Badge(label=GRANULARITY_LABEL[run["granularity"]], color="warning"))
-    if run.get("conflicts"):
-        head.append(Badge(label="sources disagree", color="danger"))
-    children = [Title(value=run["id"], size="md"), Row(gap=2, wrap="wrap", children=head)]
-    if run.get("date"):
-        children.append(Caption(value=f"Date: {run['date']}"))
-
-    children += [Divider(spacing=2), Text(value="Results", size="sm", weight="semibold")]
+def detail_sections(run: dict) -> list:
+    """A test's full record (results, conditions, disagreements, sources, notes):
+    the body of the test card, and what expands in place under an evidence row."""
+    children = [Divider(spacing=2), Text(value="Results", size="sm", weight="semibold")]
     if run["outcomes"]:
         for o in run["outcomes"][:12]:
             m = o.get("measure")
@@ -622,6 +639,25 @@ def test_widget(run_id: str, site: str | None = None) -> Card:
             children.append(Markdown(value=f"[{s['url']}]({s['url']})"))
     for n in run.get("notes", []):
         children.append(Caption(value=f"Note: {n}", size="sm", color="tertiary", maxLines=3))
+
+    return children
+
+
+def test_widget(run_id: str, site: str | None = None) -> Card:
+    runs, invs = psi_query.load()
+    run = next((r for r in runs if r["id"] == run_id), None)
+    if run is None:
+        return Card(children=[Text(value=f"No test with id {run_id}.")])
+    inv = invs[run["investigation"]]
+    head = [Badge(label=inv["name"], color="secondary")]
+    if run["granularity"] in GRANULARITY_LABEL:
+        head.append(Badge(label=GRANULARITY_LABEL[run["granularity"]], color="warning"))
+    if run.get("conflicts"):
+        head.append(Badge(label="sources disagree", color="danger"))
+    children = [Title(value=run["id"], size="md"), Row(gap=2, wrap="wrap", children=head)]
+    if run.get("date"):
+        children.append(Caption(value=f"Date: {run['date']}"))
+    children += detail_sections(run)
 
     near_q: dict = {}
     for axis in ("o2_pct", "flow_cm_s", "pressure_atm"):

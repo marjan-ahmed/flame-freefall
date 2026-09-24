@@ -43,3 +43,9 @@ def test_conversions_keep_raw():
     a = to_atm(parse_measure("760"), "mmHg")
     assert abs(a.value - 1.0) < 1e-6 and a.raw == "760"
     assert fraction_to_pct(parse_measure("0.21")).value == 21.0
+
+
+def test_zero_absolute_pressure_is_refused_not_used():
+    # FLEX-114: "0" mmHg in both the PSI table and the report, yet it burned
+    m = to_atm(parse_measure("0"), "mmHg")
+    assert m.value is None and "suspect_value" in m.flags and m.raw == "0"

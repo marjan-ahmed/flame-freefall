@@ -166,3 +166,44 @@ def test_a_failing_view_still_answers_the_button():
 
     got = asyncio.run(collect())
     assert len(got) == 1  # a card came back, so the client's spinner ends
+
+
+def test_details_expands_in_place_through_the_chatkit_protocol():
+    """The browser's exact request for a sync button: threads.sync_custom_action.
+    The reply must be the SAME card (same item id) with the row opened, so the
+    clicked button resolves and the record appears where the user clicked."""
+    import asyncio
+    from datetime import datetime
+
+    from chatkit.actions import Action
+    from chatkit.store import NotFoundError  # noqa: F401  (import check)
+    from chatkit.types import ThreadMetadata, ThreadsSyncCustomActionReq, ThreadCustomActionParams, WidgetItem
+
+    from store import InMemoryChatKitStore
+
+    srv = main.FlameFreefallChatKitServer(store=InMemoryChatKitStore(), attachment_store=main.attachment_store)
+    q = {"fuel_family": "PMMA"}
+
+    async def go():
+        thread = ThreadMetadata(id="thr_t", created_at=datetime.now())
+        await srv.store.save_thread(thread, context={})
+        card = WidgetItem(id="wid_t", thread_id="thr_t", created_at=datetime.now(), widget=w.evidence_widget(q))
+        await srv.store.add_thread_item("thr_t", card, context={})
+        first = w.psi_query.prefer_outcomes(w.psi_query.query(q)["match"])[0]["id"]
+
+        async def click(open_):
+            req = ThreadsSyncCustomActionReq(params=ThreadCustomActionParams(
+                thread_id="thr_t", item_id="wid_t",
+                action=Action(type="psi.expand", payload={"q": q, "id": first, "open": open_})))
+            res = await srv.process(req.model_dump_json().encode(), context={})
+            return json.loads(res.json)["updated_item"]
+
+        opened = await click(True)
+        closed = await click(False)
+        return first, opened, closed
+
+    first, opened, closed = asyncio.run(go())
+    assert opened["id"] == "wid_t"
+    text = json.dumps(opened)
+    assert '"Hide details"' in text and '"Conditions"' in text and '"Sources"' in text
+    assert '"Hide details"' not in json.dumps(closed)

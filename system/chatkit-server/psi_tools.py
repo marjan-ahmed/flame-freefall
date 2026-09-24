@@ -153,13 +153,15 @@ async def compare_investigations(
     repeat = _is_repeat(ctx, "compare", {**q, "inv": investigations})
     if not repeat:
         await ctx.context.stream_widget(psi_widgets.compare_widget(q, investigations))
-    payload = [{"inv": r["name"], "class": r["geometry_class"], "records": r["records"], "match": r["match"],
+    payload = [{"inv": r["name"], "class": r["geometry_class"], "fuels": r["fuels"], "records": r["records"], "match": r["match"],
                 "partial": r["partial"],
                 "ranges": {k: (f"{a['min']:g}-{a['max']:g}" if a else "not reported") for k, a in r["axes"].items()},
                 "results": [f"{x['quantity']} {x['min']:g}-{x['max']:g} {x['unit'] or ''} (n={x['n']})" for x in r["results"]],
                 "conflicts": r["conflicts"]} for r in rows[:6]]
     return _reply(repeat, "Reply in at most 90 words comparing them: which covers the conditions best, what each "
-                          "measured, and any caveat (different geometry classes are not comparable; conflicts).", {"columns": payload})
+                          "measured, and any caveat. A shared geometry class makes results comparable in kind, not "
+                          "interchangeable: name the fuels when they differ, and never call two results directly "
+                          "comparable across different fuels or classes. Mention conflicts if any.", {"columns": payload})
 
 
 @function_tool(

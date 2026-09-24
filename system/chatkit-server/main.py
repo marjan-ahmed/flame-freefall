@@ -34,6 +34,7 @@ from chatkit.agents import AgentContext, ThreadItemConverter, stream_agent_respo
 from chatkit.server import ChatKitServer, StreamingResult
 from chatkit.store import AttachmentStore
 from chatkit.types import (
+    SyncCustomActionResponse,
     AssistantMessageItem,
     Attachment,
     AttachmentCreateParams,
@@ -473,6 +474,30 @@ def _clean_query(raw: dict) -> dict:
 
 
 class FlameFreefallChatKitServer(ChatKitServer[dict]):
+    async def sync_action(self, thread, action, sender, context):
+        """Sync (streaming=False) actions update the widget that was clicked,
+        in place: ChatKit replaces it with `updated_item`. Used by an evidence
+        card's Details / Hide details buttons."""
+        payload = action.payload or {}
+        kind = str(action.type).removeprefix("psi.")
+        if kind != "expand" or sender is None:
+            print(f"[sync_action] ignored {action.type!r}")
+            return SyncCustomActionResponse()
+        run_id = payload.get("id") if isinstance(payload.get("id"), str) else None
+        try:
+            widget = psi_widgets.evidence_widget(
+                _clean_query(payload.get("q") or {}),
+                site=(context or {}).get("site"),
+                expanded=run_id if payload.get("open") else None,
+            )
+        except Exception as exc:  # keep the card as it was rather than fail the click
+            print(f"[sync_action] expand failed: {exc!r}")
+            return SyncCustomActionResponse(updated_item=sender)
+        updated = sender.model_copy(update={"widget": widget})
+        await self.store.save_item(thread.id, updated, context=context)
+        print(f"[sync_action] expand {run_id} open={bool(payload.get('open'))}")
+        return SyncCustomActionResponse(updated_item=updated)
+
     async def action(self, thread, action, sender, context):
         kind = str(action.type).removeprefix("psi.")
         try:
