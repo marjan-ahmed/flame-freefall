@@ -75,18 +75,22 @@ set_tracing_disabled(True)
 # an object shaped like AsyncOpenAI (duck-typed — it only ever calls
 # .chat.completions.create). Each provider needs its OWN model id (Groq
 # wants "openai/gpt-oss-120b", HF's router wants a full repo id like
-# "meta-llama/Llama-3.1-8B-Instruct") — since OpenAIChatCompletionsModel
+# "Qwen/Qwen2.5-7B-Instruct") — since OpenAIChatCompletionsModel
 # binds one model id for its whole lifetime, this rewrites `model` in the
 # call kwargs per provider, tried in order, falling through on a 429.
 #
 # Caveat 1: Groq's rate-limit error names an ORGANIZATION, not a key — two
 # keys on the same Groq account share the same daily quota (confirmed live
-# 2026-09-22, same pattern the Gemini keys hit earlier this session).
-# Caveat 2: meta-llama/Llama-3.1-8B-Instruct is a much smaller model than
-# gpt-oss-120b — tool-call triggering works (verified live) but argument
-# filling was weaker in a quick test (empty args where content was
-# expected), so search/read/PSI-tool calls may be less reliable
-# once this tier is actually reached.
+# 2026-09-22, same pattern the Gemini keys hit earlier this session), so
+# GROQ_API_KEY_FALLBACK is not real headroom against a quota 429, only
+# against a transient/per-key outage. Once both Groq attempts are
+# exhausted, HF_MODEL_ID is the only tier with independent quota.
+# Caveat 2: HF_MODEL_ID is a much smaller model than gpt-oss-120b, so
+# tool-call triggering and argument filling may be less reliable once this
+# tier is actually reached — confirmed live 2026-09-24 with the previous
+# choice here (meta-llama/Llama-3.1-8B-Instruct): argument filling was
+# weaker in a quick test, and it repeated/contradicted itself in a longer
+# multi-tool-call PSI session. Re-verify after changing this model.
 class _FallbackCompletions:
     def __init__(self, providers: list[tuple[AsyncOpenAI, str]]) -> None:
         self._providers = providers
@@ -118,7 +122,7 @@ class FallbackAsyncOpenAI:
 
 
 GROQ_MODEL_ID = "openai/gpt-oss-120b"
-HF_MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct"
+HF_MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 
 _groq_keys = [os.environ["GROQ_API_KEY"]]
 if fallback_key := os.environ.get("GROQ_API_KEY_FALLBACK"):
