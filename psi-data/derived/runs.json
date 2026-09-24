@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T07:56:09+00:00",
+ "generated_at": "2026-09-24T08:24:01+00:00",
  "generator": "system/psi-ingest",
  "runs": [
   {
@@ -43449,6 +43449,17 @@
      "dataset": "PSI-69",
      "file": "PSI-69_Experimental table_FLEX.csv",
      "row": 71
+    },
+    {
+     "kind": "report",
+     "table": "Table IX",
+     "line": 254,
+     "doc": "knowledge/investigations/droplet-combustion/flex",
+     "doc_title": "FLEX: Flame Extinguishment Experiment",
+     "doc_status": "stable",
+     "source_id": "flex-tp-2015",
+     "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
+     "url": "https://ntrs.nasa.gov/citations/20150023456"
     }
    ],
    "conditions": {
@@ -43459,7 +43470,8 @@
      "max": 0.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "diluent": {
@@ -43470,7 +43482,10 @@
      "value": 4.67,
      "min": 4.67,
      "max": 4.67,
-     "unit": "mm"
+     "unit": "mm",
+     "flags": [
+      "confirmed_by_source_1"
+     ]
     },
     "fuel": {
      "value": "Heptane"
@@ -43491,7 +43506,8 @@
      "max": 0.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "identifier": {
@@ -43504,7 +43520,8 @@
      "max": 84.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "o2_pct": {
@@ -43514,7 +43531,8 @@
      "max": 15.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "pressure_atm": {
@@ -43524,7 +43542,8 @@
      "max": 1.001316,
      "unit": "atm",
      "flags": [
-      "converted"
+      "converted",
+      "confirmed_by_source_1"
      ]
     }
    },
@@ -43532,6 +43551,9 @@
     {
      "quantity": "extinction_diameter",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "measure": {
       "raw": "4.6",
       "value": 4.6,
@@ -43543,6 +43565,9 @@
     {
      "quantity": "burning_rate_k",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "measure": {
       "raw": "0.41",
       "value": 0.41,
@@ -43558,6 +43583,9 @@
     {
      "quantity": "burn_time",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "measure": {
       "raw": "1.6",
       "value": 1.6,
@@ -43569,6 +43597,9 @@
     {
      "quantity": "test_end",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "text": "Extinction"
     }
    ],
@@ -43588,6 +43619,23 @@
      "Visible flame extinction diameter; mm": "4.6",
      "Burning rate; mm": "0.41",
      "Burn time; s": "1.6",
+     "Test end": "Extinction"
+    },
+    {
+     "Test": "FLEX-070",
+     "Identifier": "193F001",
+     "Date": "3/23/10",
+     "GMT time": "7:25:43",
+     "Fuel": "Heptane",
+     "Pressure (mmHg)": "761",
+     "O2": ".15",
+     "N2": ".84",
+     "CO2": "0",
+     "He": "0",
+     "Initial diameter (mm)": "4.67",
+     "Extinction diameter (mm)": "4.6",
+     "Burning rate (mm2/s)": ".41",
+     "Burn time (s)": "1.6",
      "Test end": "Extinction"
     }
    ]
@@ -43980,6 +44028,17 @@
      "dataset": "PSI-69",
      "file": "PSI-69_Experimental table_FLEX.csv",
      "row": 74
+    },
+    {
+     "kind": "report",
+     "table": "Table IX",
+     "line": 257,
+     "doc": "knowledge/investigations/droplet-combustion/flex",
+     "doc_title": "FLEX: Flame Extinguishment Experiment",
+     "doc_status": "stable",
+     "source_id": "flex-tp-2015",
+     "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
+     "url": "https://ntrs.nasa.gov/citations/20150023456"
     }
    ],
    "conditions": {
@@ -43990,7 +44049,8 @@
      "max": 0.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "diluent": {
@@ -44001,7 +44061,10 @@
      "value": 4.64,
      "min": 4.64,
      "max": 4.64,
-     "unit": "mm"
+     "unit": "mm",
+     "flags": [
+      "confirmed_by_source_1"
+     ]
     },
     "fuel": {
      "value": "Heptane"
@@ -44022,7 +44085,8 @@
      "max": 0.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "identifier": {
@@ -44035,7 +44099,8 @@
      "max": 84.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "o2_pct": {
@@ -44045,7 +44110,8 @@
      "max": 15.0,
      "unit": "%",
      "flags": [
-      "mole_fraction_to_pct"
+      "mole_fraction_to_pct",
+      "confirmed_by_source_1"
      ]
     },
     "pressure_atm": {
@@ -44055,7 +44121,8 @@
      "max": 1.001316,
      "unit": "atm",
      "flags": [
-      "converted"
+      "converted",
+      "confirmed_by_source_1"
      ]
     }
    },
@@ -44063,6 +44130,9 @@
     {
      "quantity": "extinction_diameter",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "measure": {
       "raw": "4.58",
       "value": 4.58,
@@ -44074,6 +44144,9 @@
     {
      "quantity": "burning_rate_k",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "measure": {
       "raw": "0.56",
       "value": 0.56,
@@ -44089,6 +44162,9 @@
     {
      "quantity": "burn_time",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "measure": {
       "raw": "1.5",
       "value": 1.5,
@@ -44100,6 +44176,9 @@
     {
      "quantity": "test_end",
      "source": 0,
+     "confirmed_by": [
+      1
+     ],
      "text": "Extinction"
     }
    ],
@@ -44119,6 +44198,23 @@
      "Visible flame extinction diameter; mm": "4.58",
      "Burning rate; mm": "0.56",
      "Burn time; s": "1.5",
+     "Test end": "Extinction"
+    },
+    {
+     "Test": "FLEX-073",
+     "Identifier": "193F001",
+     "Date": "3/23/10",
+     "GMT time": "7:25:43",
+     "Fuel": "Heptane",
+     "Pressure (mmHg)": "761",
+     "O2": ".15",
+     "N2": ".84",
+     "CO2": "0",
+     "He": "0",
+     "Initial diameter (mm)": "4.64",
+     "Extinction diameter (mm)": "4.58",
+     "Burning rate (mm2/s)": ".56",
+     "Burn time (s)": "1.5",
      "Test end": "Extinction"
     }
    ]
@@ -226910,336 +227006,6 @@
      "FFD inlet CO₂ increase (ppm)": "8117",
      "CO₂ partial pressure increase (mmHg)": "3.37",
      "FFD inlet CO increase (ppm)": "320"
-    }
-   ]
-  },
-  {
-   "id": "flex:FLEX-070 (report)",
-   "investigation": "flex",
-   "label": "FLEX-070 (report)",
-   "granularity": "test",
-   "date": null,
-   "sources": [
-    {
-     "kind": "report",
-     "table": "Table IX",
-     "line": 254,
-     "doc": "knowledge/investigations/droplet-combustion/flex",
-     "doc_title": "FLEX: Flame Extinguishment Experiment",
-     "doc_status": "stable",
-     "source_id": "flex-tp-2015",
-     "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
-     "url": "https://ntrs.nasa.gov/citations/20150023456"
-    }
-   ],
-   "conditions": {
-    "co2_pct": {
-     "raw": "0",
-     "value": 0.0,
-     "min": 0.0,
-     "max": 0.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "droplet_d0_mm": {
-     "raw": "4.67",
-     "value": 4.67,
-     "min": 4.67,
-     "max": 4.67,
-     "unit": "mm",
-     "flags": [
-      "from_source_0"
-     ]
-    },
-    "fuel": {
-     "value": "Heptane",
-     "source": 0
-    },
-    "fuel_family": {
-     "value": "n-heptane",
-     "raw": "Heptane",
-     "source": 0
-    },
-    "fuel_form": {
-     "value": "droplet",
-     "source": 0
-    },
-    "gravity": {
-     "value": "microgravity"
-    },
-    "he_pct": {
-     "raw": "0",
-     "value": 0.0,
-     "min": 0.0,
-     "max": 0.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "identifier": {
-     "value": "193F001"
-    },
-    "n2_pct": {
-     "raw": ".84",
-     "value": 84.0,
-     "min": 84.0,
-     "max": 84.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "o2_pct": {
-     "raw": ".15",
-     "value": 15.0,
-     "min": 15.0,
-     "max": 15.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "pressure_atm": {
-     "raw": "761",
-     "value": 1.001316,
-     "min": 1.001316,
-     "max": 1.001316,
-     "unit": "atm",
-     "flags": [
-      "converted",
-      "from_source_0"
-     ]
-    }
-   },
-   "outcomes": [
-    {
-     "quantity": "extinction_diameter",
-     "source": 0,
-     "measure": {
-      "raw": "4.6",
-      "value": 4.6,
-      "min": 4.6,
-      "max": 4.6,
-      "unit": "mm"
-     }
-    },
-    {
-     "quantity": "burning_rate_k",
-     "source": 0,
-     "measure": {
-      "raw": ".41",
-      "value": 0.41,
-      "min": 0.41,
-      "max": 0.41,
-      "unit": "mm²/s"
-     }
-    },
-    {
-     "quantity": "burn_time",
-     "source": 0,
-     "measure": {
-      "raw": "1.6",
-      "value": 1.6,
-      "min": 1.6,
-      "max": 1.6,
-      "unit": "s"
-     }
-    },
-    {
-     "quantity": "test_end",
-     "source": 0,
-     "text": "Extinction"
-    }
-   ],
-   "raw": [
-    {
-     "Test": "FLEX-070",
-     "Identifier": "193F001",
-     "Date": "3/23/10",
-     "GMT time": "7:25:43",
-     "Fuel": "Heptane",
-     "Pressure (mmHg)": "761",
-     "O2": ".15",
-     "N2": ".84",
-     "CO2": "0",
-     "He": "0",
-     "Initial diameter (mm)": "4.67",
-     "Extinction diameter (mm)": "4.6",
-     "Burning rate (mm2/s)": ".41",
-     "Burn time (s)": "1.6",
-     "Test end": "Extinction"
-    }
-   ]
-  },
-  {
-   "id": "flex:FLEX-073 (report)",
-   "investigation": "flex",
-   "label": "FLEX-073 (report)",
-   "granularity": "test",
-   "date": null,
-   "sources": [
-    {
-     "kind": "report",
-     "table": "Table IX",
-     "line": 257,
-     "doc": "knowledge/investigations/droplet-combustion/flex",
-     "doc_title": "FLEX: Flame Extinguishment Experiment",
-     "doc_status": "stable",
-     "source_id": "flex-tp-2015",
-     "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
-     "url": "https://ntrs.nasa.gov/citations/20150023456"
-    }
-   ],
-   "conditions": {
-    "co2_pct": {
-     "raw": "0",
-     "value": 0.0,
-     "min": 0.0,
-     "max": 0.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "droplet_d0_mm": {
-     "raw": "4.64",
-     "value": 4.64,
-     "min": 4.64,
-     "max": 4.64,
-     "unit": "mm",
-     "flags": [
-      "from_source_0"
-     ]
-    },
-    "fuel": {
-     "value": "Heptane",
-     "source": 0
-    },
-    "fuel_family": {
-     "value": "n-heptane",
-     "raw": "Heptane",
-     "source": 0
-    },
-    "fuel_form": {
-     "value": "droplet",
-     "source": 0
-    },
-    "gravity": {
-     "value": "microgravity"
-    },
-    "he_pct": {
-     "raw": "0",
-     "value": 0.0,
-     "min": 0.0,
-     "max": 0.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "identifier": {
-     "value": "193F001"
-    },
-    "n2_pct": {
-     "raw": ".84",
-     "value": 84.0,
-     "min": 84.0,
-     "max": 84.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "o2_pct": {
-     "raw": ".15",
-     "value": 15.0,
-     "min": 15.0,
-     "max": 15.0,
-     "unit": "%",
-     "flags": [
-      "mole_fraction_to_pct",
-      "from_source_0"
-     ]
-    },
-    "pressure_atm": {
-     "raw": "761",
-     "value": 1.001316,
-     "min": 1.001316,
-     "max": 1.001316,
-     "unit": "atm",
-     "flags": [
-      "converted",
-      "from_source_0"
-     ]
-    }
-   },
-   "outcomes": [
-    {
-     "quantity": "extinction_diameter",
-     "source": 0,
-     "measure": {
-      "raw": "4.58",
-      "value": 4.58,
-      "min": 4.58,
-      "max": 4.58,
-      "unit": "mm"
-     }
-    },
-    {
-     "quantity": "burning_rate_k",
-     "source": 0,
-     "measure": {
-      "raw": ".56",
-      "value": 0.56,
-      "min": 0.56,
-      "max": 0.56,
-      "unit": "mm²/s"
-     }
-    },
-    {
-     "quantity": "burn_time",
-     "source": 0,
-     "measure": {
-      "raw": "1.5",
-      "value": 1.5,
-      "min": 1.5,
-      "max": 1.5,
-      "unit": "s"
-     }
-    },
-    {
-     "quantity": "test_end",
-     "source": 0,
-     "text": "Extinction"
-    }
-   ],
-   "raw": [
-    {
-     "Test": "FLEX-073",
-     "Identifier": "193F001",
-     "Date": "3/23/10",
-     "GMT time": "7:25:43",
-     "Fuel": "Heptane",
-     "Pressure (mmHg)": "761",
-     "O2": ".15",
-     "N2": ".84",
-     "CO2": "0",
-     "He": "0",
-     "Initial diameter (mm)": "4.64",
-     "Extinction diameter (mm)": "4.58",
-     "Burning rate (mm2/s)": ".56",
-     "Burn time (s)": "1.5",
-     "Test end": "Extinction"
     }
    ]
   },

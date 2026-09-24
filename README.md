@@ -44,7 +44,7 @@ tested, and every number traces back to its PSI table line or report page.
 Three things, built as one product:
 
 - **A unified test-run table.** 20 PSI experimental tables from 19 investigations,
-  normalized into 1,950 records (1,402 individual tests, 435 SPICE test points, and
+  normalized into 1,948 records (1,400 individual tests, 435 SPICE test points, and
   daily summaries, per-fuel summaries and planned envelopes). The original cell is
   kept beside every normalized value. 433 records are cross-checked against NASA
   report tables. The 8 cases where a PSI table and a report disagree are flagged, with
@@ -129,7 +129,7 @@ every coding agent working in this repository reads that file first.
                                   │ POST /chatkit  (messages + widget button actions)
                                   ▼
                  ┌──────────────────────────────────┐    data/runs.json ◄── system/psi-ingest ◄── psi-data/raw
-                 │  Vercel — chat backend             │    (1,950 PSI test   (normalize, join       (20 PSI tables,
+                 │  Vercel — chat backend             │    (1,948 PSI test   (normalize, join       (20 PSI tables,
                  │  flame-freefall-site.vercel.app    │     records)          report tables,         reports,
                  │  FastAPI · openai-agents SDK       │                       verify extractions)    workbooks)
                  │  Groq (gpt-oss-120b), HF fallback  │
@@ -167,8 +167,8 @@ service redeploys and fails independently of the others. See
   the chat UI shows each tool call live (name, arguments, status) as it happens —
   nothing is hidden behind a spinner.
 - **One table of every test, queried by conditions.** `system/psi-ingest`
-  normalizes 20 NASA PSI experimental tables (19 investigations) into 1,950
-  records — 1,402 individual tests, 435 SPICE test points, 100 daily summaries,
+  normalizes 20 NASA PSI experimental tables (19 investigations) into 1,948
+  records — 1,400 individual tests, 435 SPICE test points, 100 daily summaries,
   5 per-fuel report summaries, 8 planned envelopes — keeping the original cell
   beside every normalized value.
   Ask for "15 % O₂, 10 cm/s, PMMA" and get the tests run there, the tests that
