@@ -66,7 +66,11 @@ Three things, built as one product:
 > number on screen comes from the data inside a widget; the model only writes a short
 > summary of what the tool returned and is told never to retype or merge values. An
 > empty result ("no test at these conditions") is shown as an answer, not papered
-> over.
+> over. Citations and abstentions work the same way: a source link is built straight
+> from a tool's own JSON and streamed independently of the model's prose, and a
+> genuinely failed lookup forces the "I can't check that right now" reply in code —
+> so a weaker or unlucky model call can't cite a source, or a run id, that was never
+> actually returned.
 
 ## For NASA researchers
 
@@ -102,6 +106,8 @@ Three things, built as one product:
     hidden.
   - **Architecture over prompting.** The assistant can't state a number the data
     didn't return, because numbers live in the widgets, not in the model's prose.
+    The same rule holds for citations, gaps and abstentions — enforced in code
+    against every reply, not left to an instruction the model might ignore.
 - The corpus carries a formal governance model (audiences, approval authorities, an
   append-only takedown ledger) that a wiki or a shared doc doesn't have.
 - Three independently deployed services, wired together over HTTP and MCP — see
@@ -193,8 +199,11 @@ service redeploys and fails independently of the others. See
   in the browser; a TypeScript twin of the Python query is held to the same golden
   test cases.
 - **Resilient by design.** Multi-provider LLM fallback (Groq → Hugging Face) on
-  rate limits, and a temporarily unreachable MCP door degrades the assistant to
-  "I can't look that up right now" instead of crashing the chat.
+  rate limits, a temporarily unreachable MCP door degrades the assistant to
+  "I can't look that up right now" instead of crashing the chat, and a single
+  failed search/read call mid-conversation forces that same honest abstention in
+  code — the model's own text is overridden, never left to answer from training
+  knowledge instead.
 - **File attachments, conversation history, auto-titled threads.**
 
 ## The corpus
