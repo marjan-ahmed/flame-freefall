@@ -55,20 +55,28 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
       // fails the same silent-blank-widget way `colorScheme: 'system'` did.
       prompts: [
         {
-          label: "BASS-II flame spread",
-          prompt: "What did BASS-II find about flame spread over solid fuel?",
+          label: "15% O₂, 10 cm/s, PMMA",
+          prompt: "What do all the experiments say about PMMA burning at 15% O2 with a 10 cm/s flow?",
         },
         {
-          label: "SAFFIRE vs BASS-II",
-          prompt: "How does SAFFIRE differ from BASS-II?",
+          label: "Where are the gaps?",
+          prompt: "Show me the gap map for PMMA: which O2 and flow conditions has nobody tested?",
+        },
+        {
+          label: "Spread rate vs flow",
+          prompt: "Plot the flame spread rate against flow speed for opposed-flow PMMA tests.",
+        },
+        {
+          label: "Low-pressure, high-O₂ tests",
+          prompt: "Which tests were run near 30% O2 at about 0.55 atm, and what did they measure?",
+        },
+        {
+          label: "SAFFIRE vs BASS-II fabric",
+          prompt: "Compare SAFFIRE and BASS-II tests on cotton-fiberglass (SIBAL) fabric near 21% O2 and 20 cm/s.",
         },
         {
           label: "NASA-STD-6001B",
           prompt: "What does NASA-STD-6001B require for fire safety certification?",
-        },
-        {
-          label: "FLEX droplet results",
-          prompt: "Summarize FLEX's droplet combustion results.",
         },
       ],
     },
@@ -101,12 +109,14 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
           icons — offset far enough (right-20) to clear that icon cluster
           rather than sit under it (user's call, 2026-09-22). Text only, no
           border/pill/background — a plain underlined link, ChatGPT-style. */}
-      <Link
-        href="/docs"
-        className="absolute right-20 top-4 z-10 text-sm text-gray-900 underline underline-offset-4 hover:text-black"
-      >
-        System of Record
-      </Link>
+      <div className="absolute right-20 top-4 z-10 flex gap-4 text-sm">
+        <Link href="/explore/" className="text-gray-900 underline underline-offset-4 hover:text-black">
+          Test-data explorer
+        </Link>
+        <Link href="/docs" className="text-gray-900 underline underline-offset-4 hover:text-black">
+          System of Record
+        </Link>
+      </div>
       <ChatKit control={control} className="h-full w-full" />
     </div>
   );
