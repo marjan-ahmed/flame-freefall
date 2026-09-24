@@ -82,11 +82,14 @@ set_tracing_disabled(True)
 # OR a bad/unreachable model (see Caveat 3).
 #
 # Caveat 1: Groq's rate-limit error names an ORGANIZATION, not a key — two
-# keys on the same Groq account share the same daily quota (confirmed live
-# 2026-09-22, same pattern the Gemini keys hit earlier this session), so
-# GROQ_API_KEY_FALLBACK is not real headroom against a quota 429, only
-# against a transient/per-key outage. Once both Groq attempts are
-# exhausted, HF_MODEL_ID is the only tier with independent quota.
+# keys on the same Groq account share the same daily quota FOR THE SAME
+# MODEL (confirmed live 2026-09-22, same pattern the Gemini keys hit earlier
+# this session), so GROQ_API_KEY_FALLBACK is not real headroom against a
+# quota 429 on one model, only against a transient/per-key outage. Quota IS
+# scoped per model id, though (confirmed live 2026-09-24: gpt-oss-120b's
+# daily quota was fully exhausted while qwen/qwen3.8-27b, same account, same
+# keys, was still reachable) -- see Caveat 5. Once every Groq (key, model)
+# pair is exhausted, HF_MODEL_ID is the only tier with independent quota.
 # Caveat 2: HF's router only serves a model through the providers THIS
 # account has enabled (confirmed live 2026-09-24: this account only has
 # `together` enabled, not `featherless-ai` — meta-llama/Llama-3.1-8B-Instruct
@@ -99,7 +102,24 @@ set_tracing_disabled(True)
 # NOT be caught below — only RateLimitError was — so a broken HF_MODEL_ID
 # would crash the whole chat turn instead of degrading, and Groq being
 # exhausted (Caveat 1) makes that the exact moment this tier is needed most.
-# Now caught alongside RateLimitError.
+# Caveat 4: narrowing to RateLimitError/BadRequestError still missed every
+# OTHER HTTP-status failure a provider can return -- confirmed live
+# 2026-09-24 in production: Groq's daily quota was exhausted (RateLimitError,
+# caught, fell through correctly) and the HF tier then returned a 402
+# ("depleted your monthly included credits"), which is an APIStatusError but
+# neither of the two caught subtypes, so it crashed the whole turn with a raw
+# traceback instead of the graceful fallback this class exists for. Widened
+# to APIStatusError, the actual base class RateLimitError/BadRequestError
+# both already derive from -- ANY HTTP-status failure from one provider now
+# tries the next, not just those two.
+# Caveat 5: since quota is per model id (Caveat 1), the primary/fallback
+# split below isn't just "strong model, weak model" -- it's real independent
+# headroom. GROQ_PRIMARY_MODEL_ID (qwen/qwen3.8-27b) is tried on every Groq
+# key first, THEN GROQ_FALLBACK_MODEL_ID (openai/gpt-oss-120b) on every Groq
+# key, before HF. Swapping which model leads buys nothing on its own if both
+# are already exhausted -- it only helps when one model's daily quota still
+# has headroom while the other's doesn't, which is exactly what was
+# happening live 2026-09-24.
 class _FallbackCompletions:
     def __init__(self, providers: list[tuple[AsyncOpenAI, str]]) -> None:
         self._providers = providers
@@ -109,9 +129,9 @@ class _FallbackCompletions:
         for index, (client, model_id) in enumerate(self._providers):
             try:
                 return await client.chat.completions.create(**{**kwargs, "model": model_id})
-            except (openai.RateLimitError, openai.BadRequestError) as exc:
+            except openai.APIStatusError as exc:
                 last_exc = exc
-                print(f"[llm-fallback] provider {index} ({model_id}) failed ({type(exc).__name__}), trying next")
+                print(f"[llm-fallback] provider {index} ({model_id}) failed ({type(exc).__name__}: {exc}), trying next")
         raise last_exc  # type: ignore[misc]
 
 
@@ -130,16 +150,25 @@ class FallbackAsyncOpenAI:
         return getattr(self._providers[0][0], name)
 
 
-GROQ_MODEL_ID = "openai/gpt-oss-120b"
+# Primary/fallback are both Groq-hosted (separate quota buckets per Caveat
+# 5, confirmed real Groq model ids via GET /openai/v1/models, not guessed).
+GROQ_PRIMARY_MODEL_ID = "qwen/qwen3.8-27b"
+GROQ_FALLBACK_MODEL_ID = "openai/gpt-oss-120b"
 HF_MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"
 
 _groq_keys = [os.environ["GROQ_API_KEY"]]
 if fallback_key := os.environ.get("GROQ_API_KEY_FALLBACK"):
     _groq_keys.append(fallback_key)
 
-_providers: list[tuple[AsyncOpenAI, str]] = [
-    (AsyncOpenAI(api_key=k, base_url="https://api.groq.com/openai/v1"), GROQ_MODEL_ID) for k in _groq_keys
-]
+_groq_clients = [AsyncOpenAI(api_key=k, base_url="https://api.groq.com/openai/v1") for k in _groq_keys]
+
+# Every Groq key tried on the primary model before any key is tried on the
+# fallback model -- see Caveat 5 above for why this ordering (not "strong
+# model then weak model") is the one that actually buys independent quota.
+_providers: list[tuple[AsyncOpenAI, str]] = (
+    [(client, GROQ_PRIMARY_MODEL_ID) for client in _groq_clients]
+    + [(client, GROQ_FALLBACK_MODEL_ID) for client in _groq_clients]
+)
 if hf_token := os.environ.get("HF_TOKEN"):
     _providers.append(
         (AsyncOpenAI(api_key=hf_token, base_url="https://router.huggingface.co/v1"), HF_MODEL_ID)
@@ -470,6 +499,21 @@ TOOL_FAILURE_ABSTENTION_TEXT = (
     "please try again shortly."
 )
 
+# Streamed as a Card, not chat text, when EVERY model provider fails for a
+# turn (all of Groq's keys rate-limited/quota-exhausted AND the HF fallback
+# out of credits, etc.) -- confirmed live 2026-09-24 in production: this used
+# to be an uncaught exception all the way up through Runner.run_streamed,
+# which ChatKit's client surfaces as a bare "There was an error while
+# generating the assistant's response," indistinguishable from a real bug.
+# respond() below catches that case and streams this instead -- the same
+# "degrade honestly instead of crashing" guarantee TOOL_FAILURE_ABSTENTION_TEXT
+# already gives search/read failures, extended to a full model-call failure.
+MODEL_UNAVAILABLE_TEXT = (
+    "The assistant can't reach any model provider right now (rate limit or "
+    "quota exhausted on every configured provider). This isn't a bug in your "
+    "question — please try again in a few minutes."
+)
+
 
 async def _guard_response_text(
     ctx: AgentContext, events: AsyncIterator[ThreadStreamEvent],
@@ -714,10 +758,27 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         # and chatkit's own protocol layer emits the ThreadUpdatedEvent the
         # client's history list picks up.
         title_task = asyncio.create_task(self._maybe_update_thread_title(thread, context))
-        async for event in _guard_response_text(
-            agent_context, _uniquify_fake_item_ids(stream_agent_response(agent_context, result))
-        ):
-            yield event
+        try:
+            async for event in _guard_response_text(
+                agent_context, _uniquify_fake_item_ids(stream_agent_response(agent_context, result))
+            ):
+                yield event
+        except Exception as exc:
+            # Every configured model provider failed this turn (all Groq
+            # (key, model) pairs exhausted, HF fallback also exhausted, etc.)
+            # -- confirmed live 2026-09-24 in production: this used to
+            # propagate uncaught all the way through Runner.run_streamed,
+            # which ChatKit's client shows as a bare "There was an error
+            # while generating the assistant's response," indistinguishable
+            # from a real bug. Same "degrade honestly, never crash the chat"
+            # guarantee TOOL_FAILURE_ABSTENTION_TEXT already gives search/read
+            # failures, extended to a full model-call failure.
+            print(f"[respond] every model provider failed: {exc!r}")
+            async for event in stream_widget(
+                thread, Card(children=[Text(value=MODEL_UNAVAILABLE_TEXT, size="sm")]), None,
+                lambda item_type: self.store.generate_item_id(item_type, thread, context)
+            ):
+                yield event
         await title_task
 
     async def _maybe_update_thread_title(self, thread: ThreadMetadata, context: dict) -> None:
