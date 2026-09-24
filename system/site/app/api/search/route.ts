@@ -19,4 +19,31 @@ export const revalidate = false;
 // `english` and `multilingual` return identical results on English text.
 // Restoring stemming is a separate, larger decision — it needs a stemmer
 // dependency AND the same tokenizer handed to the browser through `initDB`.
-export const { staticGET: GET } = createFromSource(source);
+//
+// Document ids: the engine ids each page `page.id` and its sections
+// `${page.id}-0`, `${page.id}-1`, … With the default `id: page.url`, the FLEX
+// page's third section is `/docs/…/flex-2` — the URL of the FLEX-2 page — and
+// the export dies with DOCUMENT_ALREADY_EXISTS (found 2026-09-24 when flex-2
+// was approved). Any `<page>-<n>` beside `<page>` collides the same way. A
+// `#` suffix makes a page id something no URL can be; `url`, which is what a
+// result links to, is untouched.
+export const { staticGET: GET } = createFromSource(source, {
+  async buildIndex(page) {
+    const data = page.data as {
+      title?: string;
+      description?: string;
+      structuredData?: unknown;
+      load?: () => Promise<{ structuredData: unknown }>;
+    };
+    const structuredData =
+      data.structuredData ?? (typeof data.load === "function" ? (await data.load()).structuredData : undefined);
+    if (!structuredData) throw new Error(`search: no structured data for ${page.url}`);
+    return {
+      title: data.title ?? page.url,
+      description: data.description,
+      url: page.url,
+      id: `${page.url}#`,
+      structuredData: structuredData as never,
+    };
+  },
+});
