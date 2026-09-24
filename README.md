@@ -132,7 +132,7 @@ every coding agent working in this repository reads that file first.
                  │  Vercel — chat backend             │    (1,948 PSI test   (normalize, join       (20 PSI tables,
                  │  flame-freefall-site.vercel.app    │     records)          report tables,         reports,
                  │  FastAPI · openai-agents SDK       │                       verify extractions)    workbooks)
-                 │  Groq (gpt-oss-120b), HF fallback  │
+                 │  Groq (gpt-oss-120b) → HF fallback │
                  │  5 PSI tools → ChatKit widgets     │
                  └────────────────┬─────────────────┘
                                   │ MCP: search · read  (narrative questions)
