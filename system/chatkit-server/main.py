@@ -308,13 +308,13 @@ WITH_TOOLS_INSTRUCTIONS = BASE_INSTRUCTIONS + (
     "use the handbook MCP tools, not general knowledge: search with k=2, "
     "read with token_budget<=600 and a specific heading. Say so if the "
     "record doesn't cover something. Be concise.\n\n"
-    "If a search or read call errors, times out, or comes back empty, say "
-    "plainly that the record couldn't be checked right now and suggest "
-    "trying again shortly — do NOT answer from general/training knowledge "
-    "and present it as if it came from the record, even as a labeled "
-    "'general explanation'; a caveat does not make an ungrounded answer "
-    "acceptable here (confirmed live 2026-09-24: a failed search call was "
-    "followed by a training-knowledge answer, which this record must never do).\n\n"
+    # A genuinely FAILED search/read call is handled unconditionally in code
+    # now (ctx._guard / _guard_response_text in this file overrides the
+    # reply text regardless of what's written here), so this only needs to
+    # cover the one case code can't see: a search that succeeds but finds
+    # nothing relevant -- still the model's own call to make honestly.
+    "If search finds nothing relevant, say plainly the record doesn't cover "
+    "it — never answer from general knowledge instead.\n\n"
     "Name the source document by title at least once in every narrative reply "
     "(e.g. 'per the Spacecraft Materials Fire Safety decadal-survey paper...'). "
     "A clickable link to it is added automatically below your reply — you do "
