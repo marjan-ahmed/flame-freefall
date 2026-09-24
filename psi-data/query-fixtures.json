@@ -503,7 +503,7 @@
      },
      "flex": {
       "o2_pct": true,
-      "pressure_atm": true
+      "pressure_atm": false
      },
      "flex-2": {
       "o2_pct": true,

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T08:24:01+00:00",
+ "generated_at": "2026-09-24T08:34:33+00:00",
  "generator": "system/psi-ingest",
  "investigations": [
   {
@@ -372,8 +372,8 @@
      "unit": "%"
     },
     "pressure_atm": {
-     "runs": 276,
-     "min": 0.0,
+     "runs": 275,
+     "min": 0.6925,
      "max": 3.0525,
      "unit": "atm"
     },

@@ -121,3 +121,10 @@ def test_shared_flex_identifier_is_not_double_counted(result):
     assert any(s["kind"] == "report" for s in f70["sources"])
     # genuinely report-only tests stay, once
     assert ids.count("flex:FLEX-216 (report)") == 1 and ids.count("flex:FLEX-230 (report)") == 1
+
+
+def test_flex_pressure_range_excludes_the_zero_reading(result):
+    f114 = _by_id(result, "PSI-69:FLEX-114")["conditions"]["pressure_atm"]
+    assert f114.get("value") is None and "zero_absolute_pressure" in f114["flags"]
+    flex = next(i for i in result["investigations"] if i["id"] == "flex")
+    assert flex["coverage"]["pressure_atm"]["min"] > 0.5
