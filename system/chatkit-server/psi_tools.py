@@ -57,8 +57,10 @@ def _is_repeat(ctx: RunContextWrapper[AgentContext], name: str, args: dict) -> b
 def _reply(repeat: bool, instructions: str, payload: dict) -> str:
     head = ("You already showed this exact widget; do not call the tool again. " if repeat
             else "Widget shown to the user. ")
-    return head + instructions + " Cite run ids in parentheses, e.g. (PSI-25:M18); no other citation markup; no tables.\n" \
-        + json.dumps(payload, ensure_ascii=False)
+    return head + instructions + " Cite run ids in parentheses using the FULL id exactly as given in each " \
+        "result's \"id\" field, e.g. (PSI-25:M18) — never drop the ':M18' part and cite just the dataset " \
+        "(PSI-25) on its own, and never reuse one citation for two different runs; no other citation markup; " \
+        "no tables.\n" + json.dumps(payload, ensure_ascii=False)
 
 
 @function_tool(
