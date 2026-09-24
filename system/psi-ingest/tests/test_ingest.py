@@ -111,3 +111,13 @@ def test_tampered_extraction_is_refused(tmp_path):
     bad.write_text(lines[0] + "\n" + tampered + "\n", encoding="utf-8")
     with pytest.raises(ExtractionNotVerified):
         load_verified(root, bad)
+
+
+def test_shared_flex_identifier_is_not_double_counted(result):
+    # 193F001 labels both FLEX-070 and FLEX-073 in the PSI table
+    ids = [r["id"] for r in result["runs"] if r["investigation"] == "flex"]
+    assert "flex:FLEX-070 (report)" not in ids and "flex:FLEX-073 (report)" not in ids
+    f70 = _by_id(result, "PSI-69:FLEX-070")
+    assert any(s["kind"] == "report" for s in f70["sources"])
+    # genuinely report-only tests stay, once
+    assert ids.count("flex:FLEX-216 (report)") == 1 and ids.count("flex:FLEX-230 (report)") == 1

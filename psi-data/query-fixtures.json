@@ -159,7 +159,7 @@
     "counts": {
      "match": 29,
      "partial": 0,
-     "near_pool": 94
+     "near_pool": 92
     },
     "match_ids": [
      "PSI-69:FLEX-009",
@@ -424,7 +424,7 @@
     "counts": {
      "match": 12,
      "partial": 63,
-     "near_pool": 1875
+     "near_pool": 1873
     },
     "match_ids": [
      "saffire-iv-vi:VI-3",
@@ -599,7 +599,7 @@
      {
       "fuel_family": "n-heptane",
       "investigation": "FLEX",
-      "runs": 8
+      "runs": 6
      }
     ]
    }

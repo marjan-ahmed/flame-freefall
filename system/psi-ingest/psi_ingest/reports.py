@@ -339,6 +339,15 @@ def flex_table_ix(m: Merger) -> None:
     for row in rows:
         label = row["Test"].strip()
         cands = by_ident.get(row["Identifier"].strip(), [])
+        if len(cands) > 1:
+            # One identifier, several tests (193F001 is both FLEX-070 and
+            # FLEX-073): break the tie on test number AND initial droplet
+            # diameter, both of which must agree. Left unjoined, each test
+            # was counted twice (seen 2026-09-24).
+            d0 = parse_measure(row["Initial diameter (mm)"], "mm")
+            cands = [r for r in cands if r.label == label and d0 is not None and d0.usable
+                     and (r.conditions.get("droplet_d0_mm") is not None)
+                     and abs(r.conditions["droplet_d0_mm"].value - d0.value) < 1e-9]
         run = cands[0] if len(cands) == 1 else None
         if run is None:
             run, alone = m.standalone("flex", f"{label} (report)"), alone + 1

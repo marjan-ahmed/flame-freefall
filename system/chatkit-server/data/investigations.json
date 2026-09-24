@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T07:56:09+00:00",
+ "generated_at": "2026-09-24T08:24:01+00:00",
  "generator": "system/psi-ingest",
  "investigations": [
   {
@@ -351,41 +351,41 @@
     "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
     "url": "https://ntrs.nasa.gov/citations/20150023456"
    },
-   "runs": 278,
+   "runs": 276,
    "granularity": {
-    "test": 278
+    "test": 276
    },
    "runs_with_report_data": 275,
-   "runs_with_outcomes": 278,
+   "runs_with_outcomes": 276,
    "conflicts": 0,
    "outcome_quantities": {
-    "test_end": 278,
-    "burn_time": 272,
-    "burning_rate_k": 262,
-    "extinction_diameter": 200
+    "test_end": 276,
+    "burn_time": 270,
+    "burning_rate_k": 260,
+    "extinction_diameter": 198
    },
    "coverage": {
     "o2_pct": {
-     "runs": 278,
+     "runs": 276,
      "min": 12.0,
      "max": 34.0,
      "unit": "%"
     },
     "pressure_atm": {
-     "runs": 278,
+     "runs": 276,
      "min": 0.0,
      "max": 3.0525,
      "unit": "atm"
     },
     "droplet_d0_mm": {
-     "runs": 266,
+     "runs": 264,
      "min": 1.1,
      "max": 4.67,
      "unit": "mm"
     },
     "fuel_family": {
      "methanol": 157,
-     "n-heptane": 121
+     "n-heptane": 119
     }
    },
    "table_notes": [],
