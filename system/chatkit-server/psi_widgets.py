@@ -41,7 +41,8 @@ from chatkit.widgets import (
 
 import psi_query
 
-SITE_URL = os.environ.get("SITE_URL", "http://localhost:3000").rstrip("/")
+# Fallback only; each request normally supplies its own site (see explorer_url).
+SITE_URL = os.environ.get("SITE_URL", "https://marjan-ahmed.github.io/flame-freefall").rstrip("/")
 
 AXIS_LABEL = {"o2_pct": "O₂", "flow_cm_s": "flow", "pressure_atm": "pressure", "thickness_mm": "thickness",
               "droplet_d0_mm": "droplet d₀"}
@@ -83,11 +84,15 @@ def query_title(q: dict) -> str:
     return " · ".join(bits) or "all tests"
 
 
-def explorer_url(q: dict, run: str | None = None) -> str:
+def explorer_url(q: dict, run: str | None = None, site: str | None = None) -> str:
+    """`site` is the base URL of the page the chat is running on (main.py derives
+    it per request from the Referer, checked against the CORS allowlist), so the
+    link opens the Explorer on that same deployment — localhost in dev, GitHub
+    Pages in production. SITE_URL is only the fallback."""
     params = {k: v for k, v in q.items()}
     if run:
         params["run"] = run
-    return f"{SITE_URL}/explore/?{urlencode(params)}"
+    return f"{(site or SITE_URL).rstrip('/')}/explore/?{urlencode(params)}"
 
 
 def action(kind: str, **payload) -> ActionConfig:
@@ -176,7 +181,10 @@ def _run_item(v: dict) -> Col:
     lines = [
         Row(gap=2, align="center", wrap="wrap", children=[
             Text(value=v["label"], weight="semibold", size="sm"), *badges, Box(flex=1),
-            Button(label="Details", onClickAction=action("test", id=v["id"]), size="xs", variant="ghost"),
+            # A unique key per button: a card holds many Details buttons that are
+            # otherwise identical, and the client tracks loading per component.
+            Button(key=f"details:{v['id']}", label="Details", size="xs", variant="ghost",
+                   onClickAction=ActionConfig(type="psi.test", payload={"id": v["id"]}, handler="server")),
         ]),
         Caption(value=_axis_line(v), size="sm"),
     ]
@@ -199,7 +207,7 @@ def _coverage_line(c: dict) -> str:
     return f"{c['investigation']} ({c['runs']}): " + "; ".join(parts) if parts else f"{c['investigation']} ({c['runs']} records)"
 
 
-def evidence_widget(q: dict, result: dict | None = None) -> Card:
+def evidence_widget(q: dict, result: dict | None = None, site: str | None = None) -> Card:
     result = result or psi_query.query(q)
     counts = result["counts"]
     children = [
@@ -233,7 +241,7 @@ def evidence_widget(q: dict, result: dict | None = None) -> Card:
         rel = "; ".join(f"{r['fuel_family']} ({r['investigation']}, {r['runs']})" for r in result["relaxed"][:4])
         children.append(Caption(value=f"Same conditions, other materials: {rel}", size="sm", color="tertiary"))
     children += [Divider(spacing=2), nav_buttons(q, skip="evidence"),
-                 Markdown(value=f"[Full list in the Explorer →]({explorer_url(q)})")]
+                 Markdown(value=f"[Full list in the Explorer →]({explorer_url(q, site=site)})")]
     return Card(size="full", children=children)
 
 
@@ -560,7 +568,7 @@ def _cond_text(c: dict) -> str:
     return val + extra + (f"  [{', '.join(f.replace('_', ' ') for f in flags)}]" if flags else "")
 
 
-def test_widget(run_id: str) -> Card:
+def test_widget(run_id: str, site: str | None = None) -> Card:
     runs, invs = psi_query.load()
     run = next((r for r in runs if r["id"] == run_id), None)
     if run is None:
@@ -627,7 +635,7 @@ def test_widget(run_id: str) -> Card:
         Button(label="Similar tests", onClickAction=action("evidence", q=near_q), size="sm", variant="outline"),
         Button(label="Gap map around this test", onClickAction=action("gap_map", q=near_q, y="flow_cm_s"), size="sm",
                variant="outline"),
-    ]), Markdown(value=f"[Source cells, exactly as written, in the Explorer →]({explorer_url(near_q, run['id'])})")]
+    ]), Markdown(value=f"[Source cells, exactly as written, in the Explorer →]({explorer_url(near_q, run['id'], site=site)})")]
     return Card(size="full", children=children)
 
 

@@ -57,6 +57,7 @@ from fastapi.responses import StreamingResponse
 from openai.types.responses import EasyInputMessageParam
 
 import psi_widgets
+from chatkit.widgets import Caption, Card, Text
 from psi_tools import TOOLS as PSI_TOOLS
 from postgres_store import PostgresChatKitStore
 from store import InMemoryChatKitStore
@@ -412,10 +413,10 @@ async def generate_short_title(items) -> str:
 
 # Widget buttons → the widget they open. Answered by the server directly: no
 # model call, no tokens, instant — the user steers the data from the chat.
-def _action_widget(kind: str, payload: dict):
+def _action_widget(kind: str, payload: dict, site: str | None = None):
     q = _clean_query(payload.get("q") or {})
     if kind == "evidence":
-        return psi_widgets.evidence_widget(q)
+        return psi_widgets.evidence_widget(q, site=site)
     if kind == "gap_map":
         y = payload.get("y") if payload.get("y") in psi_widgets.Y_BINS else "flow_cm_s"
         return psi_widgets.gap_map_widget(q, y)
@@ -426,7 +427,33 @@ def _action_widget(kind: str, payload: dict):
         quantity = payload.get("quantity") if isinstance(payload.get("quantity"), str) else None
         return psi_widgets.results_widget(q, quantity, x)
     if kind == "test" and isinstance(payload.get("id"), str):
-        return psi_widgets.test_widget(payload["id"])
+        return psi_widgets.test_widget(payload["id"], site=site)
+    return None
+
+
+# Base URLs of the sites that host this chat. A cross-origin fetch sends only
+# the ORIGIN (no path) in Origin/Referer, so the GitHub Pages base path
+# (/flame-freefall) cannot be read from the request: the request's Origin picks
+# the matching entry here instead. Without this, "Open in the Explorer" links
+# pointed at localhost for every real user (found 2026-09-24).
+SITE_URLS = [
+    u.strip().rstrip("/")
+    for u in os.environ.get(
+        "SITE_URLS", "http://localhost:3000,https://marjan-ahmed.github.io/flame-freefall"
+    ).split(",")
+    if u.strip()
+]
+
+
+def _site_for(request: Request) -> str | None:
+    origin = (request.headers.get("origin") or "").rstrip("/")
+    if not origin:
+        referer = request.headers.get("referer") or ""
+        parts = referer.split("/")
+        origin = "/".join(parts[:3]) if len(parts) >= 3 else ""
+    for url in SITE_URLS:
+        if origin and (url == origin or url.startswith(origin + "/")):
+            return url
     return None
 
 
@@ -448,10 +475,15 @@ def _clean_query(raw: dict) -> dict:
 class FlameFreefallChatKitServer(ChatKitServer[dict]):
     async def action(self, thread, action, sender, context):
         kind = str(action.type).removeprefix("psi.")
-        widget = _action_widget(kind, action.payload or {})
+        try:
+            widget = _action_widget(kind, action.payload or {}, (context or {}).get("site"))
+        except Exception as exc:  # a button must never spin forever: answer with the failure
+            print(f"[action] {kind} failed: {exc!r}")
+            widget = Card(children=[Text(value="Sorry, that view could not be opened.", size="sm"),
+                                    Caption(value=f"{kind}: {type(exc).__name__}", size="sm")])
         if widget is None:
             print(f"[action] unknown {action.type!r}")
-            return
+            widget = Card(children=[Text(value="That button is not recognised by this server version.", size="sm")])
         print(f"[action] {kind} {action.payload}")
         async for event in stream_widget(
             thread, widget, None, lambda item_type: self.store.generate_item_id(item_type, thread, context)
@@ -567,7 +599,7 @@ app.add_middleware(
 
 @app.post("/chatkit")
 async def chatkit_endpoint(request: Request):
-    result = await server.process(await request.body(), context={})
+    result = await server.process(await request.body(), context={"site": _site_for(request)})
     if isinstance(result, StreamingResult):
         return StreamingResponse(result, media_type="text/event-stream")
     return Response(content=result.json, media_type="application/json")

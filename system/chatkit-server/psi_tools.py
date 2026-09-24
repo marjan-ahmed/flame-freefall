@@ -33,6 +33,12 @@ REPEAT_WINDOW_S = 120
 _recent_calls: dict[tuple[str, str], float] = {}  # (thread id, tool+args) → last call time
 
 
+def _site(ctx: RunContextWrapper[AgentContext]) -> str | None:
+    """The site this chat is running on (set per request in main.py)."""
+    rc = getattr(ctx.context, "request_context", None)
+    return rc.get("site") if isinstance(rc, dict) else None
+
+
 def _q(**kw) -> dict:
     return {k: v for k, v in kw.items() if v not in (None, "")}
 
@@ -80,7 +86,7 @@ async def query_test_runs(
     print(f"[query_test_runs] {q} -> {result['counts']}")
     repeat = _is_repeat(ctx, "query", q)
     if not repeat:
-        await ctx.context.stream_widget(psi_widgets.evidence_widget(q, result))
+        await ctx.context.stream_widget(psi_widgets.evidence_widget(q, result, site=_site(ctx)))
     return _reply(repeat, "Reply in at most 90 words: (1) how many tests match all conditions, say plainly if none; "
                           "(2) how many are partial and which condition they don't report; (3) the nearest test with "
                           "its values; (4) conflicts if any. Give each run its own value exactly as listed — never "
@@ -171,7 +177,7 @@ async def show_test_details(ctx: RunContextWrapper[AgentContext], run_id: str) -
     print(f"[show_test_details] {run['id']}")
     repeat = _is_repeat(ctx, "test", {"id": run["id"]})
     if not repeat:
-        await ctx.context.stream_widget(psi_widgets.test_widget(run["id"]))
+        await ctx.context.stream_widget(psi_widgets.test_widget(run["id"], site=_site(ctx)))
     payload = {"id": run["id"], "results": [psi_query._fmt_outcome(o) for o in psi_query._outcome_summary(run, {})][:6],
                "conflicts": run.get("conflicts", []), "sources": len(run["sources"])}
     return _reply(repeat, "Reply in at most 60 words: what this test was and what it measured.", payload)
