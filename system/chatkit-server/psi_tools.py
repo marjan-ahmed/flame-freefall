@@ -195,7 +195,9 @@ async def show_test_details(ctx: RunContextWrapper[AgentContext], run_id: str) -
         "Plot measured RESULTS against a condition as a chart (e.g. flame spread rate vs flow, burning-rate "
         "constant vs O2, smoke-point length). Tests that swept flow are drawn one line each; otherwise one bar per "
         "test. quantity e.g. spread_rate, burning_rate_k, extinction_diameter, burn_time, smoke_point_length; omit "
-        "to use the result measured most often for these filters."
+        "to use the result measured most often for these filters. Pass only the filters the user actually stated — "
+        "never guess geometry_class, flow_direction, or investigation from what's typical for a fuel; an "
+        "unstated filter must stay None, even if that returns more tests than a narrower guess would."
     )
 )
 async def plot_results(
@@ -215,7 +217,10 @@ async def plot_results(
     if not repeat:
         await ctx.context.stream_widget(psi_widgets.results_widget(q, quantity, x_axis))
     return _reply(repeat, "Reply in at most 60 words: what the chart shows (quantity, how many tests, the range) — "
-                          "describe only what is plotted; do not infer trends the values don't show.", summary)
+                          "describe only what is plotted; do not infer trends the values don't show. If \"tests\" "
+                          "is 0 or \"points\" is 0, say plainly there is no plottable data for these filters and "
+                          "suggest widening them — do not invent a range, a test count, or any run id; cite ONLY "
+                          "run ids that literally appear in this payload.", summary)
 
 
 TOOLS = [query_test_runs, show_gap_map, compare_investigations, show_test_details, plot_results]
