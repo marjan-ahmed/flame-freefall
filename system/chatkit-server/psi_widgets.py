@@ -394,6 +394,21 @@ def gap_map_summary(q: dict, y_axis: str = "flow_cm_s") -> dict:
         out["target_cell_tests"] = len(d["grid"].get((d["tx"], d["ty"]), ()))
         out["target_cell_by_investigation"] = dict(d["by_inv"][(d["tx"], d["ty"])])
         out["same_o2_band_axis_not_reported"] = len(d["unreported"].get(d["tx"], ()))
+    # Every tested cell, spelled out. Seen live 2026-09-24: given only counts,
+    # the model described "the higher-O2, higher-flow region" as untested when
+    # SAFFIRE VI tests sit there. With the cells listed it has no gap to fill.
+    ybins, nb = d["ybins"], len(O2_BINS)
+    y_name = AXIS_LABEL[y_axis]
+    out["tested_cells"] = [
+        f"O2 {_bin_label(*O2_BINS[x], x == 0, x == nb - 1)} % / {y_name} "
+        f"{_bin_label(*ybins[y], y == 0, y == len(ybins) - 1)} {_unit(y_axis)}: {len(ids)} ("
+        + ", ".join(f"{k} {v}" for k, v in d["by_inv"][(x, y)].most_common(3)) + ")"
+        for (x, y), ids in sorted(d["grid"].items()) if ids
+    ]
+    out["axis_not_reported_by_o2_band"] = {
+        f"O2 {_bin_label(*O2_BINS[x], x == 0, x == nb - 1)} %": len(ids)
+        for x, ids in sorted(d["unreported"].items()) if ids
+    }
     return out
 
 
