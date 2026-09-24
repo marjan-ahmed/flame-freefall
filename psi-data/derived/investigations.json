@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T08:34:33+00:00",
+ "generated_at": "2026-09-24T09:18:43+00:00",
  "generator": "system/psi-ingest",
  "investigations": [
   {
@@ -139,11 +139,7 @@
    "runs_with_outcomes": 2,
    "conflicts": 6,
    "outcome_quantities": {
-    "burn_time": 2,
-    "spread_extent": 2,
-    "spread_rate": 2,
-    "burn_extent_1g": 2,
-    "spread_rate_1g": 2
+    "burn_time": 2
    },
    "coverage": {
     "o2_pct": {
@@ -195,11 +191,10 @@
    "runs_with_outcomes": 9,
    "conflicts": 2,
    "outcome_quantities": {
-    "spread_extent": 12,
-    "spread_rate": 11,
     "burn_time": 9,
-    "spread_rate_1g": 9,
-    "burn_extent_1g": 9
+    "spread_extent": 9,
+    "spread_rate_1g": 8,
+    "spread_rate": 5
    },
    "coverage": {
     "o2_pct": {

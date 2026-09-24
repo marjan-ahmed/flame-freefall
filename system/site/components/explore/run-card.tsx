@@ -4,9 +4,21 @@ import type { ReactElement } from "react";
 
 import { cn } from "@/lib/utils";
 import { NUMERIC_AXES, type NumericAxis, type RunView } from "@/lib/psi-query";
-import type { Investigation } from "@/lib/psi-types";
+import type { Investigation, Measure } from "@/lib/psi-types";
 
 import { fmt, isCat, outcomeText, QUANTITY_LABEL } from "./format";
+
+function axisDisplay(m: Measure | undefined, axis: NumericAxis): string {
+  if (!m || m.min === undefined || m.max === undefined) return "not reported";
+  const unit = m.unit ?? NUMERIC_AXES[axis].unit;
+  const convFlag = m.flags?.some((f) => f.startsWith("converted_from_")) ?? false;
+  const moleFlag = m.flags?.includes("mole_fraction_to_pct") ?? false;
+  if (convFlag || moleFlag) {
+    if (m.min === m.max) return `${fmt(m.min)} ${unit} (cell ${m.raw})`;
+    return `${fmt(m.min)}–${fmt(m.max)} ${unit} (cell ${m.raw})`;
+  }
+  return `${m.min === m.max ? fmt(m.min) : `${fmt(m.min)}–${fmt(m.max)}`}${unit ? ` ${unit}` : ""}`;
+}
 
 const OUTCOME_ORDER = [
   "spread_rate", "burning_rate_k", "burning_rate_k_hot", "burning_rate_k_cool", "extinction_diameter",
@@ -94,7 +106,7 @@ export function RunCard({
             >
               {a?.status === "not_reported"
                 ? "not reported"
-                : `${a && "raw" in a ? a.raw : ""}${a && "unit" in a && a.unit && !a.raw.includes(a.unit) ? ` ${a.unit}` : ""}`}
+                : `${a && "min" in a ? axisDisplay(a as Measure, axis) : ""}`}
               {a && "flags" in a && a.flags?.includes("sources_disagree") ? " ⚠" : ""}
             </dd>
           </div>

@@ -14,6 +14,22 @@ FLEX_K_NOTE = (
     "PSI header reads 'Burning rate; mm'; the FLEX report's Table IX key defines burning rate as the "
     "average burning-rate constant from a d²-vs-time fit, in mm²/s (knowledge/investigations/droplet-combustion/flex)"
 )
+NO_EXTINCTION_ENDS = ("disruption", "completion")
+
+
+def flex_extinction(cell: object, test_end: str | None) -> tuple[Measure | None, str | None]:
+    """FLEX extinction diameter → (measure, text). Both the PSI table and report
+    Table IX write 0 for tests that ended in Disruption or Completion, where the
+    flame never visibly went out (Table IX key: "the flame did not visibly
+    extinguish (droplet burned to completion, or disruption ended the test)").
+    That 0 is not a 0 mm diameter: keep the cell, drop the number, say why.
+    Shown as a number, it made the extinction-diameter range start at 0 mm."""
+    m = parse_measure(cell, "mm")
+    end = (test_end or "").strip().lower()
+    if m is not None and m.value == 0 and end in NO_EXTINCTION_ENDS:
+        return (Measure(raw=m.raw, unit="mm", flags=["no_visible_extinction"]),
+                f"no visible extinction (test ended in {end})")
+    return m, None
 
 
 def _diluent(parts: dict[str, Measure | None]) -> dict | None:
@@ -52,7 +68,8 @@ def flex(ctx: Ctx) -> list[Run]:
         run.set("diluent", _diluent({"N2": n2, "CO2": co2, "He": he}))
         run.set("droplet_d0_mm", parse_measure(row["Droplet initial diameter; mm"], "mm"))
 
-        run.outcome("extinction_diameter", parse_measure(row["Visible flame extinction diameter; mm"], "mm"))
+        ext, ext_text = flex_extinction(row["Visible flame extinction diameter; mm"], row["Test end"])
+        run.outcome("extinction_diameter", ext, text=ext_text)
         k = parse_measure(row["Burning rate; mm"])
         if k is not None:
             k.unit = "mm²/s"

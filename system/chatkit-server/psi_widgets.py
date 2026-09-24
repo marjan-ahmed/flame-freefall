@@ -160,7 +160,23 @@ def _axis_line(v: dict) -> str:
         else:
             flag = " ⚠" if "sources_disagree" in a.get("flags", []) else ""
             unit = a.get("unit") or ""
-            parts.append(f"{name} {a['raw']}{' ' + unit if unit and unit not in a['raw'] else ''}{flag}")
+            raw = a.get("raw", "")
+            flags = a.get("flags", [])
+            # If the value was converted, show normalized value with source cell
+            conv_flag = next((f for f in flags if f.startswith("converted_from_")), None)
+            mole_flag = "mole_fraction_to_pct" in flags
+            if conv_flag or mole_flag:
+                # Show normalized min/max with unit, then source cell in parentheses
+                if a.get("min") is not None and a.get("max") is not None:
+                    if a["min"] == a["max"]:
+                        val = f"{a['min']:g} {unit}"
+                    else:
+                        val = f"{a['min']:g}–{a['max']:g} {unit}"
+                    parts.append(f"{name} {val} (cell {raw}){flag}")
+                else:
+                    parts.append(f"{name} {raw} {unit}{flag}")
+            else:
+                parts.append(f"{name} {raw}{' ' + unit if unit and unit not in raw else ''}{flag}")
     if v.get("fuel"):
         parts.append(v["fuel"])
     return " · ".join(parts)
@@ -198,7 +214,8 @@ def _run_item(v: dict, q: dict | None = None, expanded: bool = False) -> Col:
         ]),
         Caption(value=_axis_line(v), size="sm"),
     ]
-    shown = [psi_query._fmt_outcome(o).replace("_", " ") for o in v["outcomes"][:3]]
+    shown = [f"{QUANTITY_LABEL.get(o['quantity'], o['quantity'].replace('_', ' '))}: "
+             f"{psi_query._fmt_outcome(o).split('=', 1)[1]}" for o in v["outcomes"][:3]]
     if shown:
         lines.append(Caption(value="Result: " + "; ".join(shown), size="sm", color="emphasis"))
     lines.append(Caption(value=_cite_line(v), size="sm", color="tertiary"))
@@ -604,7 +621,10 @@ def detail_sections(run: dict) -> list:
     if run["outcomes"]:
         for o in run["outcomes"][:12]:
             m = o.get("measure")
-            val = _cond_text(m) if m else (o.get("text") or "")
+            if m and m.get("min") is None and not m.get("values") and o.get("text"):
+                val = f'{o["text"]}  cell "{m["raw"]}"'
+            else:
+                val = _cond_text(m) if m else (o.get("text") or "")
             at = f" at {_fmt(o['at']['flow_cm_s'])} cm/s" if o.get("at") else ""
             conf = " ✓ two sources" if o.get("confirmed_by") else ""
             children.append(Caption(value=f"{QUANTITY_LABEL.get(o['quantity'], o['quantity'].replace('_', ' '))}: {val}{at}{conf}"

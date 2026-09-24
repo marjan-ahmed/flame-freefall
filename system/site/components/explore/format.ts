@@ -119,7 +119,10 @@ export function conditionText(c: Condition): string {
 }
 
 export function outcomeText(o: Outcome): string {
-  const v = o.measure ? measureText(o.measure) : (o.text ?? "—");
+  // A measure with no number but a text (a FLEX 0 that means "no visible
+  // extinction", not 0 mm) shows the text; run-detail adds the raw cell.
+  const numeric = o.measure && (o.measure.min !== undefined || o.measure.values?.length);
+  const v = o.measure && (numeric || !o.text) ? measureText(o.measure) : (o.text ?? "—");
   const at = o.at?.flow_cm_s !== undefined ? ` at ${fmt(o.at.flow_cm_s)} cm/s` : "";
   return `${v}${at}`;
 }

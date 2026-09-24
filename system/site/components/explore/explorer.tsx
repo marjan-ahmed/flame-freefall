@@ -45,6 +45,18 @@ function span(m: Measure | undefined): Span | null {
   return { lo: m.min, hi: m.max, vals: m.flags?.includes("multi") ? m.values : undefined };
 }
 
+function axisDisplay(m: Measure | undefined, axis: NumericAxis): string {
+  if (!m || m.min === undefined || m.max === undefined) return "not reported";
+  const unit = m.unit ?? NUMERIC_AXES[axis].unit;
+  const convFlag = m.flags?.some((f) => f.startsWith("converted_from_")) ?? false;
+  const moleFlag = m.flags?.includes("mole_fraction_to_pct") ?? false;
+  if (convFlag || moleFlag) {
+    if (m.min === m.max) return `${fmt(m.min)} ${unit} (cell ${m.raw})`;
+    return `${fmt(m.min)}–${fmt(m.max)} ${unit} (cell ${m.raw})`;
+  }
+  return `${m.min === m.max ? fmt(m.min) : `${fmt(m.min)}–${fmt(m.max)}`}${unit ? ` ${unit}` : ""}`;
+}
+
 function describeQuery(q: Query): string {
   const bits: string[] = [];
   for (const k of Object.keys(NUMERIC_AXES) as NumericAxis[])
@@ -95,7 +107,7 @@ function Answer({ r, q }: { r: QueryResult; q: Query }): ReactElement {
             {numeric
               .map((k) => {
                 const a = nearest.axes[k];
-                return a && "raw" in a ? `${NUMERIC_AXES[k].label} ${a.raw}${a.unit && !a.raw.includes(a.unit) ? ` ${a.unit}` : ""}` : null;
+                return a && "raw" in a ? `${NUMERIC_AXES[k].label} ${axisDisplay(a as any, k)}` : null;
               })
               .filter(Boolean)
               .join(", ")}
@@ -215,8 +227,8 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         y,
         color: colors[r.investigation],
         emphasis: emphasis(r.id),
-        title: `${r.id} (${invIndex[r.investigation]?.name})\nO₂ ${(r.conditions.o2_pct as Measure).raw}\n${
-          y ? `${NUMERIC_AXES[yAxis].label} ${(r.conditions[yAxis] as Measure).raw}` : `${NUMERIC_AXES[yAxis].label} not reported`
+        title: `${r.id} (${invIndex[r.investigation]?.name})\nO₂ ${axisDisplay(r.conditions.o2_pct as Measure | undefined, "o2_pct")}\n${
+          y ? `${NUMERIC_AXES[yAxis].label} ${axisDisplay(r.conditions[yAxis] as Measure | undefined, yAxis)}` : `${NUMERIC_AXES[yAxis].label} not reported`
         }`,
       });
     }
@@ -252,7 +264,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
           y: { lo: m.min!, hi: m.max!, vals: m.value === undefined ? m.values : undefined },
           color: colors[r.investigation],
           emphasis: emphasis(r.id) === "dim" ? "other" : emphasis(r.id),
-          title: `${r.id} (${invIndex[r.investigation]?.name})\n${QUANTITY_LABEL[quantity] ?? quantity}: ${m.raw}${m.unit ? ` ${m.unit}` : ""}`,
+          title: `${r.id} (${invIndex[r.investigation]?.name})\n${QUANTITY_LABEL[quantity] ?? quantity}: ${o.measure?.raw ?? ""}${o.measure?.unit ? ` ${o.measure.unit}` : ""}`,
         });
       });
     }

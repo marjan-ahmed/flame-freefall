@@ -16,6 +16,7 @@ from pathlib import Path
 
 from . import fuels, knowledge, verify
 from .adapters import Ctx
+from .adapters.droplet import flex_extinction
 from .model import Outcome, Run, cat
 from .units import Measure, parse_measure, pct, to_atm, to_mm
 
@@ -94,7 +95,8 @@ class Merger:
                         {"source": o.source, "raw": o.measure.raw}]})
                     run.outcomes.append(o)
                 return
-            if existing.measure is None and o.measure is None and (existing.text or "").lower() == (o.text or "").lower():
+            if (existing.measure is None) == (o.measure is None) and (existing.text or "").lower() == (o.text or "").lower() \
+                    and (existing.measure is None or existing.measure.raw == o.measure.raw):
                 existing.confirmed_by.append(o.source)
                 return
         run.outcomes.append(o)
@@ -264,6 +266,22 @@ def saffire_table_i(m: Merger) -> None:
         m.category(run, "flow_direction", row["Direction"].strip().lower(), src, raw=row["Direction"].strip())
         o2 = pct(parse_measure(row["Initial O₂ (%)"], "%"))
         m.condition(run, "o2_pct", o2, src)
+
+def _is_note_marker(cell: str) -> bool:
+    """Check if a cell contains only a footnote/reference marker, not a real value."""
+    c = cell.strip()
+    # Common note markers: "Note N", "(i)", "(ii)", "(iii)", "(iv)", "(v)", etc.
+    if re.match(r"^note\s+\d+$", c, re.I):
+        return True
+    if re.match(r"^\([ivx]+\)$", c, re.I):
+        return True
+    if re.match(r"^\(\d+\)$", c):
+        return True
+    if c in ("†", "‡", "§", "*", "**", "***"):
+        return True
+    return False
+
+
     for row in res_rows:
         run, inv, _ = _saffire_run(m, row["Sample"].strip())
         src = m.add_source(run, inv, "Table I (ignition and results)", row["__line__"], row)
@@ -280,7 +298,7 @@ def saffire_table_i(m: Merger) -> None:
             mm = parse_measure(cell, unit)
             if mm is not None and mm.usable:
                 m.outcome(run, Outcome(q, mm, source=src, note=note))
-            elif cell and cell not in ("—", "-"):
+            elif cell and cell not in ("—", "-") and not _is_note_marker(cell):
                 m.outcome(run, Outcome(q, text=cell, source=src, note=note))
     m.stat(f"{doc} Table I", len(cond_rows), joined, alone)
 
@@ -370,10 +388,14 @@ def flex_table_ix(m: Merger) -> None:
             if fr is not None and fr.usable and (fr.max or 0) <= 1:
                 m.condition(run, key, fr.scaled(100, "%", "mole_fraction_to_pct"), src)
         m.condition(run, "droplet_d0_mm", parse_measure(row["Initial diameter (mm)"], "mm"), src)
+        ext, ext_text = flex_extinction(row["Extinction diameter (mm)"], row["Test end"])
         for col, q, unit in (("Extinction diameter (mm)", "extinction_diameter", "mm"),
                              ("Burning rate (mm2/s)", "burning_rate_k", "mm²/s"),
                              ("Burn time (s)", "burn_time", "s")):
-            mm = parse_measure(row[col], unit)
+            mm = ext if q == "extinction_diameter" else parse_measure(row[col], unit)
+            if q == "extinction_diameter" and ext_text:
+                m.outcome(run, Outcome(q, mm, text=ext_text, source=src))
+                continue
             if mm is not None and mm.usable:
                 m.outcome(run, Outcome(q, mm, source=src))
         if row["Test end"].strip():

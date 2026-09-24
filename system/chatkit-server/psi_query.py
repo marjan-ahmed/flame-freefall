@@ -118,6 +118,8 @@ def _outcome_summary(run: dict, q: dict) -> list[dict]:
             entry["unit"] = m.get("unit")
             if m.get("values") and m.get("value") is None:
                 entry["values"] = m["values"]
+            if o.get("text"):  # e.g. a FLEX 0 that means "no visible extinction", not 0 mm
+                entry["text"] = o["text"]
         else:
             entry["text"] = o.get("text")
         if o.get("at"):
@@ -246,11 +248,16 @@ def _coverage(runs, invs, num_q, cat_q, considered) -> list[dict]:
 
 def prefer_outcomes(views: list[dict]) -> list[dict]:
     """Display order only (the query's own ranking is untouched, and is what
-    the golden fixtures pin): within a tier, runs that carry measured results
-    first. Otherwise 342 SPICE test points with no results bury the five
+    the golden fixtures pin): within a tier, runs that carry measured numeric
+    results first. Text-only outcomes (e.g. test_end=Disruption) rank below
+    numeric ones. Otherwise 342 SPICE test points with no results bury the five
     per-fuel summaries that hold the smoke points."""
-    return sorted(views, key=lambda v: not any(o.get("value") is not None or o.get("values") or o.get("text")
-                                               for o in v["outcomes"]))
+    def has_numeric(v: dict) -> bool:
+        for o in v["outcomes"]:
+            if o.get("value") is not None or o.get("values") or (o.get("min") is not None and o.get("max") is not None):
+                return True
+        return False
+    return sorted(views, key=lambda v: not has_numeric(v))
 
 
 def _fmt_outcome(o: dict) -> str:
@@ -268,6 +275,23 @@ def _fmt_outcome(o: dict) -> str:
     return f"{o['quantity']}={val}{at}"
 
 
+def _axis_for_compact(a: dict) -> str:
+    """Format axis for compact view: normalized value with source cell if converted."""
+    if a["status"] == "not_reported":
+        return "not_reported"
+    raw = a.get("raw", "")
+    flags = a.get("flags", [])
+    unit = a.get("unit") or ""
+    conv_flag = next((f for f in flags if f.startswith("converted_from_")), None)
+    mole_flag = "mole_fraction_to_pct" in flags
+    if conv_flag or mole_flag:
+        if a.get("min") is not None and a.get("max") is not None:
+            if a["min"] == a["max"]:
+                return f"{a['min']:g} {unit} (cell {raw})"
+            return f"{a['min']:g}–{a['max']:g} {unit} (cell {raw})"
+    return raw + (f" {unit}" if unit and unit not in raw else "")
+
+
 def compact(result: dict, max_runs: int = 10) -> dict:
     """The LLM-facing view: small enough for a tight token budget, still cited.
     The widget renders the full result; the model only needs enough to write
@@ -282,7 +306,7 @@ def compact(result: dict, max_runs: int = 10) -> dict:
         return {
             "id": v["id"], "inv": v["investigation"], "fuel": v["fuel"],
             **({"granularity": v["granularity"]} if v["granularity"] not in ("test", "test-point") else {}),
-            "axes": {k: (a.get("raw") or a["status"]) for k, a in v["axes"].items()},
+            "axes": {k: _axis_for_compact(a) for k, a in v["axes"].items()},
             "outcomes": [_fmt_outcome(o) for o in v["outcomes"][:3]],
             "conflicts": len(v["conflicts"]),
             "cite": cite_s,

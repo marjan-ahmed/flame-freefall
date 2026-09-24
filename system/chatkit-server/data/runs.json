@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T08:34:33+00:00",
+ "generated_at": "2026-09-24T09:18:43+00:00",
  "generator": "system/psi-ingest",
  "runs": [
   {
@@ -27494,17 +27494,6 @@
      "source_id": "saffire-results-2017",
      "title": "Results of Large-Scale Spacecraft Flammability Tests",
      "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 188,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
     }
    ],
    "conditions": {
@@ -27539,20 +27528,14 @@
      "value": 182.0,
      "min": 182.0,
      "max": 182.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "8",
      "value": 8.0,
      "min": 8.0,
      "max": 8.0,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "40.6 | 94 cm",
@@ -27601,9 +27584,6 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "420",
       "value": 420.0,
@@ -27611,43 +27591,6 @@
       "max": 420.0,
       "unit": "s"
      }
-    },
-    {
-     "quantity": "spread_extent",
-     "source": 2,
-     "measure": {
-      "raw": "~84 cm",
-      "value": 84.0,
-      "min": 84.0,
-      "max": 84.0,
-      "unit": "cm",
-      "flags": [
-       "approx"
-      ]
-     }
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "measure": {
-      "raw": "1.8 mm/s",
-      "value": 1.8,
-      "min": 1.8,
-      "max": 1.8,
-      "unit": "mm/s"
-     }
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "Complete",
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_rate_1g",
-     "source": 2,
-     "text": "Acceleratory",
-     "note": "normal-gravity comparison test"
     }
    ],
    "conflicts": [
@@ -27734,16 +27677,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "21.7 to 21.5"
-    },
-    {
-     "Sample": "1-1",
-     "Ignition power": "182 W",
-     "Ignition time": "8 s",
-     "µ-g burn duration": "420 s",
-     "µ-g spread extent": "~84 cm",
-     "µ-g spread rate": "1.8 mm/s",
-     "1-g burn extent": "Complete",
-     "1-g spread rate": "Acceleratory"
     }
    ]
   },
@@ -27764,17 +27697,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 169,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 189,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -27815,20 +27737,14 @@
      "value": 182.0,
      "min": 182.0,
      "max": 182.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "8",
      "value": 8.0,
      "min": 8.0,
      "max": 8.0,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "40.6 | ~10 cm",
@@ -27873,9 +27789,6 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "70",
       "value": 70.0,
@@ -27883,52 +27796,6 @@
       "max": 70.0,
       "unit": "s"
      }
-    },
-    {
-     "quantity": "spread_extent",
-     "source": 2,
-     "measure": {
-      "raw": "~10 cm",
-      "value": 10.0,
-      "min": 10.0,
-      "max": 10.0,
-      "unit": "cm",
-      "flags": [
-       "approx"
-      ]
-     }
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "measure": {
-      "raw": "1.3 mm/s",
-      "value": 1.3,
-      "min": 1.3,
-      "max": 1.3,
-      "unit": "mm/s"
-     }
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "measure": {
-      "raw": "~0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "cm",
-      "flags": [
-       "approx"
-      ]
-     },
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_rate_1g",
-     "source": 2,
-     "text": "n/a",
-     "note": "normal-gravity comparison test"
     }
    ],
    "conflicts": [
@@ -28015,16 +27882,6 @@
      "Flow": "20 cm/s",
      "Direction": "Opposed",
      "Initial O₂ (%)": "~21.5"
-    },
-    {
-     "Sample": "1-2",
-     "Ignition power": "182 W",
-     "Ignition time": "8 s",
-     "µ-g burn duration": "70 s",
-     "µ-g spread extent": "~10 cm",
-     "µ-g spread rate": "1.3 mm/s",
-     "1-g burn extent": "~0",
-     "1-g spread rate": "n/a"
     }
    ]
   },
@@ -28045,17 +27902,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 170,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 190,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -28093,20 +27939,14 @@
      "value": 80.0,
      "min": 80.0,
      "max": 80.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "9.2 s",
      "value": 9.2,
      "min": 9.2,
      "max": 9.2,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -28152,17 +27992,11 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Insignificant"
     },
     {
      "quantity": "spread_extent",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "~ 0",
       "value": 0.0,
@@ -28177,21 +28011,7 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Acceleratory",
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "text": "n/a"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "~Complete",
      "note": "normal-gravity comparison test"
     }
    ],
@@ -28245,16 +28065,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "~22.1"
-    },
-    {
-     "Sample": "2-1",
-     "Ignition power": "80 W",
-     "Ignition time": "9.2 s",
-     "µ-g burn duration": "Insignificant",
-     "µ-g spread extent": "~0",
-     "µ-g spread rate": "n/a",
-     "1-g burn extent": "~Complete",
-     "1-g spread rate": "Acceleratory"
     }
    ]
   },
@@ -28275,17 +28085,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 171,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 191,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -28323,20 +28122,14 @@
      "value": 80.0,
      "min": 80.0,
      "max": 80.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "9.2 s",
      "value": 9.2,
      "min": 9.2,
      "max": 9.2,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -28384,17 +28177,11 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Insignificant"
     },
     {
      "quantity": "spread_extent",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "~ 0",
       "value": 0.0,
@@ -28409,32 +28196,12 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "1.2 mm/s",
       "value": 1.2,
       "min": 1.2,
       "max": 1.2,
       "unit": "mm/s"
-     },
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "text": "n/a"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "measure": {
-      "raw": "7.6 cm",
-      "value": 7.6,
-      "min": 7.6,
-      "max": 7.6,
-      "unit": "cm"
      },
      "note": "normal-gravity comparison test"
     }
@@ -28468,16 +28235,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "~22.1"
-    },
-    {
-     "Sample": "2-2",
-     "Ignition power": "80 W",
-     "Ignition time": "9.2 s",
-     "µ-g burn duration": "Insignificant",
-     "µ-g spread extent": "~0",
-     "µ-g spread rate": "n/a",
-     "1-g burn extent": "7.6 cm",
-     "1-g spread rate": "1.2 mm/s"
     }
    ]
   },
@@ -28498,17 +28255,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 172,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 192,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -28546,20 +28292,14 @@
      "value": 80.0,
      "min": 80.0,
      "max": 80.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "9.2 s",
      "value": 9.2,
      "min": 9.2,
      "max": 9.2,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -28607,17 +28347,11 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Insignificant"
     },
     {
      "quantity": "spread_extent",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "~ 0",
       "value": 0.0,
@@ -28628,32 +28362,6 @@
        "approx"
       ]
      }
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "text": "n/a"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "measure": {
-      "raw": "~0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "cm",
-      "flags": [
-       "approx"
-      ]
-     },
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_rate_1g",
-     "source": 2,
-     "text": "n/a",
-     "note": "normal-gravity comparison test"
     }
    ],
    "raw": [
@@ -28684,16 +28392,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "~22.1"
-    },
-    {
-     "Sample": "2-3",
-     "Ignition power": "80 W",
-     "Ignition time": "9.2 s",
-     "µ-g burn duration": "Insignificant",
-     "µ-g spread extent": "~0",
-     "µ-g spread rate": "n/a",
-     "1-g burn extent": "~0",
-     "1-g spread rate": "n/a"
     }
    ]
   },
@@ -28714,17 +28412,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 173,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 193,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -28762,20 +28449,14 @@
      "value": 80.0,
      "min": 80.0,
      "max": 80.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "9.2 s",
      "value": 9.2,
      "min": 9.2,
      "max": 9.2,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -28823,17 +28504,11 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Insignificant"
     },
     {
      "quantity": "spread_extent",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "~ 0",
       "value": 0.0,
@@ -28848,9 +28523,6 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "0.6 mm/s",
       "value": 0.6,
@@ -28858,17 +28530,6 @@
       "max": 0.6,
       "unit": "mm/s"
      },
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "text": "n/a"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "Complete",
      "note": "normal-gravity comparison test"
     }
    ],
@@ -28901,16 +28562,6 @@
      "Flow": "20 cm/s",
      "Direction": "Opposed",
      "Initial O₂ (%)": "~22.1"
-    },
-    {
-     "Sample": "2-4",
-     "Ignition power": "80 W",
-     "Ignition time": "9.2 s",
-     "µ-g burn duration": "Insignificant",
-     "µ-g spread extent": "~0",
-     "µ-g spread rate": "n/a",
-     "1-g burn extent": "Complete",
-     "1-g spread rate": "0.6 mm/s"
     }
    ]
   },
@@ -28931,17 +28582,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 174,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 194,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -28982,20 +28622,14 @@
      "value": 80.0,
      "min": 80.0,
      "max": 80.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "9.2 s",
      "value": 9.2,
      "min": 9.2,
      "max": 9.2,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -29043,9 +28677,6 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "145 s",
       "value": 145.0,
@@ -29057,9 +28688,6 @@
     {
      "quantity": "spread_rate",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "2.1 mm/s",
       "value": 2.1,
@@ -29072,9 +28700,6 @@
     {
      "quantity": "spread_extent",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "29 cm",
       "value": 29.0,
@@ -29086,16 +28711,7 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Acceleratory",
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "Complete",
      "note": "normal-gravity comparison test"
     }
    ],
@@ -29128,16 +28744,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "~22.1"
-    },
-    {
-     "Sample": "2-5",
-     "Ignition power": "80 W",
-     "Ignition time": "9.2 s",
-     "µ-g burn duration": "145 s",
-     "µ-g spread extent": "29 cm",
-     "µ-g spread rate": "2.1 mm/s",
-     "1-g burn extent": "Complete",
-     "1-g spread rate": "Acceleratory"
     }
    ]
   },
@@ -29158,17 +28764,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 175,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 195,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -29208,20 +28803,14 @@
      "value": 80.0,
      "min": 80.0,
      "max": 80.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "9.2 s",
      "value": 9.2,
      "min": 9.2,
      "max": 9.2,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -29269,9 +28858,6 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "115 s",
       "value": 115.0,
@@ -29283,9 +28869,6 @@
     {
      "quantity": "spread_rate",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "2.6 mm/s",
       "value": 2.6,
@@ -29298,9 +28881,6 @@
     {
      "quantity": "spread_extent",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "29 cm",
       "value": 29.0,
@@ -29312,16 +28892,7 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Acceleratory",
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "Complete",
      "note": "normal-gravity comparison test"
     }
    ],
@@ -29377,16 +28948,6 @@
      "Flow": "25 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "~22.1"
-    },
-    {
-     "Sample": "2-6",
-     "Ignition power": "80 W",
-     "Ignition time": "9.2 s",
-     "µ-g burn duration": "115 s",
-     "µ-g spread extent": "29 cm",
-     "µ-g spread rate": "2.6 mm/s",
-     "1-g burn extent": "Complete",
-     "1-g spread rate": "Acceleratory"
     }
    ]
   },
@@ -29407,17 +28968,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 176,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 196,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -29455,20 +29005,14 @@
      "value": 80.0,
      "min": 80.0,
      "max": 80.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "9.2 s",
      "value": 9.2,
      "min": 9.2,
      "max": 9.2,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "5 and 24 cm",
@@ -29524,9 +29068,6 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "140 s",
       "value": 140.0,
@@ -29538,9 +29079,6 @@
     {
      "quantity": "spread_rate",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "n/a (Nomex)"
     },
     {
@@ -29551,21 +29089,7 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "n/a (Nomex)",
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_extent",
-     "source": 2,
-     "text": "5 cm & 0 (ii)"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "~0 (Nomex)",
      "note": "normal-gravity comparison test"
     }
    ],
@@ -29598,16 +29122,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "~22.1"
-    },
-    {
-     "Sample": "2-7",
-     "Ignition power": "80 W",
-     "Ignition time": "9.2 s",
-     "µ-g burn duration": "140 s",
-     "µ-g spread extent": "5 cm & 0 (ii)",
-     "µ-g spread rate": "n/a (Nomex)",
-     "1-g burn extent": "~0 (Nomex)",
-     "1-g spread rate": "n/a (Nomex)"
     }
    ]
   },
@@ -29628,17 +29142,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 177,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 197,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -29676,20 +29179,14 @@
      "value": 97.0,
      "min": 97.0,
      "max": 97.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "30 s",
      "value": 30.0,
      "min": 30.0,
      "max": 30.0,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -29739,9 +29236,6 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "600 s",
       "value": 600.0,
@@ -29763,26 +29257,7 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Acceleratory",
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_extent",
-     "source": 2,
-     "text": "~10 cm (iii)"
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "text": "(iv)"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "Complete",
      "note": "normal-gravity comparison test"
     }
    ],
@@ -29815,16 +29290,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "22.1 to 22.0"
-    },
-    {
-     "Sample": "2-8",
-     "Ignition power": "97 W",
-     "Ignition time": "30 s",
-     "µ-g burn duration": "600 s",
-     "µ-g spread extent": "~10 cm (iii)",
-     "µ-g spread rate": "(iv)",
-     "1-g burn extent": "Complete",
-     "1-g spread rate": "Acceleratory"
     }
    ]
   },
@@ -29845,17 +29310,6 @@
      "kind": "report",
      "table": "Table I (conditions)",
      "line": 178,
-     "doc": "knowledge/investigations/solid-fuel/saffire",
-     "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
-     "doc_status": "stable",
-     "source_id": "saffire-results-2017",
-     "title": "Results of Large-Scale Spacecraft Flammability Tests",
-     "url": "https://ntrs.nasa.gov/citations/20170008805"
-    },
-    {
-     "kind": "report",
-     "table": "Table I (ignition and results)",
-     "line": 198,
      "doc": "knowledge/investigations/solid-fuel/saffire",
      "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
      "doc_status": "stable",
@@ -29895,20 +29349,14 @@
      "value": 97.0,
      "min": 97.0,
      "max": 97.0,
-     "unit": "W",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "W"
     },
     "ignition_time_s": {
      "raw": "30 s",
      "value": 30.0,
      "min": 30.0,
      "max": 30.0,
-     "unit": "s",
-     "flags": [
-      "confirmed_by_source_2"
-     ]
+     "unit": "s"
     },
     "length_cm": {
      "raw": "29 cm",
@@ -29961,9 +29409,6 @@
     {
      "quantity": "burn_time",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "measure": {
       "raw": "900 s",
       "value": 900.0,
@@ -29985,26 +29430,7 @@
     {
      "quantity": "spread_rate_1g",
      "source": 0,
-     "confirmed_by": [
-      2
-     ],
      "text": "Acceleratory",
-     "note": "normal-gravity comparison test"
-    },
-    {
-     "quantity": "spread_extent",
-     "source": 2,
-     "text": "~10 cm (iii)"
-    },
-    {
-     "quantity": "spread_rate",
-     "source": 2,
-     "text": "(iv)"
-    },
-    {
-     "quantity": "burn_extent_1g",
-     "source": 2,
-     "text": "Complete",
      "note": "normal-gravity comparison test"
     }
    ],
@@ -30039,16 +29465,6 @@
      "Flow": "20 cm/s",
      "Direction": "Concurrent",
      "Initial O₂ (%)": "22.0 to 21.9"
-    },
-    {
-     "Sample": "2-9",
-     "Ignition power": "97 W",
-     "Ignition time": "30 s",
-     "µ-g burn duration": "900 s",
-     "µ-g spread extent": "~10 cm (iii)",
-     "µ-g spread rate": "(iv)",
-     "1-g burn extent": "Complete",
-     "1-g spread rate": "Acceleratory"
     }
    ]
   },
@@ -37522,11 +36938,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in disruption)"
     },
     {
      "quantity": "burning_rate_k",
@@ -38288,11 +37705,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in disruption)"
     },
     {
      "quantity": "burning_rate_k",
@@ -39862,11 +39280,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in completion)"
     },
     {
      "quantity": "burning_rate_k",
@@ -40064,11 +39483,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in disruption)"
     },
     {
      "quantity": "burning_rate_k",
@@ -42196,11 +41616,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in completion)"
     },
     {
      "quantity": "burning_rate_k",
@@ -43353,11 +42774,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in completion)"
     },
     {
      "quantity": "burning_rate_k",
@@ -47978,11 +47400,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in disruption)"
     },
     {
      "quantity": "burning_rate_k",
@@ -56402,11 +55825,12 @@
      ],
      "measure": {
       "raw": "0",
-      "value": 0.0,
-      "min": 0.0,
-      "max": 0.0,
-      "unit": "mm"
-     }
+      "unit": "mm",
+      "flags": [
+       "no_visible_extinction"
+      ]
+     },
+     "text": "no visible extinction (test ended in completion)"
     },
     {
      "quantity": "burning_rate_k",

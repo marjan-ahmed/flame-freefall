@@ -82,16 +82,19 @@ async def query_test_runs(
 ) -> str:
     q = _q(o2_pct=o2_pct, flow_cm_s=flow_cm_s, pressure_atm=pressure_atm, fuel_family=fuel_family,
            geometry_class=geometry_class, flow_direction=flow_direction, investigation=investigation)
+    if not q:
+        return "Please narrow your question — at least one condition (O₂ %, flow cm/s, pressure atm, fuel, geometry, investigation) is required to query the PSI test table."
     result = psi_query.query(q)
     print(f"[query_test_runs] {q} -> {result['counts']}")
     repeat = _is_repeat(ctx, "query", q)
     if not repeat:
         await ctx.context.stream_widget(psi_widgets.evidence_widget(q, result, site=_site(ctx)))
     return _reply(repeat, "Reply in at most 90 words: (1) how many tests match all conditions, say plainly if none; "
-                          "(2) how many are partial and which condition they don't report; (3) the nearest test with "
-                          "its values; (4) conflicts if any. Give each run its own value exactly as listed — never "
-                          "merge two runs into one approximate number. The widget already has buttons; do not write "
-                          "button labels or bracketed links in your reply.",
+                          "(2) how many are partial and which condition they don't report; "
+                          "(3) if matches > 0, cite 2–3 representative run ids with their measured values exactly as "
+                          "listed — never merge two runs into one approximate number; "
+                          "(4) conflicts if any. The widget already has buttons; do not write button labels or "
+                          "bracketed links in your reply. Do NOT list all matching runs — the widget shows them.",
                   psi_query.compact(result))
 
 
