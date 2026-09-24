@@ -201,21 +201,28 @@ service redeploys and fails independently of the others. See
 
 | Geometry class | Investigations | Documents |
 | --- | --- | --- |
-| Solid fuel | BASS-II, SAFFIRE (incl. Saffire VI); *drafts:* BASS, BASS-II requirements | `knowledge/investigations/solid-fuel/` |
-| Droplet combustion | FLEX; *drafts:* FLEX-2, CFI | `knowledge/investigations/droplet-combustion/` |
-| Gaseous flames | ACME; *drafts:* ACME BRE, ACME s-Flame, SPICE | `knowledge/investigations/gaseous-flames/` |
-| Smoke / aerosol *(heated, non-burning samples)* | *drafts:* SAME, SAME-R | `knowledge/investigations/smoke-aerosol/` |
+| Solid fuel | BASS-II, SAFFIRE (incl. Saffire VI), BASS, BASS-II requirements | `knowledge/investigations/solid-fuel/` |
+| Droplet combustion | FLEX, FLEX-2, CFI | `knowledge/investigations/droplet-combustion/` |
+| Gaseous flames | ACME, ACME BRE, ACME s-Flame, SPICE | `knowledge/investigations/gaseous-flames/` |
+| Smoke / aerosol *(heated, non-burning samples)* | SAME, SAME-R | `knowledge/investigations/smoke-aerosol/` |
 | Foundations *(no geometry class, narrative context)* | NASA-STD-6001B; Liao, Miller and "Thriving in Space" (decadal-survey research priorities) | `knowledge/foundations/` |
-| Data sources *(no geometry class)* | *drafts:* the PSI archive, all 20 experimental tables, the summary and matrix workbooks | `knowledge/data-sources/` |
+| Data sources *(no geometry class)* | the PSI archive, all 20 experimental tables, the summary and matrix workbooks | `knowledge/data-sources/` |
 
 Folder layout encodes comparability: two investigations are only honestly
 comparable if they share a geometry class, so that's how the record is organized,
 not by publication date or program name.
 
-8 documents are approved (`stable`) and published. The 12 *drafts* cite every other
-report, table and workbook in `psi-data/raw/`, each checked against its source's
-text. They wait for the owner's review before they publish, and until then they
-appear only in local previews, marked as drafts.
+All 20 documents are approved (`stable`) and published on the site, each with a
+summary tab. Together they cite every report, table and workbook in
+`psi-data/raw/`, and every number in them has been checked against its source's
+text. The 12 approved on 2026-09-24 (BASS, BASS-II requirements, FLEX-2, CFI, ACME
+BRE, ACME s-Flame, SPICE, SAME, SAME-R and the three data-sources documents) are not
+yet marked as human-verified, the page-by-page quote check the original 8 carry.
+
+The chatbot's narrative search (the MCP door) still holds only the original 8
+documents. Running `npm run refresh` ingests the other 12. The test-data tools
+don't depend on it: they already cite the new documents for SPICE, SAME, SAME-R,
+CFI, FLEX-2, ACME BRE and ACME s-Flame.
 
 The test data itself lives in `psi-data/`, which has its own
 [README](psi-data/README.md): `raw/` holds the files exactly as downloaded from PSI,

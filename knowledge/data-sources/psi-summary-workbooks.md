@@ -2,10 +2,12 @@
 type: Document
 title: "PSI summary and matrix workbooks"
 description: The spreadsheets held from NASA's PSI archive beside the experimental tables — test matrices, a CFI data summary, a SAME/SAME-R results workbook, and SAFFIRE image-downlink records — and what each does and does not contain.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 42
 sources:
   - id: psi-workbook-inventory

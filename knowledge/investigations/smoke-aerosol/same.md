@@ -2,10 +2,12 @@
 type: Document
 title: "SAME: Smoke Aerosol Measurement Experiment"
 description: Size distributions of smoke from overheated (not burning) spacecraft materials, measured in the ISS Microgravity Science Glovebox in 2007, from the SAME final report.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 30
 geometry_class: smoke-aerosol
 sources:

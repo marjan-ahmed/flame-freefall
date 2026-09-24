@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "build_id": "sha256:0440d30450ff385ca1aa2751888b4bd7c3b118a11148cd1cd0cfc11d29b63e97",
+  "build_id": "sha256:49bf63b2c556f283a19e077466ff242eadf92056ebb713604b18df7f75215974",
   "ksor_version": "0.0.60",
   "okf": {
     "version": "0.2",
@@ -8,8 +8,8 @@
     "spec_sha256": "26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101"
   },
   "source_commit": "d92429ba5ddabfa4ab926e84434313f8af11dea7",
-  "dirty": false,
-  "as_of": "2026-09-24T07:26:43.307Z",
+  "dirty": true,
+  "as_of": "2026-09-24T07:57:43.079Z",
   "drafts": "hidden",
   "instance_sha256": "dc6544320df5525bd9d2773f272cca522d2ab04e89e27ceb1ecf2b5781f7525b",
   "policy_sha256": "b1bfb30888527d4e42b54c533274885cbafa343617bc1c2d6f4365fa4f7a0106",
@@ -27,30 +27,36 @@
   "documents": [
     {
       "path": "data-sources/overview.md",
-      "sha256": "9f2a36ffcf0021e76b6bcd191019ec253148a37ff52d3092f08c066ab1d27ec0",
-      "status": "draft",
+      "sha256": "352d8d402ee93e70705824de15d56021a90525910ad5cea22e76d8998cf3d52a",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "data-sources/psi-experimental-tables.md",
-      "sha256": "92a14df733cf06e6e2f7cd3cbad4740cf4f2217f3e6a1d245bf7e2c27d479f3d",
-      "status": "draft",
+      "sha256": "d2ea4dd8cc4286b59ab1d5944887bb441992cb39a1f4b99ad7d0a81c672138a4",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "data-sources/psi-summary-workbooks.md",
-      "sha256": "beebbce80d888bb3fa6ba6476f2f386cdbdb2d67386ec212989ba808e1000435",
-      "status": "draft",
+      "sha256": "de58a7afc560f45f4a229ab17c204a2a64f8b29414214b915b8bf2e5fad4dc7e",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "foundations/decadal-survey/liao-micro-partial-gravity-fires.md",
@@ -98,12 +104,14 @@
     },
     {
       "path": "investigations/droplet-combustion/cfi.md",
-      "sha256": "634cb9e72698b02030e1e57535686942d27ff6f383aaeb578ab0b9ad31fa1c22",
-      "status": "draft",
+      "sha256": "1f9e971765cc353a0d957d4ea78d569ae594315d365e435a2e9221bf8036f93f",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/droplet-combustion/flex.md",
@@ -118,12 +126,14 @@
     },
     {
       "path": "investigations/droplet-combustion/flex-2.md",
-      "sha256": "c0571b4d44b9b183e6b0c83affe873dac60c66b298acdb096eaeda6ea774b1d1",
-      "status": "draft",
+      "sha256": "a799c8d8f305939f39d01884c34cf22396031722fa454160e3b4442e69618282",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/gaseous-flames/acme.md",
@@ -138,57 +148,69 @@
     },
     {
       "path": "investigations/gaseous-flames/acme-bre.md",
-      "sha256": "c289cd30ff9cad60f9fa3d13b044421cbd84b15d440ac3826045b8cae1a00ddd",
-      "status": "draft",
+      "sha256": "ad797c892546c9f7cff5cd515a0a3cae2c68f15f44bb745ae43c7866cb897f96",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/gaseous-flames/acme-s-flame.md",
-      "sha256": "f28aed8b06d00d5d241cc29056eea96dbe3ba6f02851da88a7a027ae1ac32c37",
-      "status": "draft",
+      "sha256": "4404b63c9ceb07d6fe7959f45087bf75c6edc513fc18fbb8b1ef045ac6598f77",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/gaseous-flames/spice.md",
-      "sha256": "101029db7548602bb6aebfc1cea048a9c3cbe41f101a92ad55e9b33cb1036d66",
-      "status": "draft",
+      "sha256": "e72441249c907bff7d3d76d051d3923dc3f9a2d79d994aa1ad9a8eb3548255e2",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/smoke-aerosol/same.md",
-      "sha256": "d62da24b2bc56dca9b9ab4e9258409fa7c56aa496f4faaef4fe8d4d188b74c36",
-      "status": "draft",
+      "sha256": "04b65ef4f9b5ac2514c7a797c966c1fb54990d80a46812db1bcc3229d87de083",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/smoke-aerosol/same-r.md",
-      "sha256": "f52e0bc3dda189dfa0e755d4af1e993883360d9f7ba80d5d63f2f04c266bb97f",
-      "status": "draft",
+      "sha256": "96a4204be171ad621679f920bc324bf1c0b9e69858c68b22424238aa03dffffd",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/solid-fuel/bass.md",
-      "sha256": "b43c9346a06e18f46f7d4bbfe2e30c46648a4ca7d0deb24bd05ee1608374fe69",
-      "status": "draft",
+      "sha256": "1391dccf08d4ff632d3b70afed2f51b81c6f85b2d1479341655e09bd7798eda8",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/solid-fuel/bass-ii.md",
@@ -203,12 +225,14 @@
     },
     {
       "path": "investigations/solid-fuel/bass-ii-requirements.md",
-      "sha256": "4379d3c4d97ec4b958ca18911a8a8927fc057e1c25744a0ff25aa0d160edc905",
-      "status": "draft",
+      "sha256": "10381ca16fcd1503a42e6d79a3a5210295b703ce958615b64b1cd17bc94befac",
+      "status": "stable",
       "audience": [
         "public"
       ],
-      "admitted": []
+      "admitted": [
+        "public"
+      ]
     },
     {
       "path": "investigations/solid-fuel/saffire.md",
@@ -223,6 +247,18 @@
     }
   ],
   "companions": [
+    {
+      "path": "data-sources/overview.summary.md",
+      "sha256": "d08fe28e9beeaa5a4044a4cd7dcf06e6c3c9e56fd63b5f2f73b0631f7f93c04e"
+    },
+    {
+      "path": "data-sources/psi-experimental-tables.summary.md",
+      "sha256": "d4e165b429c1693825b15aaa62eb3e0af9f5e68fff963bea308361c95ea1e647"
+    },
+    {
+      "path": "data-sources/psi-summary-workbooks.summary.md",
+      "sha256": "ed6bdbe94752d55d9644e1384ead3c3d7c7519cf53db8fee7398c1ecc8fc12bf"
+    },
     {
       "path": "foundations/decadal-survey/liao-micro-partial-gravity-fires.summary.md",
       "sha256": "b365a89c725d2f8be677c6c1ff1358b0a382c42d810d1bd79d0bbcb2b25f2094"
@@ -240,16 +276,52 @@
       "sha256": "9d9111fafbc6db63b1dc8e4052d82a1cd8513ed2c841f63b52d7bf8b3087a721"
     },
     {
+      "path": "investigations/droplet-combustion/cfi.summary.md",
+      "sha256": "ca459c5500a5e88d95e19abade2bad2d4ebfc74d76733801a0f90690dd53c867"
+    },
+    {
+      "path": "investigations/droplet-combustion/flex-2.summary.md",
+      "sha256": "88a7782a2123bc6c96662d69feba3a6b0e2d59d5b1788b547f06faee0b941ae3"
+    },
+    {
       "path": "investigations/droplet-combustion/flex.summary.md",
       "sha256": "5b99830e0f81cecede67b863b316a2c3a356e414d694676a5bfec6ad5419ed56"
+    },
+    {
+      "path": "investigations/gaseous-flames/acme-bre.summary.md",
+      "sha256": "d1a702362514a23f4bff7d454bf6bcce56614f0d4de91ca3556ea1c9b4c0eddd"
+    },
+    {
+      "path": "investigations/gaseous-flames/acme-s-flame.summary.md",
+      "sha256": "b98e46cc98bd34acb69af5972e33a66f71e601b1d651b72ee6a24e22d1730d06"
     },
     {
       "path": "investigations/gaseous-flames/acme.summary.md",
       "sha256": "0cc5739f065475987e23dbad236de99962eb9a1b0b2a1928040c10ba694ac3ef"
     },
     {
+      "path": "investigations/gaseous-flames/spice.summary.md",
+      "sha256": "65b4aadfe44debffed224d2d5e1ad55888308730fc0a595f99673a747fff9f08"
+    },
+    {
+      "path": "investigations/smoke-aerosol/same-r.summary.md",
+      "sha256": "5a81ef53f02210e0675a3b81eb1b1584c2310ef8c5ca6407fbde606a179ac5ed"
+    },
+    {
+      "path": "investigations/smoke-aerosol/same.summary.md",
+      "sha256": "d4133b85c2702171045ff3f1723bc531352aad776f4a24308e8f733955604a64"
+    },
+    {
+      "path": "investigations/solid-fuel/bass-ii-requirements.summary.md",
+      "sha256": "2d48e23c6d72bf4a66f48a6d1ca0b31669edad0b3ba1c12ddf07c867eafbcd7e"
+    },
+    {
       "path": "investigations/solid-fuel/bass-ii.summary.md",
       "sha256": "5b5be751d6de08b0f6028163cf7f18e0cab6a5aa49b627a10e8290445625900e"
+    },
+    {
+      "path": "investigations/solid-fuel/bass.summary.md",
+      "sha256": "d8b660d6ad1d2fc5f4f05ee35a40a304eaef6dc8afed4bb0ad20641a09858b25"
     },
     {
       "path": "investigations/solid-fuel/saffire.summary.md",
@@ -298,8 +370,8 @@
   "bundles": [
     {
       "viewer": "public",
-      "sha256": "8cccf54ceaed015d2b1c4d9a56b0a80afc16aafd655d9e88983135a458ff58e3",
-      "files": 23
+      "sha256": "85ead54a8286888afb14818c764676db8f9f14ef273cfb07ec073f3c8325dc13",
+      "files": 49
     }
   ]
 }

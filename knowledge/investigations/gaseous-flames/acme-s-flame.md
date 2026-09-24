@@ -2,10 +2,12 @@
 type: Document
 title: "ACME s-Flame: Structure and Response of Spherical Diffusion Flames"
 description: Spherical diffusion flames from a porous spherical burner in quiescent microgravity, tested on the ISS in 2019-2020 with nitrogen and helium dilution, from the ACME/s-Flame final report.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 28
 geometry_class: gaseous-flames
 sources:

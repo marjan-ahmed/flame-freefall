@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T04:58:05+00:00",
+ "generated_at": "2026-09-24T07:56:09+00:00",
  "generator": "system/psi-ingest",
  "investigations": [
   {
@@ -396,10 +396,18 @@
   {
    "id": "flex-2",
    "name": "FLEX-2",
-   "full_name": null,
+   "full_name": "Fundamental Studies in Droplet Combustion and Flame Extinguishment in Microgravity",
    "psi_id": "PSI-68",
    "geometry_class": "droplet-combustion",
-   "citation": null,
+   "citation": {
+    "doc": "knowledge/investigations/droplet-combustion/flex-2",
+    "doc_title": "FLEX-2: Fundamental Studies in Droplet Combustion and Flame Extinguishment",
+    "doc_status": "stable",
+    "source_id": "flex-2-srd",
+    "title": "Fundamental Studies in Droplet Combustion and Flame Extinguishment in Microgravity (FLEX-2) — Science Requirements Document, SRD Rev. 1",
+    "url": null,
+    "descriptor": "FLEX-2 Science Requirements Document, research team lead Forman A. Williams (UC San Diego), project scientist Michael C. Hicks (NASA Glenn), dated March 15, 2010; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'FLEX-2 SRD Final.pdf'"
+   },
    "runs": 8,
    "granularity": {
     "envelope": 8
@@ -451,10 +459,18 @@
   {
    "id": "cfi",
    "name": "CFI",
-   "full_name": null,
+   "full_name": "Cool Flame Investigation",
    "psi_id": "PSI-39",
    "geometry_class": "droplet-combustion",
-   "citation": null,
+   "citation": {
+    "doc": "knowledge/investigations/droplet-combustion/cfi",
+    "doc_title": "CFI: Cool Flame Investigation",
+    "doc_status": "stable",
+    "source_id": "cfi-final-report",
+    "title": "Cool Flame Investigation (CFI) — Science Final Report",
+    "url": null,
+    "descriptor": "CFI science final report by Vedha Nayagam (CWRU/LTX) and Daniel L. Dietrich (NASA/LTX); distributed in the NASA Physical Sciences Informatics (PSI) archive as 'CFI Science Final Report.pdf'. The title-page date did not survive text extraction legibly."
+   },
    "runs": 79,
    "granularity": {
     "test": 79
@@ -625,12 +641,13 @@
    "psi_id": "PSI-20",
    "geometry_class": "gaseous-flames",
    "citation": {
-    "doc": "knowledge/investigations/gaseous-flames/acme",
-    "doc_title": "ACME: Advanced Combustion via Microgravity Experiments",
+    "doc": "knowledge/investigations/gaseous-flames/acme-bre",
+    "doc_title": "ACME BRE: Burning Rate Emulator",
     "doc_status": "stable",
-    "source_id": "acme-ps-03403",
-    "title": "Advanced Combustion via Microgravity Experiments (ACME) on the International Space Station (ISS)",
-    "url": "https://ntrs.nasa.gov/citations/20210015913"
+    "source_id": "acme-bre-final-report",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME) Burning Rate Emulator (BRE) — ACME/BRE Final Report (2022)",
+    "url": null,
+    "descriptor": "ACME/BRE final report prepared by Dennis P. Stocker (NASA Glenn), James G. Quintiere and Peter B. Sunderland (University of Maryland), John L. de Ris (FM Global, retired) and Parham Dehghani (University of Maryland), dated 1 Feb. 2022; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'BRE_final_report_20220201.pdf'"
    },
    "runs": 18,
    "granularity": {
@@ -760,12 +777,13 @@
    "psi_id": "PSI-23",
    "geometry_class": "gaseous-flames",
    "citation": {
-    "doc": "knowledge/investigations/gaseous-flames/acme",
-    "doc_title": "ACME: Advanced Combustion via Microgravity Experiments",
+    "doc": "knowledge/investigations/gaseous-flames/acme-s-flame",
+    "doc_title": "ACME s-Flame: Structure and Response of Spherical Diffusion Flames",
     "doc_status": "stable",
-    "source_id": "acme-ps-03403",
-    "title": "Advanced Combustion via Microgravity Experiments (ACME) on the International Space Station (ISS)",
-    "url": "https://ntrs.nasa.gov/citations/20210015913"
+    "source_id": "acme-s-flame-final-report",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME) Structure and Response of Spherical Diffusion Flames (s-Flame) — ACME/s-Flame Final Report (2021)",
+    "url": null,
+    "descriptor": "ACME/s-Flame final report prepared by Dennis P. Stocker (NASA Glenn) and Chung K. Law (Princeton University) with the s-Flame team, dated 29 July 2021; distributed in the NASA Physical Sciences Informatics (PSI) archive as 's_Flame_final_report_20210729.pdf'"
    },
    "runs": 18,
    "granularity": {
@@ -810,10 +828,18 @@
   {
    "id": "spice",
    "name": "SPICE",
-   "full_name": null,
+   "full_name": "Smoke Point in Co-flow Experiment",
    "psi_id": "PSI-107",
    "geometry_class": "gaseous-flames",
-   "citation": null,
+   "citation": {
+    "doc": "knowledge/investigations/gaseous-flames/spice",
+    "doc_title": "SPICE: Smoke Point in Co-flow Experiment",
+    "doc_status": "stable",
+    "source_id": "spice-final-report",
+    "title": "Smoke Point in Co-flow Experiment (SPICE): Laminar Smoke Point Properties of Non-buoyant Round-Jet Diffusion Flames — Final Report",
+    "url": null,
+    "descriptor": "SPICE final report by David L. Urban (NASA Glenn), Peter B. Sunderland (University of Maryland) and Zeng-Guang Yuan (NCSER), dated 2 December 2011; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'SPICE Final Report 12_2_2012.pdf'"
+   },
    "runs": 440,
    "granularity": {
     "test-point": 435,
@@ -887,10 +913,18 @@
   {
    "id": "same",
    "name": "SAME",
-   "full_name": null,
+   "full_name": "Smoke Aerosol Measurement Experiment",
    "psi_id": "PSI-102",
    "geometry_class": "smoke-aerosol",
-   "citation": null,
+   "citation": {
+    "doc": "knowledge/investigations/smoke-aerosol/same",
+    "doc_title": "SAME: Smoke Aerosol Measurement Experiment",
+    "doc_status": "stable",
+    "source_id": "same-final-report",
+    "title": "Smoke Aerosol Measurement Experiment (SAME) — Final Report, November 1, 2000 - April 14, 2009",
+    "url": null,
+    "descriptor": "SAME final report by David L. Urban, Gary A. Ruff, William Sheredy (NASA Glenn), Thomas Cleary, Jiann Yang (NIST), George Mulholland (University of Maryland) and Zeng-Guang Yuan (NCSER), dated March 15, 2010, with conference papers attached; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'SAME Final Science report  03 18 10 with papers attached.pdf'"
+   },
    "runs": 8,
    "granularity": {
     "test": 8
@@ -924,10 +958,18 @@
   {
    "id": "same-r",
    "name": "SAME-R",
-   "full_name": null,
+   "full_name": "Smoke Aerosol Measurement Experiment Re-flight",
    "psi_id": "PSI-101",
    "geometry_class": "smoke-aerosol",
-   "citation": null,
+   "citation": {
+    "doc": "knowledge/investigations/smoke-aerosol/same-r",
+    "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+    "doc_status": "stable",
+    "source_id": "samer-final-report",
+    "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
+    "url": null,
+    "descriptor": "SAMER final report by David L. Urban, Gary A. Ruff, William Sheredy, Marit Meyer (NASA Glenn), Thomas Cleary, Jiann Yang (NIST), George Mulholland (University of Maryland) and Zeng-Guang Yuan (NCSER), covering 01 November 2000 - June 2, 2014, with appendices including the paper 'Particle Morphology and Size Results from the Smoke Aerosol Measurement Experiment-2'; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'SAMER_Final 0602 2014.pdf'"
+   },
    "runs": 109,
    "granularity": {
     "test": 109

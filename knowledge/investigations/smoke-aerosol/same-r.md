@@ -2,10 +2,12 @@
 type: Document
 title: "SAME-R: Smoke Aerosol Measurement Experiment Re-flight"
 description: The 2010 re-flight of SAME — new material (Pyrell), higher sample temperatures and no-flow runs, a new two-moment detector, and ground tests that check the moment method — from the SAMER final report.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 31
 geometry_class: smoke-aerosol
 sources:

@@ -13,7 +13,7 @@ report table or a governed document, and the model never states values itself.
 
 | Part | Where | What it is |
 | --- | --- | --- |
-| The record | `knowledge/` | 20 governed docs: 8 `stable` (BASS-II, SAFFIRE, FLEX, ACME, NASA-STD-6001B, 3 decadal-survey papers) + 12 `draft` (BASS, BASS-II requirements, FLEX-2, CFI, ACME BRE, ACME s-Flame, SPICE, SAME, SAME-R, `data-sources/` ×3) awaiting owner approval |
+| The record | `knowledge/` | 20 governed docs, all `stable`, each with a `.summary.md`. The 12 approved 2026-09-24 (BASS, BASS-II requirements, FLEX-2, CFI, ACME BRE, ACME s-Flame, SPICE, SAME, SAME-R, `data-sources/` ×3) carry no `verified:` stamp yet, and are NOT yet ingested into the MCP door (`npm run refresh` does that; the owner has held it back) |
 | The test data | `psi-data/` + `system/psi-ingest/` | 20 PSI experimental tables → 1,950 normalized run records (`psi-data/derived/runs.json`) |
 | The chatbot | `system/chatkit-server/` (FastAPI, Groq) + `system/site/` (ChatKit UI) | answers through ChatKit **widgets**; the site also hosts a linked Explorer at `/explore` |
 

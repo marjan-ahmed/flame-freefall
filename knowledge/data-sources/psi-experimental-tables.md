@@ -2,10 +2,12 @@
 type: Document
 title: "PSI experimental tables"
 description: The 20 per-test tables from NASA's PSI archive — which investigation each belongs to, what one row is, what it records, and what it does not.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 41
 sources:
   - id: psi-experimental-tables
