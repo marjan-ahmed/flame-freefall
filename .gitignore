@@ -32,3 +32,8 @@ system/site/public/sims/
 !.env.example
 
 .DS_Store
+
+# PSI raw matrix whose first row carries account credentials — never commit
+# it, never ingest it (psi-data/README.md explains). The as-run matrix
+# "BASS test matrix.xlsx" covers the same tests without them.
+psi-data/raw/matrices/BASS Test Matrix 050213.xlsx
