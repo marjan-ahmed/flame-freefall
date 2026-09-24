@@ -102,3 +102,67 @@ def test_gap_map_summary_lists_every_tested_cell():
     s = w.gap_map_summary({"fuel_family": "PMMA"})
     assert len(s["tested_cells"]) == s["cells_with_tests"]
     assert any(c.startswith("O2 30–35 % / flow 20–30") and "SAFFIRE IV–VI" in c for c in s["tested_cells"])
+
+
+def test_details_buttons_have_unique_keys():
+    # seen live: Details spun forever; the card's many Details buttons were
+    # otherwise identical components
+    card = json.loads(w.evidence_widget({"fuel_family": "PMMA"}).model_dump_json())
+    keys = []
+
+    def walk(node):
+        if isinstance(node, dict):
+            if node.get("type") == "Button" and node.get("label") == "Details":
+                keys.append(node.get("key"))
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(card)
+    assert keys and None not in keys and len(keys) == len(set(keys))
+
+
+def test_explorer_link_follows_the_requesting_site():
+    # seen live: the link pointed at localhost:3000 for every real user
+    from starlette.requests import Request
+
+    def req(origin):
+        return Request({"type": "http", "headers": [(b"origin", origin.encode())]})
+
+    assert main._site_for(req("https://marjan-ahmed.github.io")) == "https://marjan-ahmed.github.io/flame-freefall"
+    assert main._site_for(req("http://localhost:3000")) == "http://localhost:3000"
+    assert main._site_for(req("https://evil.example")) is None
+    link = w.explorer_url({"o2_pct": 15}, site="https://marjan-ahmed.github.io/flame-freefall")
+    assert link.startswith("https://marjan-ahmed.github.io/flame-freefall/explore/?")
+    assert w.explorer_url({"o2_pct": 15}).startswith("https://marjan-ahmed.github.io/flame-freefall/explore/")
+
+
+def test_a_failing_view_still_answers_the_button():
+    import asyncio
+
+    class T:
+        id = "t"
+
+    class A:
+        type = "psi.test"
+        payload = {"id": 123}  # not a string: _action_widget returns None
+
+    async def collect():
+        out = []
+
+        async def fake_stream(thread, widget, copy, gen):
+            yield widget
+
+        orig = main.stream_widget
+        main.stream_widget = fake_stream
+        try:
+            async for ev in main.server.action(T(), A(), None, {}):
+                out.append(ev)
+        finally:
+            main.stream_widget = orig
+        return out
+
+    got = asyncio.run(collect())
+    assert len(got) == 1  # a card came back, so the client's spinner ends
