@@ -30,7 +30,7 @@ sys.stdout.reconfigure(line_buffering=True)
 import openai
 from agents import Agent, AsyncOpenAI, ModelSettings, OpenAIChatCompletionsModel, Runner, RunHooks, set_tracing_disabled
 from agents.mcp import MCPServerStreamableHttp
-from chatkit.agents import AgentContext, ThreadItemConverter, stream_agent_response
+from chatkit.agents import AgentContext, ThreadItemConverter, stream_agent_response, stream_widget
 from chatkit.server import ChatKitServer, StreamingResult
 from chatkit.store import AttachmentStore
 from chatkit.types import (
@@ -56,7 +56,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from openai.types.responses import EasyInputMessageParam
 
-from comparison_widget import show_comparison
+import psi_widgets
+from psi_tools import TOOLS as PSI_TOOLS
 from postgres_store import PostgresChatKitStore
 from store import InMemoryChatKitStore
 
@@ -82,7 +83,7 @@ set_tracing_disabled(True)
 # Caveat 2: meta-llama/Llama-3.1-8B-Instruct is a much smaller model than
 # gpt-oss-120b — tool-call triggering works (verified live) but argument
 # filling was weaker in a quick test (empty args where content was
-# expected), so search/read/show_comparison calls may be less reliable
+# expected), so search/read/PSI-tool calls may be less reliable
 # once this tier is actually reached.
 class _FallbackCompletions:
     def __init__(self, providers: list[tuple[AsyncOpenAI, str]]) -> None:
@@ -159,11 +160,25 @@ handbook_mcp = MCPServerStreamableHttp(
 # short instructions, k=2 on search, a low token_budget on read, capped
 # output, and a short history window (below).
 BASE_INSTRUCTIONS = (
-    "Assistant for Flame in Freefall (NASA microgravity combustion: "
-    "BASS-II, SAFFIRE, FLEX, ACME; fire-safety standards).\n\n"
+    "Assistant for Flame in Freefall: NASA microgravity-combustion test data "
+    "(BASS, BASS-II, SAFFIRE I-VI, FLEX, FLEX-2, CFI, CFI-G, ACME, SPICE, "
+    "SLICE, SAME) and the fire-safety standards that frame it.\n\n"
     "Greetings, thanks, and chit-chat ('hi', 'who are you', 'thanks') get "
     "a direct reply — NEVER call a tool for these, there is nothing to "
     "look up.\n\n"
+    "NUMBERS COME ONLY FROM TOOLS, and every view is a widget. Pick ONE tool "
+    "per question, called once with only the conditions the user gave:\n"
+    "- query_test_runs: which tests exist / what was measured at some O2, "
+    "flow, pressure, fuel (the default).\n"
+    "- show_gap_map: what has or hasn't been tested, where the gaps are.\n"
+    "- compare_investigations: comparing investigations side by side.\n"
+    "- show_test_details: one named test (id like PSI-25:M18).\n"
+    "- plot_results: a chart of a measured result against a condition.\n"
+    "Then write the short summary the tool asks for, citing run ids. Say "
+    "plainly when there is no test at the requested conditions. Never state "
+    "a number that is not in a tool result, never average across tests, and "
+    "never write your own table or chart. The widgets carry buttons for the "
+    "next step, so you don't need to offer every option.\n\n"
 )
 
 # Told to the model ONLY while handbook_mcp is actually connected (mirrors
@@ -172,33 +187,24 @@ BASE_INSTRUCTIONS = (
 # the Chat Completions API rejects outright ("attempted to call tool
 # 'search' which was not in request.tools") and crashes the whole turn,
 # not just the tool call (confirmed live 2026-09-22, MCP door unreachable).
+# The PSI tools are local (read data/runs.json), so they are available in
+# both modes; only the narrative corpus depends on the MCP door.
 WITH_TOOLS_INSTRUCTIONS = BASE_INSTRUCTIONS + (
-    "For anything that actually asks about the corpus, ground the answer "
-    "in the handbook MCP tools, not general knowledge — but call a tool "
-    "only when the question needs it, and only once per distinct fact "
-    "you're missing, not speculatively. Keep tool calls small: search "
-    "with k=2, read with token_budget<=600 and a specific heading rather "
-    "than a whole document. Say so if the record doesn't cover "
-    "something. Be concise.\n\n"
-    "HARD BUDGET: at most 2 tool calls per investigation you mention "
-    "(one outline or search, one read), and never repeat a call you "
-    "already made. If you hit that budget and still don't have a fact, "
-    "use '—' for it rather than searching again — going over this budget "
-    "causes a real failure (rate limit), not just a slower answer.\n\n"
-    "When the question compares 2+ investigations (flame spread rate, "
-    "O2%, pressure, gravity, geometry), you MUST call show_comparison — "
-    "do this even if you only found some of the facts, passing '—' for "
-    "whatever you didn't find. NEVER write a markdown table, bullet "
-    "list, or any other manual side-by-side layout comparing "
-    "investigations — that is what show_comparison is for, and writing "
-    "one yourself is a mistake, not just a style choice."
+    "For narrative questions (why an experiment was run, how the hardware "
+    "worked, what a standard requires, what the decadal surveys prioritize) "
+    "use the handbook MCP tools, not general knowledge: search with k=2, "
+    "read with token_budget<=600 and a specific heading. Say so if the "
+    "record doesn't cover something. Be concise.\n\n"
+    "HARD BUDGET: at most 3 tool calls per turn, never repeat a call — "
+    "going over causes a real failure (rate limit), not just a slower answer."
 )
 
 WITHOUT_TOOLS_INSTRUCTIONS = BASE_INSTRUCTIONS + (
-    "The corpus search connection is temporarily unavailable — you have NO "
-    "way to look anything up right now. Say so plainly for any question "
-    "that needs the corpus (do not guess or answer from general knowledge "
-    "as if it were the record), and suggest trying again shortly."
+    "The narrative corpus connection is temporarily unavailable. "
+    "The PSI test-data tools still work for test conditions and results. For "
+    "narrative questions, say plainly the record can't be searched right "
+    "now (do not answer from general knowledge as if it were the record) "
+    "and suggest trying again shortly."
 )
 
 assistant = Agent(
@@ -207,10 +213,13 @@ assistant = Agent(
     model=model,
     model_settings=ModelSettings(
         extra_body={"reasoning_format": "hidden"},
-        max_tokens=400,
+        # Hidden reasoning still spends this budget: at 400 a cited summary
+        # was cut off mid-sentence (seen live 2026-09-24). 900 leaves room for
+        # both and stays well inside Groq's 8000 TPM with the compact tool result.
+        max_tokens=900,
     ),
     mcp_servers=[],
-    tools=[show_comparison],
+    tools=PSI_TOOLS,
 )
 
 
@@ -401,7 +410,54 @@ async def generate_short_title(items) -> str:
     return (resp.choices[0].message.content or "").strip().strip('"')
 
 
+# Widget buttons → the widget they open. Answered by the server directly: no
+# model call, no tokens, instant — the user steers the data from the chat.
+def _action_widget(kind: str, payload: dict):
+    q = _clean_query(payload.get("q") or {})
+    if kind == "evidence":
+        return psi_widgets.evidence_widget(q)
+    if kind == "gap_map":
+        y = payload.get("y") if payload.get("y") in psi_widgets.Y_BINS else "flow_cm_s"
+        return psi_widgets.gap_map_widget(q, y)
+    if kind == "compare":
+        return psi_widgets.compare_widget(q)
+    if kind == "results":
+        x = payload.get("x") if payload.get("x") in psi_widgets.X_AXES else "flow_cm_s"
+        quantity = payload.get("quantity") if isinstance(payload.get("quantity"), str) else None
+        return psi_widgets.results_widget(q, quantity, x)
+    if kind == "test" and isinstance(payload.get("id"), str):
+        return psi_widgets.test_widget(payload["id"])
+    return None
+
+
+def _clean_query(raw: dict) -> dict:
+    """Action payloads come back from the browser: keep only known keys with
+    well-typed values, never pass anything else into the query."""
+    q = {}
+    for k, v in raw.items():
+        if k in psi_widgets.psi_query.NUMERIC_AXES:
+            try:
+                q[k] = float(v)
+            except (TypeError, ValueError):
+                continue
+        elif k in psi_widgets.psi_query.CATEGORICAL_AXES and isinstance(v, str) and len(v) < 80:
+            q[k] = v
+    return q
+
+
 class FlameFreefallChatKitServer(ChatKitServer[dict]):
+    async def action(self, thread, action, sender, context):
+        kind = str(action.type).removeprefix("psi.")
+        widget = _action_widget(kind, action.payload or {})
+        if widget is None:
+            print(f"[action] unknown {action.type!r}")
+            return
+        print(f"[action] {kind} {action.payload}")
+        async for event in stream_widget(
+            thread, widget, None, lambda item_type: self.store.generate_item_id(item_type, thread, context)
+        ):
+            yield event
+
     async def respond(
         self,
         thread: ThreadMetadata,
