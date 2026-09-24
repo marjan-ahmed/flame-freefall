@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "build_id": "sha256:d68a79238c92500a56d45f5664b44f730abcc3ebfd70eeba8a489842458bb46b",
+  "build_id": "sha256:848ceb22c1c047fe666dd8dfc690cf9da0dd6598253e671afbaadfa749dbf8cb",
   "ksor_version": "0.0.60",
   "okf": {
     "version": "0.2",
@@ -8,8 +8,8 @@
     "spec_sha256": "26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101"
   },
   "source_commit": "37bca2907dbbdcb9d43b9b80f2c067ebcd80ec33",
-  "dirty": false,
-  "as_of": "2026-09-22T13:30:54.298Z",
+  "dirty": true,
+  "as_of": "2026-09-24T07:09:08.010Z",
   "drafts": "hidden",
   "instance_sha256": "dc6544320df5525bd9d2773f272cca522d2ab04e89e27ceb1ecf2b5781f7525b",
   "policy_sha256": "b1bfb30888527d4e42b54c533274885cbafa343617bc1c2d6f4365fa4f7a0106",
@@ -25,6 +25,33 @@
     }
   },
   "documents": [
+    {
+      "path": "data-sources/overview.md",
+      "sha256": "4426a8feb6fdf19da39d42c13925ad91dddd0cace8139b5082acbdab6765325c",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "data-sources/psi-experimental-tables.md",
+      "sha256": "92a14df733cf06e6e2f7cd3cbad4740cf4f2217f3e6a1d245bf7e2c27d479f3d",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "data-sources/psi-summary-workbooks.md",
+      "sha256": "beebbce80d888bb3fa6ba6476f2f386cdbdb2d67386ec212989ba808e1000435",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
     {
       "path": "foundations/decadal-survey/liao-micro-partial-gravity-fires.md",
       "sha256": "c2a045cd9293d8503abd5d51b3d1a9fd9e17906404819438eb6fabc4e51afbcd",
@@ -70,6 +97,15 @@
       ]
     },
     {
+      "path": "investigations/droplet-combustion/cfi.md",
+      "sha256": "634cb9e72698b02030e1e57535686942d27ff6f383aaeb578ab0b9ad31fa1c22",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
       "path": "investigations/droplet-combustion/flex.md",
       "sha256": "1dd4781d77d76903b2bcb02a8c6933a0912274dec6948828930952518e3f8991",
       "status": "stable",
@@ -79,6 +115,15 @@
       "admitted": [
         "public"
       ]
+    },
+    {
+      "path": "investigations/droplet-combustion/flex-2.md",
+      "sha256": "c0571b4d44b9b183e6b0c83affe873dac60c66b298acdb096eaeda6ea774b1d1",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
     },
     {
       "path": "investigations/gaseous-flames/acme.md",
@@ -92,6 +137,60 @@
       ]
     },
     {
+      "path": "investigations/gaseous-flames/acme-bre.md",
+      "sha256": "c289cd30ff9cad60f9fa3d13b044421cbd84b15d440ac3826045b8cae1a00ddd",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "investigations/gaseous-flames/acme-s-flame.md",
+      "sha256": "f28aed8b06d00d5d241cc29056eea96dbe3ba6f02851da88a7a027ae1ac32c37",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "investigations/gaseous-flames/spice.md",
+      "sha256": "101029db7548602bb6aebfc1cea048a9c3cbe41f101a92ad55e9b33cb1036d66",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "investigations/smoke-aerosol/same.md",
+      "sha256": "d62da24b2bc56dca9b9ab4e9258409fa7c56aa496f4faaef4fe8d4d188b74c36",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "investigations/smoke-aerosol/same-r.md",
+      "sha256": "f52e0bc3dda189dfa0e755d4af1e993883360d9f7ba80d5d63f2f04c266bb97f",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
+      "path": "investigations/solid-fuel/bass.md",
+      "sha256": "b43c9346a06e18f46f7d4bbfe2e30c46648a4ca7d0deb24bd05ee1608374fe69",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
       "path": "investigations/solid-fuel/bass-ii.md",
       "sha256": "dbe32387de23a500fa929393566b5495800c9c9d65d90deae3153eac2009f211",
       "status": "stable",
@@ -101,6 +200,15 @@
       "admitted": [
         "public"
       ]
+    },
+    {
+      "path": "investigations/solid-fuel/bass-ii-requirements.md",
+      "sha256": "4379d3c4d97ec4b958ca18911a8a8927fc057e1c25744a0ff25aa0d160edc905",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
     },
     {
       "path": "investigations/solid-fuel/saffire.md",
@@ -151,6 +259,10 @@
   "assets": [],
   "indexes": [
     {
+      "path": "data-sources/index.md",
+      "sha256": "d69abe6d3a21a02f9be9e90cf42a7520e770b481a29441435e56cc3970980ca9"
+    },
+    {
       "path": "foundations/decadal-survey/index.md",
       "sha256": "6b9b9382f841af74b92036739c6251eca23e3d1b52945324d966f12824af111a"
     },
@@ -160,23 +272,27 @@
     },
     {
       "path": "index.md",
-      "sha256": "f381420dfbe0e6bf3000178bbd2b9f9922fd135fc568e59fb9aec3560313d296"
+      "sha256": "9ed997b760f9ec82505684c86da9447b44ec3bdad7e99c5fdfd7b782e76f713c"
     },
     {
       "path": "investigations/droplet-combustion/index.md",
-      "sha256": "0a9073e1d58c7eeb2dd73fc2a79d4942e854887eda869489a2d9e70632eab7bb"
+      "sha256": "b6952ecf058e4d656bed44ea07c1db8e40603277083f2ddf56e8ac0005c5791b"
     },
     {
       "path": "investigations/gaseous-flames/index.md",
-      "sha256": "993568878bba6177cfaa861301b86d3797f2baa504f4d88900a7de257fd7abb2"
+      "sha256": "6ba1c179c7fa3b5850c2b4e9c83907677561b7881263a25617cbda06bfba8099"
     },
     {
       "path": "investigations/index.md",
-      "sha256": "9b0cfbd38b960f3c8a71f84df16192bc93fbcd230e668d932c3423c14906b2f1"
+      "sha256": "66cc2ac060cd518985ff78993dd6e5767148cdf73970d2d98ed600893e59782d"
+    },
+    {
+      "path": "investigations/smoke-aerosol/index.md",
+      "sha256": "a3ec217c0d1c9cf94217fd2a5149cbd2f47226b91dbf6f655754fac0b87ecac8"
     },
     {
       "path": "investigations/solid-fuel/index.md",
-      "sha256": "a02ce3fc3b614ffc3bcbd67d5f755927a7862260436b1f594e7605006c212c37"
+      "sha256": "4d88076226982a4cf07abdf7b769f7279d0bafcc18188e7a81e4ce632e1a08af"
     }
   ],
   "bundles": [
