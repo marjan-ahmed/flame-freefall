@@ -30,6 +30,7 @@ const PRESETS: { label: string; hint: string; q: Query }[] = [
   { label: "30 % O₂ at 0.55 atm", hint: "exploration-atmosphere conditions", q: { o2_pct: 30, pressure_atm: 0.55 } },
   { label: "Cotton-fiberglass fabric in air at 20 cm/s", hint: "Saffire vs BASS", q: { o2_pct: 21, flow_cm_s: 20, fuel_family: "SIBAL" } },
   { label: "Heptane droplets, 15 % O₂", hint: "FLEX extinction", q: { o2_pct: 15, fuel_family: "n-heptane" } },
+  { label: "34 % O₂ at 0.56 atm", hint: "Lunar surface habitat (proposed) — NASA-STD-6001B worst-case screening", q: { o2_pct: 34, pressure_atm: 0.5577 } },
 ];
 
 type Form = Record<NumericAxis | (typeof CATEGORICAL_AXES)[number], string>;

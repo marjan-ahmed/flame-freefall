@@ -78,6 +78,13 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
           label: "NASA-STD-6001B",
           prompt: "What does NASA-STD-6001B require for fire safety certification?",
         },
+        {
+          label: "Screen for a Lunar atmosphere",
+          prompt:
+            "NASA-STD-6001B says materials must be evaluated at the worst-case atmosphere they'll see. Is there PSI data " +
+            "near the Lunar surface habitat atmosphere (34% O2, ~0.56 atm), and which solid-fuel materials rank fastest-" +
+            "spreading there?",
+        },
       ],
     },
     composer: {
@@ -105,11 +112,15 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
     <div className="relative flex h-screen w-full flex-col">
       {/* The assistant answers from — and cites — the governed record, but
           nothing else on this screen says that record is browsable on its
-          own. Top-right, left of ChatKit's own native history/new-chat
-          icons — offset far enough (right-20) to clear that icon cluster
-          rather than sit under it (user's call, 2026-09-22). Text only, no
-          border/pill/background — a plain underlined link, ChatGPT-style. */}
+          own, or how to get back to the landing page. Top-right, left of
+          ChatKit's own native history/new-chat icons — offset far enough
+          (right-20) to clear that icon cluster rather than sit under it
+          (user's call, 2026-09-22). Text only, no border/pill/background —
+          a plain underlined link, ChatGPT-style. */}
       <div className="absolute right-20 top-4 z-10 flex gap-4 text-sm">
+        <Link href="/" className="text-gray-900 underline underline-offset-4 hover:text-black">
+          ← Home
+        </Link>
         <Link href="/explore/" className="text-gray-900 underline underline-offset-4 hover:text-black">
           Test-data explorer
         </Link>

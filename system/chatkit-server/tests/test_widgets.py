@@ -78,6 +78,67 @@ def test_action_router_rejects_junk():
     assert main._action_widget("gap_map", {"q": {"o2_pct": 15}, "y": "../../etc"}) is not None
 
 
+@pytest.mark.parametrize("gc,quantity", [
+    ("solid-fuel", "spread_rate"),
+    ("droplet-combustion", "burning_rate_k"),
+    ("droplet-combustion", "extinction_diameter"),
+    ("gaseous-flames", "burn_time"),
+    ("gaseous-flames", "peak_burner_temp_c"),
+])
+def test_rank_widget_builds_for_every_rankable_pair(gc, quantity):
+    for q in ({}, {"o2_pct": 20.9, "pressure_atm": 1.0}):
+        assert _size(w.rank_widget(q, quantity, gc)) < 60_000
+
+
+def test_rank_widget_rejects_unrankable_pair_without_crashing():
+    card = json.loads(w.rank_widget({}, "burning_rate_k", "solid-fuel").model_dump_json())
+    text = json.dumps(card)
+    assert "not a rankable result" in text
+    assert "Flame spread rate" in text  # names what IS rankable instead
+
+
+def test_rank_widget_never_mixes_geometry_classes():
+    r = psi_query.rank({}, "burning_rate_k", "droplet-combustion")
+    runs, invs = psi_query.load()
+    by_id = {x["id"]: x for x in runs}
+    for row in r["rows"]:
+        for run_id in row["runs"]:
+            assert invs[by_id[run_id]["investigation"]]["geometry_class"] == "droplet-combustion"
+
+
+def test_rank_action_router_wires_up():
+    widget = main._action_widget("rank", {"q": {"o2_pct": 20.9}, "quantity": "burning_rate_k",
+                                          "geometry_class": "droplet-combustion", "direction": "desc"})
+    assert widget is not None
+    assert main._action_widget("rank", {"q": {}, "quantity": "burning_rate_k", "geometry_class": "nope"}) is None
+    assert main._action_widget("rank", {"q": {}, "geometry_class": "droplet-combustion"}) is None
+
+
+@pytest.mark.parametrize("atm_id", ["iss", "gateway", "lunar"])
+def test_readiness_widget_builds_for_every_atmosphere(atm_id):
+    assert _size(w.readiness_widget(atm_id)) < 60_000
+
+
+def test_readiness_widget_rejects_unknown_atmosphere_without_crashing():
+    card = json.loads(w.readiness_widget("mars").model_dump_json())
+    assert "Unknown atmosphere" in json.dumps(card)
+
+
+def test_readiness_widget_shows_a_gap_as_a_gap():
+    # Solid-fuel data never reaches the Lunar preset's 34% O2 — the widget
+    # must say GAP, not silently omit the class or call it covered.
+    text = json.dumps(json.loads(w.readiness_widget("lunar").model_dump_json()))
+    assert "GAP" in text
+    assert "lunar-retest-needed" not in text  # finding ids are internal; quotes are shown, not ids
+    assert "will likely require the retest of many materials" in text
+
+
+def test_readiness_action_router_wires_up():
+    assert main._action_widget("readiness", {"atmosphere": "gateway"}) is not None
+    assert main._action_widget("readiness", {"atmosphere": "mars"}) is None
+    assert main._action_widget("readiness", {}) is None
+
+
 def test_widget_numbers_come_from_the_data():
     """Every number shown in the M18 test widget is a value (or raw cell) in its record."""
     runs, _ = psi_query.load()

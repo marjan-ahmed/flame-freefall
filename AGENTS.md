@@ -60,17 +60,37 @@ generated and committed; never hand-edit them.
 - **Query** (`system/chatkit-server/psi_query.py`): tiers `match` / `partial`
   (within tolerance on every axis it reports, silent on one) / `near`, plus
   per-investigation coverage and `relaxed` (same conditions, other
-  materials). Categorical filters are hard. **Twin implementation** in
-  `system/site/lib/psi-query.ts`: change both together;
-  `psi-data/query-fixtures.json` pins them to identical output.
-- **Chat** (`system/chatkit-server/`): `psi_tools.py` holds the five tools
+  materials). Categorical filters are hard. `rank()` aggregates match/partial
+  runs per material (n, min, median, max, every contributing run id) within
+  ONE geometry class (`RANKABLE` names which (class, quantity) pairs have
+  enough data — never ranks across classes). `readiness()` reports
+  match/partial/near coverage per geometry class near a named mission
+  atmosphere (`psi_atmospheres.py`: `iss`/`gateway`/`lunar`, each preset's
+  numbers copied from a governed doc and checked verbatim by
+  `tests/test_atmospheres.py`), paired with governed-doc quotes from
+  `psi-data/findings.yaml` (also checked verbatim, by
+  `tests/test_findings.py`). **Twin implementation** of `query()`/`rank()` in
+  `system/site/lib/psi-query.ts` (atmospheres twinned in
+  `psi-atmospheres.ts`): change both together; `psi-data/query-fixtures.json`
+  pins them to identical output. `readiness()` has no TS twin — the
+  dashboard's mission-readiness cards (`system/site/lib/dashboard-data.ts`)
+  compute coverage directly from the twinned `query()` instead, so there is
+  no third reimplementation of the match/partial/near tiers.
+- **Chat** (`system/chatkit-server/`): `psi_tools.py` holds the seven tools
   the model calls (`query_test_runs`, `show_gap_map`,
-  `compare_investigations`, `show_test_details`, `plot_results`), and
-  `psi_widgets.py` builds the widgets. Widget buttons are answered by
-  `main.py` `action()` with no model call. Each tool streams its widget and
-  returns a small summary the model writes 2-4 sentences from. Narrative
-  answers come from the MCP door (`HANDBOOK_MCP_URL`); the PSI tools are local
-  and work without it.
+  `compare_investigations`, `show_test_details`, `plot_results`,
+  `rank_results`, `show_mission_readiness`), and `psi_widgets.py` builds the
+  widgets. Widget buttons are answered by `main.py` `action()` with no model
+  call. Each tool streams its widget and returns a small summary the model
+  writes 2-4 sentences from. Narrative answers come from the MCP door
+  (`HANDBOOK_MCP_URL`); the PSI tools are local and work without it.
+- **Dashboard** (`system/site/app/(home)/page.tsx`): a server-rendered band
+  above the chat — coverage heatmaps per geometry class
+  (`components/dashboard/heatmap.tsx`) and mission-readiness cards
+  (`components/dashboard/readiness-cards.tsx`), both fed by
+  `lib/dashboard-data.ts`. Same O₂/pressure bins and color scale as the
+  chat's gap map (`--heat-0`…`--heat-4` in `app/global.css`), so the two
+  surfaces read as one system.
 - **Deploys**: the site is a static export on GitHub Pages
   (`KSOR_BASE_PATH=/flame-freefall`). The chat backend
   (`flame-freefall-site`) and MCP door (`flame-freefall-mcp`) are Vercel
@@ -97,6 +117,14 @@ generated and committed; never hand-edit them.
   `data-sources/` docs). For a multi-source doc, concatenate its extractions
   into one scratch file and verify against that. `verify.mjs` cannot see
   numbers written as words; count those by hand.
+- **Mission-atmosphere presets and mission-readiness findings are the same
+  rule, enforced by pytest instead of `verify.mjs`.** `psi_atmospheres.py`
+  (ISS/Gateway/Lunar O₂ %/pressure) and `psi-data/findings.yaml` (the
+  governed-doc quotes the readiness view shows beside a coverage gap) each
+  carry a `quote` checked verbatim (whitespace-normalized) against its `doc`
+  by `tests/test_atmospheres.py` / `tests/test_findings.py`. Editing either
+  file's numbers or quotes without updating the source citation fails that
+  test — don't loosen it to make a new preset or finding pass.
 - **Editing a `stable` doc's body forces re-approval**: `generated.at` must
   move past the edit, and `stable` needs an approval no earlier than it. Add a
   sibling draft instead, as `bass-ii-requirements.md` does. Never record an

@@ -21,13 +21,17 @@ from typing import Literal
 from agents import RunContextWrapper, function_tool
 from chatkit.agents import AgentContext
 
+import psi_atmospheres
 import psi_query
 import psi_widgets
 
 GeometryClass = Literal["solid-fuel", "droplet-combustion", "gaseous-flames", "smoke-aerosol"]
+RankableGeometryClass = Literal["solid-fuel", "droplet-combustion", "gaseous-flames"]
 FlowDirection = Literal["opposed", "concurrent", "coflow", "stagnation"]
 YAxis = Literal["flow_cm_s", "pressure_atm"]
 XAxis = Literal["flow_cm_s", "o2_pct", "pressure_atm", "thickness_mm", "droplet_d0_mm"]
+MissionAtmosphere = Literal["iss", "gateway", "lunar"]
+RankDirection = Literal["asc", "desc"]
 
 REPEAT_WINDOW_S = 120
 _recent_calls: dict[tuple[str, str], float] = {}  # (thread id, tool+args) → last call time
@@ -235,4 +239,73 @@ async def plot_results(
                           "suggest widening them — do not invent a range or a test count.", summary, cite_run_ids=False)
 
 
-TOOLS = [query_test_runs, show_gap_map, compare_investigations, show_test_details, plot_results]
+@function_tool(
+    description_override=(
+        "RANK materials within ONE geometry class by a measured result — highest or lowest first. Use for "
+        "'which material burns fastest/slowest', 'rank fuels by...', or any question that names an order. Never "
+        "compares across geometry classes. quantity must fit geometry_class: solid-fuel -> spread_rate; "
+        "droplet-combustion -> burning_rate_k or extinction_diameter; gaseous-flames -> burn_time or "
+        "peak_burner_temp_c. atmosphere: a named mission atmosphere ('iss', 'gateway' for the Lunar Gateway, "
+        "'lunar' for a Lunar surface habitat) — use this when the user names a mission, the ISS, the Gateway, the "
+        "Moon, or Artemis instead of stating O2 %% / pressure atm directly; it sets o2_pct and pressure_atm from "
+        "the governed record. Explicit o2_pct/pressure_atm/flow_cm_s override the atmosphere if both are given."
+    )
+)
+async def rank_results(
+    ctx: RunContextWrapper[AgentContext],
+    geometry_class: RankableGeometryClass,
+    quantity: str,
+    atmosphere: MissionAtmosphere | None = None,
+    o2_pct: float | None = None,
+    pressure_atm: float | None = None,
+    flow_cm_s: float | None = None,
+    fuel_family: str | None = None,
+    direction: RankDirection = "desc",
+) -> str:
+    base = psi_atmospheres.query_for(atmosphere) if atmosphere else {}
+    q = {**base, **_q(o2_pct=o2_pct, pressure_atm=pressure_atm, flow_cm_s=flow_cm_s, fuel_family=fuel_family)}
+    result = psi_query.rank(q, quantity, geometry_class, direction)
+    print(f"[rank_results] {geometry_class} {quantity} {q} dir={direction} -> "
+          f"{result.get('total_ranked', result.get('error'))}")
+    repeat = _is_repeat(ctx, f"rank:{geometry_class}:{quantity}:{direction}", q)
+    if not repeat:
+        await ctx.context.stream_widget(psi_widgets.rank_widget(q, quantity, geometry_class, direction))
+    payload = psi_query.compact_rank(result)
+    if result.get("error"):
+        return _reply(repeat, "Reply in at most 40 words: say this quantity can't be ranked for this geometry "
+                              "class and name what CAN be ranked instead (the \"rankable\" list). Do not invent "
+                              "a ranking.", payload, cite_run_ids=False)
+    return _reply(repeat, "Reply in at most 90 words: name the top few materials in rank order with their median "
+                          "value exactly as given (never compute your own average or rank order) — each is a "
+                          "median over n runs (given per material), not one test's number, so refer to materials "
+                          "by name, never by a run id. Mention at most one 'untested_at_these_conditions' "
+                          "material worth noting.", payload, cite_run_ids=False)
+
+
+@function_tool(
+    description_override=(
+        "Show MISSION READINESS: how much PSI test data exists near a named mission atmosphere (iss, gateway for "
+        "the Lunar Gateway, lunar for a Lunar surface habitat), per geometry class, next to what the governed "
+        "record says about why a gap matters. Use for 'is there data for the Moon/Gateway/34% oxygen', 'are we "
+        "ready for a Lunar atmosphere', or any question about coverage of a mission environment rather than a "
+        "specific fuel or test."
+    )
+)
+async def show_mission_readiness(ctx: RunContextWrapper[AgentContext], atmosphere: MissionAtmosphere) -> str:
+    result = psi_query.readiness(atmosphere)
+    print(f"[show_mission_readiness] {atmosphere} -> "
+          f"{[(c['geometry_class'], c['covered']) for c in result.get('classes', [])]}")
+    repeat = _is_repeat(ctx, "readiness", {"atmosphere": atmosphere})
+    if not repeat:
+        await ctx.context.stream_widget(psi_widgets.readiness_widget(atmosphere))
+    payload = psi_query.compact_readiness(result)
+    return _reply(repeat, "Reply in at most 90 words: say which geometry classes are covered near this "
+                          "atmosphere and which are a gap, exactly as the payload states — a class with 0 match "
+                          "and 0 partial is a gap, say so plainly. If a class has a quoted finding, work its "
+                          "quote or its substance into the sentence about that class. Never invent a safety "
+                          "conclusion beyond what a quote or the coverage numbers state.", payload,
+                  cite_run_ids=False)
+
+
+TOOLS = [query_test_runs, show_gap_map, compare_investigations, show_test_details, plot_results, rank_results,
+         show_mission_readiness]
