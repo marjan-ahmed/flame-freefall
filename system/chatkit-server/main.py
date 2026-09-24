@@ -75,9 +75,10 @@ set_tracing_disabled(True)
 # an object shaped like AsyncOpenAI (duck-typed — it only ever calls
 # .chat.completions.create). Each provider needs its OWN model id (Groq
 # wants "openai/gpt-oss-120b", HF's router wants a full repo id like
-# "Qwen/Qwen2.5-7B-Instruct") — since OpenAIChatCompletionsModel
+# "Qwen/Qwen2.5-72B-Instruct") — since OpenAIChatCompletionsModel
 # binds one model id for its whole lifetime, this rewrites `model` in the
-# call kwargs per provider, tried in order, falling through on a 429.
+# call kwargs per provider, tried in order, falling through on a rate limit
+# OR a bad/unreachable model (see Caveat 3).
 #
 # Caveat 1: Groq's rate-limit error names an ORGANIZATION, not a key — two
 # keys on the same Groq account share the same daily quota (confirmed live
@@ -85,12 +86,19 @@ set_tracing_disabled(True)
 # GROQ_API_KEY_FALLBACK is not real headroom against a quota 429, only
 # against a transient/per-key outage. Once both Groq attempts are
 # exhausted, HF_MODEL_ID is the only tier with independent quota.
-# Caveat 2: HF_MODEL_ID is a much smaller model than gpt-oss-120b, so
-# tool-call triggering and argument filling may be less reliable once this
-# tier is actually reached — confirmed live 2026-09-24 with the previous
-# choice here (meta-llama/Llama-3.1-8B-Instruct): argument filling was
-# weaker in a quick test, and it repeated/contradicted itself in a longer
-# multi-tool-call PSI session. Re-verify after changing this model.
+# Caveat 2: HF's router only serves a model through the providers THIS
+# account has enabled (confirmed live 2026-09-24: this account only has
+# `together` enabled, not `featherless-ai` — meta-llama/Llama-3.1-8B-Instruct
+# routes through together and works, Qwen/Qwen2.5-7B-Instruct's only live
+# provider is featherless-ai and 400s outright as "not supported by any
+# provider you have enabled"). Verify a candidate HF_MODEL_ID with a plain
+# curl against router.huggingface.co before changing this, not just a Hub
+# model-card lookup.
+# Caveat 3: a BadRequestError (wrong/unreachable model id, as above) used to
+# NOT be caught below — only RateLimitError was — so a broken HF_MODEL_ID
+# would crash the whole chat turn instead of degrading, and Groq being
+# exhausted (Caveat 1) makes that the exact moment this tier is needed most.
+# Now caught alongside RateLimitError.
 class _FallbackCompletions:
     def __init__(self, providers: list[tuple[AsyncOpenAI, str]]) -> None:
         self._providers = providers
@@ -100,9 +108,9 @@ class _FallbackCompletions:
         for index, (client, model_id) in enumerate(self._providers):
             try:
                 return await client.chat.completions.create(**{**kwargs, "model": model_id})
-            except openai.RateLimitError as exc:
+            except (openai.RateLimitError, openai.BadRequestError) as exc:
                 last_exc = exc
-                print(f"[llm-fallback] provider {index} ({model_id}) rate-limited, trying next")
+                print(f"[llm-fallback] provider {index} ({model_id}) failed ({type(exc).__name__}), trying next")
         raise last_exc  # type: ignore[misc]
 
 
@@ -122,7 +130,7 @@ class FallbackAsyncOpenAI:
 
 
 GROQ_MODEL_ID = "openai/gpt-oss-120b"
-HF_MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
+HF_MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"
 
 _groq_keys = [os.environ["GROQ_API_KEY"]]
 if fallback_key := os.environ.get("GROQ_API_KEY_FALLBACK"):

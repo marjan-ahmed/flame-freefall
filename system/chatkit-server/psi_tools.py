@@ -54,13 +54,16 @@ def _is_repeat(ctx: RunContextWrapper[AgentContext], name: str, args: dict) -> b
     return repeat
 
 
-def _reply(repeat: bool, instructions: str, payload: dict) -> str:
+def _reply(repeat: bool, instructions: str, payload: dict, cite_run_ids: bool = True) -> str:
     head = ("You already showed this exact widget; do not call the tool again. " if repeat
             else "Widget shown to the user. ")
-    return head + instructions + " Cite run ids in parentheses using the FULL id exactly as given in each " \
-        "result's \"id\" field, e.g. (PSI-25:M18) — never drop the ':M18' part and cite just the dataset " \
-        "(PSI-25) on its own, and never reuse one citation for two different runs; no other citation markup; " \
-        "no tables.\n" + json.dumps(payload, ensure_ascii=False)
+    cite = (" Cite run ids in parentheses using the FULL id exactly as given in each "
+            "result's \"id\" field, e.g. (PSI-25:M18) — never drop the ':M18' part and cite just the dataset "
+            "(PSI-25) on its own, and never reuse one citation for two different runs; no other citation markup; "
+            "no tables." if cite_run_ids else
+            " This payload has no per-run \"id\" field — do not write any parenthetical run-id citation "
+            "(nothing like (PSI-25:M18)) in this reply; no other citation markup; no tables.")
+    return head + instructions + cite + "\n" + json.dumps(payload, ensure_ascii=False)
 
 
 @function_tool(
@@ -166,7 +169,8 @@ async def compare_investigations(
     return _reply(repeat, "Reply in at most 90 words comparing them: which covers the conditions best, what each "
                           "measured, and any caveat. A shared geometry class makes results comparable in kind, not "
                           "interchangeable: name the fuels when they differ, and never call two results directly "
-                          "comparable across different fuels or classes. Mention conflicts if any.", {"columns": payload})
+                          "comparable across different fuels or classes. Mention conflicts if any. Refer to "
+                          "investigations by name.", {"columns": payload}, cite_run_ids=False)
 
 
 @function_tool(
@@ -219,8 +223,7 @@ async def plot_results(
     return _reply(repeat, "Reply in at most 60 words: what the chart shows (quantity, how many tests, the range) — "
                           "describe only what is plotted; do not infer trends the values don't show. If \"tests\" "
                           "is 0 or \"points\" is 0, say plainly there is no plottable data for these filters and "
-                          "suggest widening them — do not invent a range, a test count, or any run id; cite ONLY "
-                          "run ids that literally appear in this payload.", summary)
+                          "suggest widening them — do not invent a range or a test count.", summary, cite_run_ids=False)
 
 
 TOOLS = [query_test_runs, show_gap_map, compare_investigations, show_test_details, plot_results]
