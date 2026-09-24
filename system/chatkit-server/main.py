@@ -58,7 +58,7 @@ from fastapi.responses import StreamingResponse
 from openai.types.responses import EasyInputMessageParam
 
 import psi_widgets
-from chatkit.widgets import Caption, Card, Text
+from chatkit.widgets import Caption, Card, Markdown, Text
 from psi_tools import TOOLS as PSI_TOOLS
 from postgres_store import PostgresChatKitStore
 from store import InMemoryChatKitStore
@@ -158,6 +158,44 @@ handbook_mcp = MCPServerStreamableHttp(
     cache_tools_list=True,
 )
 
+# Deterministic source links for narrative answers: the model was told (in
+# prose, via WITH_TOOLS_INSTRUCTIONS) to name and link its source, and that
+# worked right up until it didn't -- an accurate, fully grounded answer with
+# zero source named anywhere (confirmed live 2026-09-24). An LLM instruction
+# is a request, not a guarantee. This is the guarantee: every search/read
+# result search/read actually returns gets its citation link streamed as a
+# widget by CODE, from the tool's own JSON, independent of what the model
+# writes afterward -- the same principle the PSI widgets already use (the
+# evidence card renders before the model's prose, from the query result
+# directly, not from the model repeating it).
+DOCS_BASE_URL = "https://marjan-ahmed.github.io/flame-freefall/docs"
+_DOC_TITLES: dict[str, tuple[str, str]] = {}  # slug -> (title, heading_path)
+
+
+async def _load_doc_titles() -> None:
+    """One-time prefetch via outline (not the agent) so a citation card can
+    show a real title, not a raw slug. Best-effort: an empty cache just means
+    citation links fall back to a prettified slug, never a missing link."""
+    try:
+        result = await handbook_mcp.call_tool("outline", {"depth": 5})
+        data = json.loads(result.content[0].text)
+        for node in data.get("nodes", []):
+            if node.get("kind") == "document" and node.get("slug") and node.get("heading_path"):
+                _DOC_TITLES[node["slug"]] = (node.get("title") or node["slug"], node["heading_path"])
+        print(f"[doc-titles] cached {len(_DOC_TITLES)} document titles")
+    except Exception as exc:
+        print(f"[doc-titles] prefetch failed, citation links will use slugs: {exc!r}")
+
+
+def _doc_url(stable_id: str) -> str:
+    return f"{DOCS_BASE_URL}/{stable_id.removeprefix('knowledge/')}"
+
+
+def _doc_title(slug: str | None, fallback: str) -> str:
+    if slug and slug in _DOC_TITLES:
+        return _DOC_TITLES[slug][0]
+    return fallback.replace("-", " ").title() if fallback else "source document"
+
 # reasoning_format="hidden" (Groq-specific): without it, gpt-oss-120b's chain
 # of thought comes back as a `reasoning` field, which chatkit-python's
 # stream_agent_response maps into a "workflow" item it never finishes
@@ -217,12 +255,9 @@ WITH_TOOLS_INSTRUCTIONS = BASE_INSTRUCTIONS + (
     "acceptable here (confirmed live 2026-09-24: a failed search call was "
     "followed by a training-knowledge answer, which this record must never do).\n\n"
     "Name the source document by title at least once in every narrative reply "
-    "(e.g. 'per the Spacecraft Materials Fire Safety decadal-survey paper...' "
-    "or 'the BASS-II summary report states...') — every hit's provenance names "
-    "the title; never give a narrative answer, however accurate, with no "
-    "document named at all (confirmed live 2026-09-24: an accurate, fully "
-    "grounded summary named no source anywhere, which is indistinguishable "
-    "from an ungrounded one to the reader).\n\n"
+    "(e.g. 'per the Spacecraft Materials Fire Safety decadal-survey paper...'). "
+    "A clickable link to it is added automatically below your reply — you do "
+    "not need to build or write a URL yourself, just name the document in prose.\n\n"
     "HARD BUDGET: at most 3 tool calls per turn, never repeat a call — "
     "going over causes a real failure (rate limit), not just a slower answer."
 )
@@ -328,6 +363,8 @@ class ToolCallVisibilityHooks(RunHooks):
         ctx: AgentContext = context.context
         result_preview = str(result)[:500]
         print(f"[tool-call] END   {tool.name} -> {result_preview}")
+        if tool.name in ("search", "read"):
+            await self._cite_sources(ctx, tool.name, result)
         if ctx.workflow_item is None:
             return
         call_id = getattr(context, "tool_call_id", None)
@@ -342,6 +379,44 @@ class ToolCallVisibilityHooks(RunHooks):
                 update=WorkflowTaskUpdated(task_index=task_index, task=task),
             )
         )
+
+    async def _cite_sources(self, ctx: AgentContext, tool_name: str, result) -> None:
+        """Stream a clickable source link straight from search/read's own
+        JSON -- see the comment above DOCS_BASE_URL for why this is code,
+        not another prompt instruction."""
+        text = result.get("text") if isinstance(result, dict) else None
+        if not text:
+            return
+        try:
+            data = json.loads(text)
+        except (TypeError, ValueError):
+            return
+        cited: set[str] = getattr(ctx, "_cited_stable_ids", None)
+        if cited is None:
+            cited = set()
+            ctx._cited_stable_ids = cited  # type: ignore[attr-defined]
+        links: list[tuple[str, str]] = []
+        if tool_name == "search" and data.get("ok"):
+            for hit in data.get("hits", []):
+                prov = hit.get("provenance") or {}
+                stable_id = prov.get("stable_id")
+                if not stable_id or stable_id in cited:
+                    continue
+                cited.add(stable_id)
+                links.append((_doc_title(hit.get("slug") or prov.get("slug"), hit.get("slug") or ""), _doc_url(stable_id)))
+        elif tool_name == "read":
+            prov = data.get("provenance") or {}
+            stable_id = prov.get("stable_id")
+            if stable_id and stable_id not in cited:
+                cited.add(stable_id)
+                links.append((data.get("title") or _doc_title(prov.get("slug"), prov.get("slug") or ""), _doc_url(stable_id)))
+        if not links:
+            return
+        body = "\n".join(f"Source: [{title}]({url})" for title, url in links)
+        try:
+            await ctx.stream_widget(Card(children=[Markdown(value=body)]))
+        except Exception as exc:
+            print(f"[doc-citation] stream failed: {exc!r}")
 
 
 tool_call_hooks = ToolCallVisibilityHooks()
@@ -626,6 +701,7 @@ async def lifespan(_app: FastAPI):
         async with handbook_mcp:
             assistant.mcp_servers = [handbook_mcp]
             assistant.instructions = WITH_TOOLS_INSTRUCTIONS
+            await _load_doc_titles()
             yield
     except Exception as exc:
         print(f"[handbook-mcp] connect failed at startup, continuing without corpus tools: {exc}")
