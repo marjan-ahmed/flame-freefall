@@ -177,7 +177,21 @@ _groq_keys = [os.environ["GROQ_API_KEY"]]
 if fallback_key := os.environ.get("GROQ_API_KEY_FALLBACK"):
     _groq_keys.append(fallback_key)
 
-_groq_clients = [AsyncOpenAI(api_key=k, base_url="https://api.groq.com/openai/v1") for k in _groq_keys]
+# max_retries=0 on every client: the openai SDK's OWN retry-with-backoff on
+# 429s runs INSIDE client.chat.completions.create(), before
+# _FallbackCompletions ever gets a chance to move to the next provider --
+# confirmed live 2026-09-24 in production ("Retrying request in 17.000000
+# seconds (retry 1 of 2)" in the Vercel logs), and with gpt-oss-120b back as
+# primary while still rate-limited, that SDK-level sleep-and-retry across
+# multiple provider attempts blew Vercel's 60s function budget outright
+# ("Vercel Runtime Timeout Error: Task timed out after 60 seconds") -- the
+# whole function got killed by the platform before our own fallback logic,
+# or even the except-Exception guard in respond(), ever ran. We want a rate
+# limit to fail INSTANTLY so _FallbackCompletions can try the next provider
+# in milliseconds, not have the SDK silently retry the SAME exhausted one.
+_groq_clients = [
+    AsyncOpenAI(api_key=k, base_url="https://api.groq.com/openai/v1", max_retries=0) for k in _groq_keys
+]
 
 # Every Groq key tried on the primary model before any key is tried on the
 # fallback model -- see Caveat 5 above for why this ordering (not "strong
@@ -188,7 +202,7 @@ _providers: list[tuple[AsyncOpenAI, str]] = (
 )
 if hf_token := os.environ.get("HF_TOKEN"):
     _providers.append(
-        (AsyncOpenAI(api_key=hf_token, base_url="https://router.huggingface.co/v1"), HF_MODEL_ID)
+        (AsyncOpenAI(api_key=hf_token, base_url="https://router.huggingface.co/v1", max_retries=0), HF_MODEL_ID)
     )
 
 chat_client = FallbackAsyncOpenAI(_providers) if len(_providers) > 1 else _providers[0][0]
