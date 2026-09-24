@@ -61,18 +61,18 @@ investigations:
     source_id: flex-tp-2015
   flex-2:
     name: FLEX-2
-    full_name: null
+    full_name: Fundamental Studies in Droplet Combustion and Flame Extinguishment in Microgravity
     psi_id: PSI-68
     geometry_class: droplet-combustion
-    ksor_doc: null
-    source_id: null
+    ksor_doc: knowledge/investigations/droplet-combustion/flex-2
+    source_id: flex-2-srd
   cfi:
     name: CFI
-    full_name: null
+    full_name: Cool Flame Investigation
     psi_id: PSI-39
     geometry_class: droplet-combustion
-    ksor_doc: null
-    source_id: null
+    ksor_doc: knowledge/investigations/droplet-combustion/cfi
+    source_id: cfi-final-report
   cfi-g:
     name: CFI-G
     full_name: null
@@ -92,8 +92,8 @@ investigations:
     full_name: Burning Rate Emulator (ACME)
     psi_id: PSI-20
     geometry_class: gaseous-flames
-    ksor_doc: knowledge/investigations/gaseous-flames/acme
-    source_id: acme-ps-03403
+    ksor_doc: knowledge/investigations/gaseous-flames/acme-bre
+    source_id: acme-bre-final-report
   acme-cld:
     name: ACME CLD Flame
     full_name: Coflow Laminar Diffusion Flame (ACME)
@@ -113,15 +113,15 @@ investigations:
     full_name: Structure and Response of Spherical Diffusion Flames (ACME)
     psi_id: PSI-23
     geometry_class: gaseous-flames
-    ksor_doc: knowledge/investigations/gaseous-flames/acme
-    source_id: acme-ps-03403
+    ksor_doc: knowledge/investigations/gaseous-flames/acme-s-flame
+    source_id: acme-s-flame-final-report
   spice:
     name: SPICE
-    full_name: null
+    full_name: Smoke Point in Co-flow Experiment
     psi_id: PSI-107
     geometry_class: gaseous-flames
-    ksor_doc: null
-    source_id: null
+    ksor_doc: knowledge/investigations/gaseous-flames/spice
+    source_id: spice-final-report
   slice:
     name: SLICE
     full_name: null
@@ -131,15 +131,15 @@ investigations:
     source_id: null
   same:
     name: SAME
-    full_name: null
+    full_name: Smoke Aerosol Measurement Experiment
     psi_id: PSI-102
     geometry_class: smoke-aerosol
-    ksor_doc: null
-    source_id: null
+    ksor_doc: knowledge/investigations/smoke-aerosol/same
+    source_id: same-final-report
   same-r:
     name: SAME-R
-    full_name: null
+    full_name: Smoke Aerosol Measurement Experiment Re-flight
     psi_id: PSI-101
     geometry_class: smoke-aerosol
-    ksor_doc: null
-    source_id: null
+    ksor_doc: knowledge/investigations/smoke-aerosol/same-r
+    source_id: samer-final-report

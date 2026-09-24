@@ -2,10 +2,12 @@
 type: Document
 title: "SPICE: Smoke Point in Co-flow Experiment"
 description: Laminar smoke points of non-buoyant gas-jet diffusion flames in co-flowing air, measured in the ISS Microgravity Science Glovebox in 2009, from the SPICE final report.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 29
 geometry_class: gaseous-flames
 sources:

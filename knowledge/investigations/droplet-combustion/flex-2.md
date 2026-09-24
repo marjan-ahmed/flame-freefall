@@ -2,10 +2,12 @@
 type: Document
 title: "FLEX-2: Fundamental Studies in Droplet Combustion and Flame Extinguishment"
 description: The planned objectives and test-matrix envelope of the FLEX-2 droplet experiments on the ISS, from the FLEX-2 Science Requirements Document (March 2010) — a plan, not a results report.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 25
 geometry_class: droplet-combustion
 sources:

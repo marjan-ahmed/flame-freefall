@@ -2,10 +2,12 @@
 type: Document
 title: "ACME BRE: Burning Rate Emulator"
 description: Gas-fed porous burners that emulate burning condensed materials in quiescent microgravity, tested on the ISS in 2019-2021 in the exploration atmospheres NASA proposed, from the ACME/BRE final report.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 27
 geometry_class: gaseous-flames
 sources:

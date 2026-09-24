@@ -2,10 +2,12 @@
 type: Document
 title: "BASS: Burning and Suppression of Solids"
 description: The first BASS campaign (2012-2013) — solid samples burned in a small flow duct in the ISS Microgravity Science Glovebox — from its science requirements, its 2013 results overview, and the PSI data layout document.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 24
 geometry_class: solid-fuel
 sources:

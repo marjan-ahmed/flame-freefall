@@ -2,10 +2,12 @@
 type: Document
 title: "NASA PSI data behind this record"
 description: What this record holds from NASA's Physical Sciences Informatics (PSI) archive — experimental tables, summary and matrix workbooks, and final reports — and where each is described.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 40
 sources:
   - id: psi-file-inventory

@@ -40,7 +40,14 @@ def citation(repo_root: Path, doc_id: str, source_id: str | None) -> dict:
     if source_id:
         for s in fm.get("sources") or []:
             if s.get("id") == source_id:
-                out.update(source_id=s["id"], title=s.get("title"), url=s.get("resource"))
+                # A resource is a URL where one exists, otherwise a descriptor
+                # ("SPICE final report by ..., distributed in PSI as ...").
+                # Only a URL may become a link; a descriptor is kept as text.
+                resource = s.get("resource") or ""
+                is_url = resource.startswith(("http://", "https://"))
+                out.update(source_id=s["id"], title=s.get("title"),
+                           url=resource if is_url else None,
+                           **({} if is_url else {"descriptor": resource}))
                 break
         else:
             raise LookupError(f"{doc_id} declares no source {source_id!r}")

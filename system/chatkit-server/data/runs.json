@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-24T04:58:05+00:00",
+ "generated_at": "2026-09-24T07:56:09+00:00",
  "generator": "system/psi-ingest",
  "runs": [
   {
@@ -217261,7 +217261,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SAMER_Final 0602 2014.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SAMER_Final 0602 2014",
+     "doc": "knowledge/investigations/smoke-aerosol/same-r",
+     "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+     "doc_status": "stable",
+     "source_id": "samer-final-report",
+     "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
      "url": null
     }
    ],
@@ -218565,7 +218569,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SAMER_Final 0602 2014.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SAMER_Final 0602 2014",
+     "doc": "knowledge/investigations/smoke-aerosol/same-r",
+     "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+     "doc_status": "stable",
+     "source_id": "samer-final-report",
+     "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
      "url": null
     }
    ],
@@ -219637,7 +219645,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SAMER_Final 0602 2014.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SAMER_Final 0602 2014",
+     "doc": "knowledge/investigations/smoke-aerosol/same-r",
+     "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+     "doc_status": "stable",
+     "source_id": "samer-final-report",
+     "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
      "url": null
     }
    ],
@@ -221195,7 +221207,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SAMER_Final 0602 2014.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SAMER_Final 0602 2014",
+     "doc": "knowledge/investigations/smoke-aerosol/same-r",
+     "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+     "doc_status": "stable",
+     "source_id": "samer-final-report",
+     "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
      "url": null
     }
    ],
@@ -221319,7 +221335,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SAMER_Final 0602 2014.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SAMER_Final 0602 2014",
+     "doc": "knowledge/investigations/smoke-aerosol/same-r",
+     "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+     "doc_status": "stable",
+     "source_id": "samer-final-report",
+     "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
      "url": null
     }
    ],
@@ -224307,7 +224327,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SAMER_Final 0602 2014.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SAMER_Final 0602 2014",
+     "doc": "knowledge/investigations/smoke-aerosol/same-r",
+     "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+     "doc_status": "stable",
+     "source_id": "samer-final-report",
+     "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
      "url": null
     }
    ],
@@ -224509,7 +224533,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SAMER_Final 0602 2014.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SAMER_Final 0602 2014",
+     "doc": "knowledge/investigations/smoke-aerosol/same-r",
+     "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+     "doc_status": "stable",
+     "source_id": "samer-final-report",
+     "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
      "url": null
     }
    ],
@@ -227547,7 +227575,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SPICE Final Report 12_2_2012.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SPICE Final Report 12_2_2012",
+     "doc": "knowledge/investigations/gaseous-flames/spice",
+     "doc_title": "SPICE: Smoke Point in Co-flow Experiment",
+     "doc_status": "stable",
+     "source_id": "spice-final-report",
+     "title": "Smoke Point in Co-flow Experiment (SPICE): Laminar Smoke Point Properties of Non-buoyant Round-Jet Diffusion Flames — Final Report",
      "url": null
     }
    ],
@@ -227654,7 +227686,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SPICE Final Report 12_2_2012.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SPICE Final Report 12_2_2012",
+     "doc": "knowledge/investigations/gaseous-flames/spice",
+     "doc_title": "SPICE: Smoke Point in Co-flow Experiment",
+     "doc_status": "stable",
+     "source_id": "spice-final-report",
+     "title": "Smoke Point in Co-flow Experiment (SPICE): Laminar Smoke Point Properties of Non-buoyant Round-Jet Diffusion Flames — Final Report",
      "url": null
     }
    ],
@@ -227761,7 +227797,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SPICE Final Report 12_2_2012.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SPICE Final Report 12_2_2012",
+     "doc": "knowledge/investigations/gaseous-flames/spice",
+     "doc_title": "SPICE: Smoke Point in Co-flow Experiment",
+     "doc_status": "stable",
+     "source_id": "spice-final-report",
+     "title": "Smoke Point in Co-flow Experiment (SPICE): Laminar Smoke Point Properties of Non-buoyant Round-Jet Diffusion Flames — Final Report",
      "url": null
     }
    ],
@@ -227868,7 +227908,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SPICE Final Report 12_2_2012.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SPICE Final Report 12_2_2012",
+     "doc": "knowledge/investigations/gaseous-flames/spice",
+     "doc_title": "SPICE: Smoke Point in Co-flow Experiment",
+     "doc_status": "stable",
+     "source_id": "spice-final-report",
+     "title": "Smoke Point in Co-flow Experiment (SPICE): Laminar Smoke Point Properties of Non-buoyant Round-Jet Diffusion Flames — Final Report",
      "url": null
     }
    ],
@@ -227975,7 +228019,11 @@
      "line": null,
      "via": "psi-data/derived/report-extractions/SPICE Final Report 12_2_2012.md",
      "extraction": "verbatim cell from converted report text",
-     "title": "SPICE Final Report 12_2_2012",
+     "doc": "knowledge/investigations/gaseous-flames/spice",
+     "doc_title": "SPICE: Smoke Point in Co-flow Experiment",
+     "doc_status": "stable",
+     "source_id": "spice-final-report",
+     "title": "Smoke Point in Co-flow Experiment (SPICE): Laminar Smoke Point Properties of Non-buoyant Round-Jet Diffusion Flames — Final Report",
      "url": null
     }
    ],

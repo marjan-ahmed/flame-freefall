@@ -2,10 +2,12 @@
 type: Document
 title: "CFI: Cool Flame Investigation"
 description: Droplet cool-flame experiments on n-dodecane, n-dodecane/iso-dodecane mixtures and farnesane in the ISS Combustion Integrated Rack in 2017, from the CFI science final report.
-status: draft
+status: stable
+generated: { by: "claude-code/opus-5.5", at: 2026-09-24T07:55:18Z }
 ksor:
   audience: [public]
   owner: human:you
+  approval: { by: human:you, at: 2026-09-24T07:55:18Z }
 order: 26
 geometry_class: droplet-combustion
 sources:
