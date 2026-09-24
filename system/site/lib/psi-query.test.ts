@@ -8,14 +8,22 @@ import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { query, type Query } from "./psi-query.ts";
+import { query, rank, type Query } from "./psi-query.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (p: string) => JSON.parse(readFileSync(path.join(root, p), "utf8"));
 const runs = read("psi-data/derived/runs.json").runs;
 const investigations = read("psi-data/derived/investigations.json").investigations;
-const { cases } = read("psi-data/query-fixtures.json") as {
+const { cases, rank_cases } = read("psi-data/query-fixtures.json") as {
   cases: { name: string; query: Query; tolerances: Record<string, number> | null; expect: Record<string, unknown> }[];
+  rank_cases: {
+    name: string;
+    query: Query;
+    quantity: string;
+    geometry_class: string;
+    direction: "asc" | "desc";
+    expect: Record<string, unknown>;
+  }[];
 };
 
 for (const c of cases) {
@@ -35,6 +43,19 @@ for (const c of cases) {
         ]),
       ),
       relaxed: r.relaxed,
+    };
+    assert.deepEqual(got, c.expect);
+  });
+}
+
+for (const c of rank_cases) {
+  test(c.name, () => {
+    const r = rank(runs, investigations, c.query, c.quantity, c.geometry_class, c.direction);
+    if ("error" in r) throw new Error(r.error);
+    const got = {
+      total_ranked: r.total_ranked,
+      rows: r.rows.map((row) => ({ fuel_family: row.fuel_family, n: row.n, min: row.min, median: row.median, max: row.max })),
+      untested: r.untested,
     };
     assert.deepEqual(got, c.expect);
   });

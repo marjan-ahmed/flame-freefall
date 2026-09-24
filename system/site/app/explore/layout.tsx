@@ -15,6 +15,9 @@ export default function Layout({ children }: { children: ReactNode }) {
           </Link>
           <div className="flex flex-wrap gap-4">
             <Link href="/" className="text-muted-foreground hover:text-foreground">
+              Home
+            </Link>
+            <Link href="/chat/" className="text-muted-foreground hover:text-foreground">
               Ask the copilot
             </Link>
             <Link href="/explore/" className="font-medium text-foreground">

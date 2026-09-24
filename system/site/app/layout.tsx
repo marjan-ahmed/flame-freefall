@@ -13,6 +13,10 @@ import KsorSearchDialog from "@/components/search-dialog";
 // if the project wants a specific face.
 
 export const metadata: Metadata = {
+  // Resolves relative openGraph/twitter image URLs (e.g. the home page's
+  // "icon.png") against the site's one published address, in dev too —
+  // without it Next falls back to localhost and warns on every build.
+  metadataBase: new URL("https://marjan-ahmed.github.io/flame-freefall/"),
   title: {
     default: appTitle,
     template: `%s | ${appTitle}`,

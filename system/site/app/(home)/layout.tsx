@@ -1,18 +1,21 @@
-import Script from "next/script";
+import type { ReactNode } from "react";
 
-// The root `/` is a full-screen ChatKit interface, not the record's cover: no
-// navbar, no search, no theme switch, no docs chrome — a deliberate product
-// choice (2026-09-22), overriding the front-door design this route group
-// carried before. The chatkit.js web component is loaded only here, not in
-// the root layout, since nothing outside this route uses it.
+import { SiteFooter } from "@/components/landing/site-footer";
+import { SiteHeader } from "@/components/landing/site-header";
+import { appTitle } from "@/lib/shared";
+
+// The root `/` is the landing page (2026-09-25 decision, replacing the
+// full-screen ChatKit interface this route group carried before): a judge or
+// researcher lands somewhere that explains what the product is and offers
+// three clear destinations — the AI assistant (now at /chat), the Test-data
+// Explorer, and the System of Record — rather than an empty chat composer.
+// No chatkit.js here: nothing on this page loads the widget.
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
-    <>
-      <Script
-        src="https://cdn.platform.openai.com/deployments/chatkit/chatkit.js"
-        strategy="afterInteractive"
-      />
-      {children}
-    </>
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <SiteHeader title={appTitle} />
+      <main className="flex-1">{children}</main>
+      <SiteFooter title={appTitle} />
+    </div>
   );
 }

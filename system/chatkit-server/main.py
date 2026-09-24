@@ -287,6 +287,13 @@ BASE_INSTRUCTIONS = (
     "- compare_investigations: comparing investigations side by side.\n"
     "- show_test_details: one named test (id like PSI-25:M18).\n"
     "- plot_results: a chart of a measured result against a condition.\n"
+    "- rank_results: 'which material is fastest/slowest/highest/lowest', "
+    "'rank fuels by...' — never for a plain lookup. Pass atmosphere='iss'/"
+    "'gateway'/'lunar' when the user names a mission, the ISS, the Gateway, "
+    "the Moon, or Artemis instead of stating O2 % / pressure atm.\n"
+    "- show_mission_readiness: 'is there data for the Moon/Gateway/34% "
+    "oxygen', 'are we ready for a Lunar atmosphere' — coverage of a whole "
+    "mission environment, not one fuel or test.\n"
     "Then write the short summary the tool asks for, citing run ids. Say "
     "plainly when there is no test at the requested conditions. Never state "
     "a number that is not in a tool result, never average across tests, and "
@@ -675,6 +682,19 @@ def _action_widget(kind: str, payload: dict, site: str | None = None):
         return psi_widgets.results_widget(q, quantity, x)
     if kind == "test" and isinstance(payload.get("id"), str):
         return psi_widgets.test_widget(payload["id"], site=site)
+    if kind == "rank":
+        quantity = payload.get("quantity") if isinstance(payload.get("quantity"), str) else None
+        geometry_class = payload.get("geometry_class")
+        direction = payload.get("direction") if payload.get("direction") in ("asc", "desc") else "desc"
+        if not quantity or geometry_class not in psi_widgets.psi_query.RANKABLE:
+            return None
+        q2 = {k: v for k, v in q.items() if k != "geometry_class"}
+        return psi_widgets.rank_widget(q2, quantity, geometry_class, direction)
+    if kind == "readiness":
+        atmosphere = payload.get("atmosphere")
+        if not isinstance(atmosphere, str) or atmosphere not in psi_widgets.psi_atmospheres.ATMOSPHERES:
+            return None
+        return psi_widgets.readiness_widget(atmosphere)
     return None
 
 

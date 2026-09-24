@@ -238,6 +238,136 @@ function coverage(
     });
 }
 
+// Which (geometry class, quantity) pairs have enough numeric runs to rank —
+// twin of RANKABLE in psi_query.py. Keep both in sync.
+export const RANKABLE: Record<string, string[]> = {
+  "solid-fuel": ["spread_rate"],
+  "droplet-combustion": ["burning_rate_k", "extinction_diameter"],
+  "gaseous-flames": ["burn_time", "peak_burner_temp_c"],
+};
+
+/** A single number to rank by: the stated value, else a range's midpoint,
+ * else the median of several stated values — twin of _outcome_value() in
+ * psi_query.py. A text-only outcome (no `measure`) returns null. */
+function outcomeValue(o: import("./psi-types").Outcome): number | null {
+  const m = o.measure;
+  if (!m) return null;
+  if (m.value !== undefined && m.value !== null) return m.value;
+  if (m.min !== undefined && m.max !== undefined) return (m.min + m.max) / 2;
+  if (m.values?.length) {
+    const vs = [...m.values].sort((a, b) => a - b);
+    const n = vs.length;
+    return n % 2 ? vs[(n - 1) / 2] : (vs[n / 2 - 1] + vs[n / 2]) / 2;
+  }
+  return null;
+}
+
+export type RankRow = {
+  fuel_family: string;
+  n: number;
+  min: number;
+  max: number;
+  median: number;
+  unit?: string;
+  runs: string[];
+  investigations: string[];
+};
+
+export type RankResult =
+  | { error: string; rankable: string[] }
+  | {
+      query: Query;
+      quantity: string;
+      geometry_class: string;
+      direction: "asc" | "desc";
+      rows: RankRow[];
+      total_ranked: number;
+      untested: string[];
+      coverage: Coverage[];
+    };
+
+/** Rank materials within ONE geometry class by a measured quantity, at
+ * conditions given by q. TypeScript twin of psi_query.rank() — both are
+ * pinned to psi-data/query-fixtures.json's rank_cases. */
+export function rank(
+  runs: SlimRun[],
+  investigations: Investigation[],
+  q: Query,
+  quantity: string,
+  geometryClass: string,
+  direction: "asc" | "desc" = "desc",
+  limit = 10,
+): RankResult {
+  const rankable = RANKABLE[geometryClass] ?? [];
+  if (!rankable.includes(quantity)) {
+    return { error: `${JSON.stringify(quantity)} is not a rankable result for ${JSON.stringify(geometryClass)}`, rankable };
+  }
+  const invs: InvIndex = Object.fromEntries(investigations.map((i) => [i.id, i]));
+  const fullQ: Query = { ...q, geometry_class: geometryClass };
+  const result = query(runs, investigations, fullQ);
+
+  const byMaterial = new Map<string, { run_id: string; investigation: string; value: number; unit?: string }[]>();
+  const targetFlow = (q as Record<string, unknown>).flow_cm_s !== undefined ? Number((q as Record<string, unknown>).flow_cm_s) : 0.0;
+  for (const tier of ["match", "partial"] as const) {
+    for (const v of result[tier]) {
+      // A run may report this quantity at several flow settings; one
+      // contribution per run, the entry nearest the requested flow (0 if
+      // none given) — tie-broken by the flow value itself, order-independent
+      // so this never has to rely on matching Python's outcomes ordering.
+      const candidates = (v.run.outcomes ?? []).filter((o) => o.quantity === quantity && outcomeValue(o) !== null);
+      if (!candidates.length) continue;
+      const flowOf = (o: (typeof candidates)[number]) => (o.at?.flow_cm_s ?? targetFlow) as number;
+      const chosen = candidates.reduce((best, o) => {
+        const d = Math.abs(flowOf(o) - targetFlow);
+        const bd = Math.abs(flowOf(best) - targetFlow);
+        return d < bd || (d === bd && flowOf(o) < flowOf(best)) ? o : best;
+      });
+      const val = outcomeValue(chosen)!;
+      const fam = (catValue(v.run, "fuel_family", invs) ?? "unassigned") as string;
+      const list = byMaterial.get(fam) ?? [];
+      list.push({ run_id: v.run.id, investigation: invs[v.run.investigation].name, value: val, unit: chosen.measure?.unit });
+      byMaterial.set(fam, list);
+    }
+  }
+
+  const rows: RankRow[] = [];
+  for (const [fam, entries] of byMaterial) {
+    const vals = entries.map((e) => e.value).sort((a, b) => a - b);
+    const n = vals.length;
+    const median = n % 2 ? vals[(n - 1) / 2] : (vals[n / 2 - 1] + vals[n / 2]) / 2;
+    rows.push({
+      fuel_family: fam,
+      n,
+      min: Math.round(vals[0] * 10000) / 10000,
+      max: Math.round(vals[n - 1] * 10000) / 10000,
+      median: Math.round(median * 10000) / 10000,
+      unit: entries[0].unit,
+      runs: entries.map((e) => e.run_id).slice(0, 8),
+      investigations: [...new Set(entries.map((e) => e.investigation))].sort(cmp),
+    });
+  }
+  rows.sort((a, b) => (direction === "desc" ? b.median - a.median : a.median - b.median) || cmp(a.fuel_family, b.fuel_family));
+
+  const rankedFamilies = new Set(rows.map((r) => r.fuel_family));
+  const allFamilies = new Set(
+    runs
+      .filter((r) => invs[r.investigation].geometry_class === geometryClass)
+      .map((r) => (catValue(r, "fuel_family", invs) ?? "unassigned") as string),
+  );
+  const untested = [...allFamilies].filter((f) => !rankedFamilies.has(f)).sort(cmp);
+
+  return {
+    query: fullQ,
+    quantity,
+    geometry_class: geometryClass,
+    direction,
+    rows: rows.slice(0, limit),
+    total_ranked: rows.length,
+    untested,
+    coverage: result.coverage,
+  };
+}
+
 /** The query as URL search params (what the copilot's "Open in Explorer" link carries). */
 export function queryFromParams(p: URLSearchParams): Query {
   const q: Query = {};

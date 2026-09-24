@@ -5,8 +5,11 @@
 <h1 align="center">Flame Freefall</h1>
 
 <p align="center">
-  A governed, citation-backed record of NASA's microgravity combustion research —
-  and an AI assistant that answers only from it, and says so when it can't.
+  Fire behaves differently without gravity — and the atmospheres proposed for the Moon and
+  the Lunar Gateway are more flammable than anything NASA certifies materials against today.
+  This turns two decades of NASA's microgravity combustion data into a governed, citation-backed
+  record that shows exactly where the evidence reaches, where it doesn't, and what NASA's own
+  documents say those gaps mean for crew safety.
 </p>
 
 <p align="center">
@@ -17,27 +20,42 @@
 </p>
 
 <p align="center">
-  <strong><a href="https://marjan-ahmed.github.io/flame-freefall/">Try the assistant →</a></strong>
+  <strong><a href="https://marjan-ahmed.github.io/flame-freefall/">Open the dashboard →</a></strong>
   &nbsp;·&nbsp;
   <a href="https://marjan-ahmed.github.io/flame-freefall/docs/">Browse the governed record →</a>
 </p>
 
 ---
 
-## The problem
+<!-- Dashboard screenshot: system/site/app/(home)/page.tsx after `npm run build` —
+     the coverage heatmaps and mission-readiness cards, above the chat. -->
+<p align="center">
+  <em>The home page leads with this: where the data reaches (a coverage heatmap per
+  geometry class, O₂ × pressure), and whether it reaches the atmospheres proposed for
+  the ISS, the Lunar Gateway and a Lunar surface habitat — before anyone types a
+  question.</em>
+</p>
 
-NASA has run microgravity combustion investigations for two decades (BASS, BASS-II,
-SAFFIRE, FLEX, CFI, ACME, SPICE, SAME and more), and the data sits in NASA's Physical
-Sciences Informatics (PSI) archive. Each investigation was published separately:
-different teams, table layouts, units and years, with no shared schema. Nothing is
-missing, but nothing is comparable either. Answering "what do all of these experiments
-say about 15% O₂, 10 cm/s, PMMA?" means a person reading report after report and
-re-typing numbers into one table by hand, and that work happens today inside active
-NASA-funded research.
+## Why this matters
 
-This project turns that question into a five-second chat message. The answer comes
-with every test run at those conditions, the ones that come close, and what nobody has
-tested, and every number traces back to its PSI table line or report page.
+Spacecraft materials are certified today (NASA-STD-6001B) at 20.9% O₂ and 1
+atmosphere. The atmospheres NASA has proposed for exploration missions run as high
+as 34% oxygen at reduced pressure — and NASA's own decadal-survey papers say plainly
+that "the new exploration atmospheres of up to 34% oxygen will likely require the
+retest of many materials." This project doesn't just store that sentence — it puts a
+number next to it: for the Lunar-habitat atmosphere, **solid-fuel combustion data
+covers zero tests**, while gaseous-flame data covers dozens, computed live from the
+1,948-record test table, not asserted.
+
+Ask it a question and it ranks materials by a measured result within one comparable
+class ("which solid fuels spread fastest near a Lunar atmosphere?"), shows exactly
+which mission atmospheres the evidence reaches, and cites the PSI table line or NASA
+report behind every number — never the model's own words. This generalizes past
+combustion, too: the same governed-corpus-plus-computed-coverage pattern applies to
+any NASA PSI domain, and the same certification question (does ground-test data
+cover the atmosphere a mission will actually use?) applies anywhere materials are
+qualified for an oxygen-enriched environment — hyperbaric medicine and submarines
+included, not just spacecraft.
 
 ## What this is
 
@@ -54,32 +72,52 @@ Three things, built as one product:
   against its source's text, gaps are recorded as open questions rather than filled by
   inference, and nothing publishes without a `draft → stable` approval carrying a named
   approver and a timestamp.
-- **A research assistant.** A full-screen chat that answers only through tools, never
-  from the model's own training data. Test-data questions render **interactive
-  widgets** in the conversation: an evidence list, a gap map, a side-by-side
-  comparison, per-test details and results charts. Their buttons let you steer without
-  retyping. Narrative questions go to the governed record over the
+- **A research assistant and a dashboard.** The home page opens on a coverage
+  heatmap and mission-readiness cards — computed, glanceable, no typing needed —
+  above a full-screen chat that answers only through tools, never from the model's
+  own training data. Test-data questions render **interactive widgets**: an evidence
+  list, a gap map, a **ranking** of materials by a measured result, a **mission
+  readiness** view, a side-by-side comparison, per-test details and results charts.
+  Narrative questions go to the governed record over the
   [Model Context Protocol](https://modelcontextprotocol.io).
 
 > [!NOTE]
 > This is not a wrapped LLM with a system prompt telling it to "be accurate." Every
-> number on screen comes from the data inside a widget; the model only writes a short
-> summary of what the tool returned and is told never to retype or merge values. An
-> empty result ("no test at these conditions") is shown as an answer, not papered
-> over. Citations and abstentions work the same way: a source link is built straight
-> from a tool's own JSON and streamed independently of the model's prose, and a
-> genuinely failed lookup forces the "I can't check that right now" reply in code —
-> so a weaker or unlucky model call can't cite a source, or a run id, that was never
-> actually returned.
+> number on screen — in the dashboard, in a ranking, in a mission-readiness card, in
+> an evidence list — comes from the data or a verbatim-checked quote from a governed
+> document; the model only writes a short summary of what a tool returned and is told
+> never to retype or merge values. An empty result ("no test at these conditions", "no
+> data near this atmosphere") is shown as an answer, not papered over. A ranking is
+> computed in code (median, min–max, every contributing run id) and never invented by
+> the model; a mission-readiness finding is a citation checked verbatim against its
+> source document by an automated test, not free text. Citations and abstentions work
+> the same way: a source link is built straight from a tool's own JSON and streamed
+> independently of the model's prose, and a genuinely failed lookup forces the "I
+> can't check that right now" reply in code — so a weaker or unlucky model call can't
+> cite a source, a run id, or a ranking that was never actually returned.
 
 ## For NASA researchers
 
+- **The dashboard, first.** Coverage heatmaps (O₂ × pressure) per geometry class,
+  with the ISS, Lunar Gateway and Lunar-habitat atmospheres marked on them, and
+  mission-readiness cards showing which classes are covered near each — all computed
+  at build time from the run table, none of it typed in by hand.
 - Ask by conditions: *"What do all the experiments say about PMMA burning at 15% O₂
   with a 10 cm/s flow?"* The answer is in tiers:
   - **At conditions**: every test that reports all of your conditions within tolerance.
   - **Partial**: tests that match what they report but are silent on one of your
     conditions (e.g. BASS-II rod tests at ~15% O₂ whose flow isn't recorded in cm/s).
   - **Nearest**: the closest remaining tests, with what each one measured.
+- **Rank materials** within one geometry class by a measured result — flame spread
+  rate, burning-rate constant, extinction diameter, burn time, peak burner
+  temperature — highest or lowest first, at conditions you state or a named mission
+  atmosphere (`iss`, `gateway`, `lunar`). Every row keeps its n, median, range and
+  every contributing run id; materials never tested at those conditions are listed,
+  not silently dropped. Never ranks across geometry classes — a solid and a droplet
+  are not comparable in kind.
+- **Mission readiness**: for a named atmosphere, how many tests exist near it in each
+  geometry class, the nearest tested conditions if none do, and a verbatim quote from
+  the governed record on why that gap matters where one exists.
 - **Gap map**: a grid of O₂ × flow (or pressure) bands, shaded by how many tests were
   run in each cell. Empty cells are conditions nobody has tested; your target is
   outlined.
@@ -97,17 +135,21 @@ Three things, built as one product:
 ## For evaluators and judges
 
 - **[Try it live](https://marjan-ahmed.github.io/flame-freefall/)** — no setup, no
-  login.
-- What's actually novel isn't the chat UI. It's three things:
+  login. The dashboard is the first thing you see.
+- What's actually novel isn't the chat UI. It's four things:
   - **The data.** 19 investigations' tables normalized into one queryable record,
     with the raw cell kept beside every value.
   - **Honest answers.** Match, partial and near tiers with explicit coverage gaps, so
     "nobody has tested this" is an answer, and source disagreements are shown, not
     hidden.
+  - **Ranking and readiness, computed, not asserted.** A material ranking is a
+    median over every contributing run, not a guess; a mission-readiness gap is a
+    match/partial count of zero, not a feeling — and the "why it matters" text beside
+    it is a citation, checked against its source by a test, never generated.
   - **Architecture over prompting.** The assistant can't state a number the data
     didn't return, because numbers live in the widgets, not in the model's prose.
-    The same rule holds for citations, gaps and abstentions — enforced in code
-    against every reply, not left to an instruction the model might ignore.
+    The same rule holds for citations, gaps, rankings and abstentions — enforced in
+    code against every reply, not left to an instruction the model might ignore.
 - The corpus carries a formal governance model (audiences, approval authorities, an
   append-only takedown ledger) that a wiki or a shared doc doesn't have.
 - Three independently deployed services, wired together over HTTP and MCP — see
@@ -129,7 +171,7 @@ every coding agent working in this repository reads that file first.
                                   ▼
                  ┌──────────────────────────────────┐
                  │  GitHub Pages — static export      │   Next.js 16 · React 19
-                 │  marjan-ahmed.github.io/            │   ChatKit UI, record pages,
+                 │  marjan-ahmed.github.io/            │   dashboard, ChatKit UI, record pages,
                  │  flame-freefall/                    │   /explore (same query, in-browser)
                  └────────────────┬─────────────────┘
                                   │ POST /chatkit  (messages + widget button actions)
@@ -139,7 +181,7 @@ every coding agent working in this repository reads that file first.
                  │  flame-freefall-site.vercel.app    │     records)          report tables,         reports,
                  │  FastAPI · openai-agents SDK       │                       verify extractions)    workbooks)
                  │  gpt-oss → qwen → HF fallback      │
-                 │  5 PSI tools → ChatKit widgets     │
+                 │  7 PSI tools → ChatKit widgets     │
                  └────────────────┬─────────────────┘
                                   │ MCP: search · read  (narrative questions)
                                   ▼
@@ -166,6 +208,21 @@ service redeploys and fails independently of the others. See
 
 ## Features
 
+- **A computed dashboard, not a mockup.** The home page's coverage heatmaps and
+  mission-readiness cards are server-rendered at build time from
+  `psi-data/derived/*.json`, using the exact same query algorithm (`query()`,
+  TypeScript-twinned and golden-fixture-pinned) the chat and Explorer use — not a
+  third, drifting reimplementation.
+- **Ranking, computed in code.** `psi_query.rank()` aggregates every match/partial
+  run's measured value per material (n, min, median, max, every contributing run id)
+  within one geometry class, at conditions you state or a named mission atmosphere.
+  A TypeScript twin backs an Explorer ranking view; golden fixtures pin both to
+  identical output.
+- **Mission readiness, cited.** `psi_query.readiness()` computes match/partial/near
+  coverage per geometry class near a named atmosphere (ISS, Lunar Gateway, Lunar
+  surface habitat — each preset's O₂ %/pressure copied from a governed document and
+  checked verbatim by a test); `psi-data/findings.yaml` pairs a gap with a verbatim
+  quote from the governed record on why it matters, also checked verbatim by a test.
 - **Governed knowledge, not a wiki.** Every document carries `draft`/`stable`
   status, a named approver, and provenance (`generated.by`, `generated.at`).
   Withdrawals go through an append-only ledger a door checks on every request.
@@ -190,14 +247,14 @@ service redeploys and fails independently of the others. See
   report text before it is used. Where the PSI table and a report disagree
   (8 cases, e.g. Saffire-1 thickness 0.37 cm vs 0.37 mm), both values are kept
   and flagged — never silently resolved.
-- **Evidence in widgets, not generated numbers.** Five tools render ChatKit
-  widgets: evidence list, gap map, side-by-side comparison, test details and
-  results chart. Every value carries its PSI file line or report table, and the
-  model only writes a short summary around it. Widget buttons ("Gap map",
-  "Compare investigations", "Details"…) are answered by the server directly, with
-  no model call. The static **Test-data explorer** (`/explore`) runs the same query
-  in the browser; a TypeScript twin of the Python query is held to the same golden
-  test cases.
+- **Evidence in widgets, not generated numbers.** Seven tools render ChatKit
+  widgets: evidence list, gap map, ranking, mission readiness, side-by-side
+  comparison, test details and results chart. Every value carries its PSI file line
+  or report table, and the model only writes a short summary around it. Widget
+  buttons ("Gap map", "Compare investigations", "Details"…) are answered by the
+  server directly, with no model call. The static **Test-data explorer**
+  (`/explore`) runs the same query in the browser; a TypeScript twin of the Python
+  query and ranking logic is held to the same golden test cases.
 - **Resilient by design.** Multi-provider LLM fallback (two Groq-hosted models,
   then Hugging Face) on rate limits, a temporarily unreachable MCP door
   degrades the assistant to "I can't look that up right now" instead of
@@ -221,7 +278,8 @@ service redeploys and fails independently of the others. See
 
 Folder layout encodes comparability: two investigations are only honestly
 comparable if they share a geometry class, so that's how the record is organized,
-not by publication date or program name.
+not by publication date or program name — and it's the same rule the ranking
+feature enforces in code, never ranking across classes.
 
 All 20 documents are approved (`stable`) and published on the site, each with a
 summary tab. Together they cite every report, table and workbook in
@@ -237,8 +295,9 @@ CFI, FLEX-2, ACME BRE and ACME s-Flame.
 
 The test data itself lives in `psi-data/`, which has its own
 [README](psi-data/README.md): `raw/` holds the files exactly as downloaded from PSI,
-`derived/` the generated run table, report extractions and inventory, and
-`extracted/` the report values pulled per test.
+`derived/` the generated run table, report extractions and inventory, `extracted/`
+the report values pulled per test, and `findings.yaml` the governed-doc quotes the
+mission-readiness view cites.
 
 ## Deployment
 
@@ -276,11 +335,11 @@ uv run pytest            # ingest invariants: every row accounted for, every val
 cd system/chatkit-server
 uv sync
 uv run uvicorn main:app --reload --port 8000    # the chat backend
-GROQ_API_KEY=dummy uv run pytest                # query + widget tests (no network)
+GROQ_API_KEY=dummy uv run pytest                # query, ranking, readiness + widget tests (no network)
 ```
 
 ```sh
-npm --prefix system/site run test:psi           # the in-browser query matches the Python one
+npm --prefix system/site run test:psi           # the in-browser query/ranking matches the Python one
 npm run check                                   # the record's format checker (what CI runs)
 ```
 

@@ -39,6 +39,7 @@ from chatkit.widgets import (
     Title,
 )
 
+import psi_atmospheres
 import psi_query
 
 # Fallback only; each request normally supplies its own site (see explorer_url).
@@ -817,3 +818,133 @@ def results_summary(q: dict, quantity: str | None = None, x_axis: str = "flow_cm
             "range": [min(p["lo"] for p in pts), max(p["hi"] for p in pts)] if pts else None,
             "unit": next((p["unit"] for p in pts if p["unit"]), None),
             "other_results_available": list(d["available"])}
+
+
+# ── 6. ranking ───────────────────────────────────────────────────────────────
+# Materials ranked by a measured result, within ONE geometry class (never
+# across classes — folder = geometry class = comparability, see AGENTS.md).
+# psi_query.rank() does the aggregation; this only draws it.
+
+RANK_BAR_MAX = 220
+
+
+def rank_widget(q: dict, quantity: str, geometry_class: str, direction: str = "desc", limit: int = 10) -> Card:
+    r = psi_query.rank(q, quantity, geometry_class, direction, limit)
+    qlabel = QUANTITY_LABEL.get(quantity, quantity.replace("_", " "))
+    gc_label = GEOMETRY_LABEL.get(geometry_class, geometry_class)
+    children = [Title(value=f"{qlabel}, ranked by material", size="md"),
+                Caption(value=f"{gc_label} · {query_title(q) if q else 'no conditions given'}")]
+    full_q = {**q, "geometry_class": geometry_class}
+
+    if r.get("error"):
+        children.append(Text(value=r["error"], size="sm", weight="semibold"))
+        if r.get("rankable"):
+            children.append(Caption(value="Rankable results in this class: "
+                                          + ", ".join(QUANTITY_LABEL.get(x, x.replace("_", " ")) for x in r["rankable"]),
+                                    size="sm"))
+        children += [Divider(spacing=2), nav_buttons(full_q)]
+        return Card(size="full", children=children)
+
+    rows = r["rows"]
+    if not rows:
+        children.append(Text(value="No test at these conditions reports this result for any material.", size="sm"))
+    else:
+        top_val = max(row["median"] for row in rows) or 1.0
+        for i, row in enumerate(rows, start=1):
+            unit = f" {row['unit']}" if row.get("unit") else ""
+            bar_w = max(6, round(RANK_BAR_MAX * row["median"] / top_val)) if top_val else 6
+            children.append(Row(gap=2, align="center", wrap="wrap", children=[
+                Box(width=22, children=[Caption(value=f"{i}.", size="sm", color="tertiary")]),
+                Col(gap=1, flex=1, minWidth=180, children=[
+                    Row(gap=2, align="center", wrap="wrap", children=[
+                        Text(value=row["fuel_family"], size="sm", weight="semibold"),
+                        Badge(label=f"n={row['n']}", color="secondary", size="sm"),
+                        *([Badge(label=iv, color="secondary", variant="outline", size="sm") for iv in row["investigations"][:2]]),
+                    ]),
+                    Box(width=bar_w, height=10, radius="sm", background=PALETTE[(i - 1) % len(PALETTE)]),
+                    Caption(value=f"median {_fmt(row['median'])}{unit} · range {_fmt(row['min'])}–{_fmt(row['max'])}{unit}",
+                            size="sm", color="tertiary"),
+                ]),
+                Button(label="Evidence", size="xs", variant="ghost",
+                       onClickAction=action("evidence", q={**full_q, "fuel_family": row["fuel_family"]})),
+            ]))
+        children.append(Caption(value=f"Ranked by median {qlabel.lower()} across tests at these conditions; "
+                                      f"each row lists every contributing run, never an average across materials.",
+                                size="sm", color="tertiary"))
+    if r.get("untested"):
+        shown = r["untested"][:8]
+        more = len(r["untested"]) - len(shown)
+        children.append(Caption(value=f"Not tested at these conditions: {', '.join(shown)}"
+                                      + (f" (+{more} more)" if more > 0 else ""), size="sm", color="warning"))
+    children += [Divider(spacing=2), nav_buttons(full_q)]
+    return Card(size="full", children=children)
+
+
+def rank_summary(q: dict, quantity: str, geometry_class: str, direction: str = "desc") -> dict:
+    return psi_query.compact_rank(psi_query.rank(q, quantity, geometry_class, direction))
+
+
+# ── 7. mission readiness ─────────────────────────────────────────────────────
+# How much of a named mission atmosphere the PSI data actually covers, per
+# geometry class — the coverage counts are computed by psi_query.readiness();
+# every interpretive line beside them is a verbatim quote from a governed doc
+# (psi-data/findings.yaml, checked by tests/test_findings.py). Nothing here
+# states a safety conclusion itself.
+
+DOCS_BASE_URL = "https://marjan-ahmed.github.io/flame-freefall/docs"
+
+
+def _doc_url(stable_id: str) -> str:
+    return f"{DOCS_BASE_URL}/{stable_id.removeprefix('knowledge/')}"
+
+
+def readiness_widget(atm_id: str) -> Card:
+    r = psi_query.readiness(atm_id)
+    if r.get("error"):
+        return Card(children=[Text(value=r["error"], size="sm", weight="semibold"),
+                              Caption(value="Known atmospheres: " + ", ".join(r["known"]), size="sm")])
+    atm = r["atmosphere"]
+    general_findings = [f for f in r["findings"] if f.get("geometry_class") is None]
+    children = [
+        Title(value=f"Mission readiness: {atm['label']}", size="md"),
+        Caption(value=f"O₂ {_fmt(atm['o2_pct'])}% · pressure {_fmt(atm['pressure_atm'])} atm "
+                      f"(cell {atm['pressure_source_value']})"),
+        Markdown(value=f"Source: [{atm['doc_title']}]({_doc_url(atm['doc'])}) — “{atm['quote']}”"),
+    ]
+    for f in general_findings:
+        children.append(Caption(value=f"“{f['quote']}” — {f['doc_title']}", size="sm", color="tertiary"))
+    children.append(Divider(spacing=2))
+
+    for c in r["classes"]:
+        gc_label = GEOMETRY_LABEL.get(c["geometry_class"], c["geometry_class"])
+        lines = [Row(gap=2, align="center", children=[
+            Text(value=gc_label, size="sm", weight="semibold"),
+            Badge(label="covered" if c["covered"] else "GAP: not tested here",
+                  color="success" if c["covered"] else "danger"),
+        ]), Caption(value=f"{c['match']} at conditions · {c['partial']} partial", size="sm")]
+        n = c["nearest_tested"]
+        if n:
+            o2 = f"{_fmt(n['o2_pct'])}%" if n["o2_pct"] is not None else "O₂ not reported"
+            p = f"{_fmt(n['pressure_atm'])} atm" if n["pressure_atm"] is not None else "pressure not reported"
+            lines.append(Caption(value=f"Nearest tested: {o2}, {p} ({n['tier']}, {n['investigation']})",
+                                 size="sm", color="tertiary"))
+        if c["quantities_available"]:
+            lines.append(Caption(value="Measured here: " + ", ".join(
+                QUANTITY_LABEL.get(q, q.replace("_", " ")) for q in c["quantities_available"][:5]), size="sm"))
+        for f in r["findings"]:
+            if f.get("geometry_class") == c["geometry_class"]:
+                lines.append(Caption(value=f"“{f['quote']}” — {f['doc_title']}", size="sm",
+                                     color="warning" if not c["covered"] else "tertiary"))
+        lines.append(Button(label="Evidence at these conditions", size="xs", variant="outline",
+                            onClickAction=action("evidence", q={**r["query"], "geometry_class": c["geometry_class"]})))
+        children.append(Col(gap=1, padding=2, radius="md", border={"size": 1, "color": "subtle"}, children=lines))
+
+    children += [Divider(spacing=2), Caption(value="Coverage is computed from data/runs.json; quotes above are "
+                                                    "verbatim from the governed record, never generated.",
+                                              size="sm", color="tertiary"),
+                 Row(gap=2, wrap="wrap", children=[
+                     Button(label=psi_atmospheres.ATMOSPHERES[other]["label"], size="sm", variant="soft",
+                            onClickAction=action("readiness", atmosphere=other))
+                     for other in psi_atmospheres.ATMOSPHERES if other != atm_id
+                 ])]
+    return Card(size="full", children=children)

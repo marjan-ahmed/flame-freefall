@@ -1,0 +1,74 @@
+# Governed statements paired with the Mission Readiness view's computed test
+# coverage (system/chatkit-server/psi_query.readiness(), psi_widgets.py
+# readiness_widget()). Every `quote` is checked verbatim (whitespace-
+# normalized) against its `doc` by tests/test_findings.py — this file adds
+# NO new fact; it only points at what the governed record already says.
+#
+# `atmosphere`: iss | gateway | lunar | null (shown for every atmosphere).
+# `geometry_class`: solid-fuel | droplet-combustion | gaseous-flames |
+#   smoke-aerosol | null (shown regardless of class).
+# Never hand-edit the numbers a preset itself uses (those live in
+# psi_atmospheres.py, cited there) — this file is for the INTERPRETIVE
+# statements about what a coverage gap or overlap means.
+
+- id: lunar-msg-limit
+  atmosphere: lunar
+  geometry_class: solid-fuel
+  doc: knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety
+  doc_title: "Spacecraft Materials Fire Safety"
+  quote: >-
+    was limited to 1 atmosphere and oxygen concentrations below 22% by
+    Microgravity Science Glovebox constraints — not the conditions proposed
+    for future exploration missions, which may include oxygen concentrations
+    up to 34%.
+
+- id: lunar-retest-needed
+  atmosphere: lunar
+  geometry_class: solid-fuel
+  doc: knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety
+  doc_title: "Spacecraft Materials Fire Safety"
+  quote: >-
+    the new exploration atmospheres of up to 34% oxygen will likely require
+    the retest of many materials even under the current protocols
+
+- id: lunar-safety-margin
+  atmosphere: lunar
+  geometry_class: solid-fuel
+  doc: knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety
+  doc_title: "Spacecraft Materials Fire Safety"
+  quote: >-
+    the differences in the 1g and 0g or partial g Upward Limiting Oxygen
+    Concentration (ULOI) and Minimum Oxygen Concentration (MOC) are largest
+    for the Lunar g level
+
+- id: sofie-extends-range
+  atmosphere: lunar
+  geometry_class: solid-fuel
+  doc: knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety
+  doc_title: "Spacecraft Materials Fire Safety"
+  quote: >-
+    The CIR/SoFIE facility studies solid-fuel combustion at a wider range of
+    pressures and O₂ concentrations than MSG, extending to the 34%-oxygen
+    exploration atmospheres — though it cannot reach 100% O₂ (EVA suit)
+    conditions due to hardware limits.
+
+- id: gateway-eva-prep
+  atmosphere: gateway
+  geometry_class: null
+  doc: knowledge/foundations/decadal-survey/liao-micro-partial-gravity-fires
+  doc_title: "Challenges and Research Needs for Micro- and Partial-Gravity Fires"
+  quote: >-
+    the proposed atmosphere for habitable structures in future space
+    missions requires an oxygen concentration higher than sea-level
+    conditions and at a reduced pressure to lower the preparation time for
+    Extravehicular Activities (EVA).
+
+- id: worst-case-testing
+  atmosphere: null
+  geometry_class: null
+  doc: knowledge/foundations/nasa-std-6001b
+  doc_title: "NASA-STD-6001B"
+  quote: >-
+    Evaluation shall use the worst-case anticipated use environment (most
+    hazardous pressure, temperature, material thickness, and fluid
+    exposure)

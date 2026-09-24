@@ -85,6 +85,16 @@
   --ksor-cover-hover: oklch(0.935 0.018 258);
   --ksor-cover-panel: oklch(1 0 0);
   --ksor-cover-panel-rule: oklch(0.9 0.014 258);
+
+  /* The dashboard heatmap's test-count scale — same five steps and the same
+     hex values as the chat gap map's SHADES (system/chatkit-server/
+     psi_widgets.py), so the two surfaces read as one system. --heat-0 is the
+     untested gap. */
+  --heat-0: #f8fafc;
+  --heat-1: #fed7aa;
+  --heat-2: #fdba74;
+  --heat-3: #fb923c;
+  --heat-4: #ea580c;
 }
 
 .dark {
@@ -130,6 +140,12 @@
   --ksor-cover-hover: oklch(0.3 0.035 258);
   --ksor-cover-panel: oklch(0.285 0.036 258);
   --ksor-cover-panel-rule: oklch(0.36 0.03 258);
+
+  --heat-0: #1e293b;
+  --heat-1: #7c2d12;
+  --heat-2: #9a3412;
+  --heat-3: #c2410c;
+  --heat-4: #ea580c;
 }
 
 /* The token → utility mapping shadcn components compile against, as
@@ -503,6 +519,23 @@ html > body[data-scroll-locked] {
 
 .dark .ksor-caution {
   background-color: color-mix(in oklab, var(--ksor-caution) 12%, transparent);
+}
+
+/* Dashboard mission-readiness chips: "tests exist near this atmosphere" vs
+   "this is a gap". Classes, not Tailwind arbitrary var() values — see the
+   comment above .ksor-answer-correct for why (a var() inside an arbitrary
+   value silently failed to resolve in a real build, 2026-08-23). Reuses the
+   existing --ksor-correct / --ksor-caution tokens rather than a third pair. */
+.ksor-coverage-ok {
+  border-color: color-mix(in oklab, var(--ksor-correct) 32%, transparent);
+  background-color: color-mix(in oklab, var(--ksor-correct) 10%, transparent);
+  color: var(--ksor-correct);
+}
+
+.ksor-coverage-gap {
+  border-color: color-mix(in oklab, var(--ksor-caution) 40%, transparent);
+  background-color: color-mix(in oklab, var(--ksor-caution) 10%, transparent);
+  color: var(--ksor-caution);
 }
 
 /* A withdrawn document's status chip, wherever one renders. A `draft` chip and
@@ -1046,4 +1079,42 @@ html > body[data-scroll-locked] {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--color-fd-primary);
+}
+
+/* ── Landing page motion ─────────────────────────────────────────────────
+   ONE orchestrated moment, not motion scattered across every card: the hero
+   text and CTAs settle in on load (ksor-fade-up, staggered), and the
+   microgravity flame in the hero drifts the way a real diffusion flame does
+   — slow, calm, no flicker — which is itself part of what the illustration
+   is showing, not decoration bolted onto it. Transform/opacity only. */
+
+@keyframes ksor-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ksor-fade-up {
+  animation: ksor-fade-up 600ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+.ksor-fade-up-delay-1 { animation-delay: 100ms; }
+.ksor-fade-up-delay-2 { animation-delay: 200ms; }
+
+@keyframes ksor-flame-drift {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.035) translateY(-2px); }
+}
+
+.ksor-flame-drift {
+  transform-origin: center;
+  animation: ksor-flame-drift 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ksor-fade-up,
+  .ksor-flame-drift {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }

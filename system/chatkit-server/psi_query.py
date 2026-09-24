@@ -27,6 +27,10 @@ from collections import Counter, defaultdict
 from functools import lru_cache
 from pathlib import Path
 
+import yaml
+
+import psi_atmospheres
+
 # axis → (tolerance kind, default tolerance, unit)
 NUMERIC_AXES: dict[str, tuple[str, float, str]] = {
     "o2_pct": ("abs", 1.5, "%"),
@@ -246,6 +250,107 @@ def _coverage(runs, invs, num_q, cat_q, considered) -> list[dict]:
     return out
 
 
+# Which (geometry class, quantity) pairs have enough numeric runs to rank.
+# Solid fuels have no numeric extinction outcome (only end_mode/ignited text)
+# and report pressure on almost no runs; smoke-aerosol has no measured
+# quantity comparable across materials. Ranking never crosses a class.
+RANKABLE: dict[str, list[str]] = {
+    "solid-fuel": ["spread_rate"],
+    "droplet-combustion": ["burning_rate_k", "extinction_diameter"],
+    "gaseous-flames": ["burn_time", "peak_burner_temp_c"],
+}
+
+
+def _outcome_value(o: dict) -> float | None:
+    """A single number to rank by: the stated value, else a range's midpoint
+    (never a number the source states outright), else the median of several
+    stated values. Text-only outcomes (e.g. end_mode="blow-off") return None."""
+    if o.get("value") is not None:
+        return o["value"]
+    if o.get("min") is not None and o.get("max") is not None:
+        return (o["min"] + o["max"]) / 2
+    if o.get("values"):
+        vs = sorted(o["values"])
+        n = len(vs)
+        return vs[n // 2] if n % 2 else (vs[n // 2 - 1] + vs[n // 2]) / 2
+    return None
+
+
+def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", limit: int = 10,
+         runs=None, invs=None) -> dict:
+    """Rank materials within ONE geometry class by a measured quantity, at
+    conditions given by q (any NUMERIC_AXES/CATEGORICAL_AXES key). Aggregates
+    per fuel_family as (n, min, median, max) over every match/partial run
+    reporting that quantity — never merges runs into one number silently;
+    every row keeps its run ids. `untested` lists materials in the class with
+    no run at these conditions, so an empty top spot is visible, not silent."""
+    if geometry_class not in RANKABLE or quantity not in RANKABLE[geometry_class]:
+        return {"error": f"{quantity!r} is not a rankable result for {geometry_class!r}",
+                "rankable": RANKABLE.get(geometry_class, [])}
+    if runs is None or invs is None:
+        runs, invs = load()
+    full_q = {**q, "geometry_class": geometry_class}
+    result = query(full_q, runs=runs, invs=invs)
+
+    by_material: dict[str, list[dict]] = defaultdict(list)
+    target_flow = q.get("flow_cm_s", 0.0)
+    for tier in ("match", "partial"):
+        for v in result[tier]:
+            # A run may report this quantity at several flow settings (e.g.
+            # BASS-II spread rate); one contribution per run, the entry
+            # nearest the requested flow (0 if none given) — tie-broken by
+            # the flow value itself so the pick is independent of list order,
+            # which the TS twin (reading the same JSON) cannot rely on
+            # matching v["outcomes"]'s Python-side _outcome_summary sort.
+            candidates = [o for o in v["outcomes"] if o["quantity"] == quantity and _outcome_value(o) is not None]
+            if not candidates:
+                continue
+            o = min(candidates, key=lambda o: (abs(o.get("at", {}).get("flow_cm_s", target_flow) - target_flow),
+                                               o.get("at", {}).get("flow_cm_s", target_flow)))
+            fam = v["fuel_family"] or "unassigned"
+            by_material[fam].append({"run_id": v["id"], "investigation": v["investigation"],
+                                     "tier": v["tier"], "value": _outcome_value(o), "unit": o.get("unit")})
+
+    rows = []
+    for fam, entries in by_material.items():
+        vals = sorted(e["value"] for e in entries)
+        n = len(vals)
+        median = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+        rows.append({
+            "fuel_family": fam, "n": n, "min": round(vals[0], 4), "max": round(vals[-1], 4),
+            "median": round(median, 4), "unit": entries[0].get("unit"),
+            "runs": [e["run_id"] for e in entries][:8],
+            "investigations": sorted({e["investigation"] for e in entries}),
+        })
+    rows.sort(key=lambda r: (-r["median"] if direction == "desc" else r["median"], r["fuel_family"]))
+
+    ranked_families = {r["fuel_family"] for r in rows}
+    all_families = {(_cat_value(r, "fuel_family", invs) or "unassigned") for r in runs
+                    if invs[r["investigation"]]["geometry_class"] == geometry_class}
+    return {
+        "query": full_q, "quantity": quantity, "geometry_class": geometry_class, "direction": direction,
+        "rows": rows[:limit], "total_ranked": len(rows),
+        "untested": sorted(all_families - ranked_families),
+        "coverage": result["coverage"],
+    }
+
+
+def compact_rank(result: dict, max_rows: int = 10) -> dict:
+    """The LLM-facing view of rank(): small and already formatted, never asks
+    the model to compute or restate a median itself."""
+    if result.get("error"):
+        return result
+    return {
+        "quantity": result["quantity"], "geometry_class": result["geometry_class"],
+        "query": result["query"], "direction": result["direction"], "total_ranked": result["total_ranked"],
+        "top": [{"material": r["fuel_family"], "n": r["n"],
+                 "median": f"{r['median']:g}" + (f" {r['unit']}" if r["unit"] else ""),
+                 "range": f"{r['min']:g}–{r['max']:g}" + (f" {r['unit']}" if r["unit"] else ""),
+                 "runs": r["runs"][:4]} for r in result["rows"][:max_rows]],
+        "untested_at_these_conditions": result["untested"][:10],
+    }
+
+
 def prefer_outcomes(views: list[dict]) -> list[dict]:
     """Display order only (the query's own ranking is untouched, and is what
     the golden fixtures pin): within a tier, runs that carry measured numeric
@@ -334,4 +439,77 @@ def compact(result: dict, max_runs: int = 10) -> dict:
         ],
         "relaxed": result["relaxed"][:5],
         "geometry_classes": result["geometry_classes"],
+    }
+
+
+# ── Mission readiness ────────────────────────────────────────────────────────
+# How much of a named mission atmosphere (psi_atmospheres.py) the PSI data
+# actually covers, per geometry class — computed here, never asserted by the
+# model. Paired in the widget with governed-doc quotes from
+# psi-data/findings.yaml, each checked verbatim against its doc by
+# tests/test_findings.py. This view adds no new fact: it is the existing
+# query() tiers, reshaped, next to what the record already says about why a
+# gap matters.
+
+_FINDINGS_PATH = Path(__file__).resolve().parents[2] / "psi-data" / "findings.yaml"
+
+
+@lru_cache(maxsize=1)
+def _findings() -> list[dict]:
+    if not _FINDINGS_PATH.is_file():
+        return []
+    return yaml.safe_load(_FINDINGS_PATH.read_text(encoding="utf-8")) or []
+
+
+def readiness(atm_id: str, runs=None, invs=None) -> dict:
+    atm = psi_atmospheres.ATMOSPHERES.get(atm_id)
+    if atm is None:
+        return {"error": f"Unknown atmosphere {atm_id!r}", "known": sorted(psi_atmospheres.ATMOSPHERES)}
+    if runs is None or invs is None:
+        runs, invs = load()
+    base_q = {"o2_pct": atm["o2_pct"], "pressure_atm": atm["pressure_atm"]}
+
+    classes = []
+    for gc in sorted({i["geometry_class"] for i in invs.values()}):
+        result = query({**base_q, "geometry_class": gc}, runs=runs, invs=invs)
+        best_pool = result["match"] or result["partial"] or result["near"]
+        nearest = None
+        if best_pool:
+            b = best_pool[0]
+            nearest = {"run_id": b["id"], "investigation": b["investigation"], "tier": b["tier"],
+                      "o2_pct": (b["axes"].get("o2_pct") or {}).get("min"),
+                      "pressure_atm": (b["axes"].get("pressure_atm") or {}).get("min")}
+        quantities = sorted({o["quantity"] for v in (result["match"] + result["partial"]) for o in v["outcomes"]
+                             if o.get("value") is not None
+                             or (o.get("min") is not None and o.get("max") is not None) or o.get("values")})
+        classes.append({
+            "geometry_class": gc, "match": result["counts"]["match"], "partial": result["counts"]["partial"],
+            "near_pool": result["counts"]["near_pool"],
+            "covered": result["counts"]["match"] > 0 or result["counts"]["partial"] > 0,
+            "nearest_tested": nearest, "quantities_available": quantities,
+        })
+
+    findings = [f for f in _findings() if f.get("atmosphere") in (None, atm_id)]
+    return {"atmosphere": atm, "query": base_q, "classes": classes, "findings": findings}
+
+
+def compact_readiness(result: dict) -> dict:
+    if result.get("error"):
+        return result
+    atm = result["atmosphere"]
+
+    def nearest_str(n: dict | None) -> str | None:
+        if n is None:
+            return None
+        o2 = f"{n['o2_pct']:g}% O2" if n["o2_pct"] is not None else "O2 not reported"
+        p = f"{n['pressure_atm']:g} atm" if n["pressure_atm"] is not None else "pressure not reported"
+        return f"{o2}, {p} ({n['tier']}, {n['investigation']})"
+
+    return {
+        "atmosphere": {"id": atm["id"], "label": atm["label"], "o2_pct": atm["o2_pct"], "pressure_atm": atm["pressure_atm"]},
+        "classes": [{"geometry_class": c["geometry_class"], "match": c["match"], "partial": c["partial"],
+                    "covered": c["covered"], "nearest_tested": nearest_str(c["nearest_tested"]),
+                    "quantities": c["quantities_available"][:6]} for c in result["classes"]],
+        "findings": [{"quote": f["quote"].strip(), "doc_title": f["doc_title"], "geometry_class": f.get("geometry_class")}
+                     for f in result["findings"]],
     }
