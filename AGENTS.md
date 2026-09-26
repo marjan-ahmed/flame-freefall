@@ -75,15 +75,43 @@ generated and committed; never hand-edit them.
   pins them to identical output. `readiness()` has no TS twin — the
   dashboard's mission-readiness cards (`system/site/lib/dashboard-data.ts`)
   compute coverage directly from the twinned `query()` instead, so there is
-  no third reimplementation of the match/partial/near tiers.
+  no third reimplementation of the match/partial/near tiers. A tolerance
+  boundary is inclusive on both sides (`TOLERANCE_EPS`, both twins — plain
+  float division can land a query's own axis a hair past `1.0`); a near-tier
+  run reporting NONE of the query's axes never outranks one that reports the
+  axis however far off (`NO_AXES_REPORTED_SCORE`). Investigation names
+  (`query()`'s `investigation` filter, `compare_investigations`,
+  `results_data`/`plot_results`) all resolve through one function,
+  `_investigation_ids`/`investigationIds`: exact id/name, then family prefix
+  ("SAFFIRE" → every SAFFIRE), then hyphen-insensitive, then a **one-way**
+  roman-numeral alias (a real name's own trailing numeral, e.g. `BASS-II`,
+  answers to an arabic query `"BASS 2"` — never the reverse, so a query that
+  itself types a roman numeral, e.g. `"SAFFIRE-II"`, is never aliased onto
+  the arabic-named `SAFFIRE-2`). Every outcome `compact()` hands the model
+  carries its own source tag (`fmt_sourced_outcome`; a run's `conflicts` via
+  `sourced_conflicts`) — never a single per-run citation, which used to get
+  copied as the source of a value from a different table entirely — and
+  `_shrink_to_budget()` trims the longest outcome strings, never a whole run
+  first, until the payload provably fits, rather than trusting one pinned
+  query shape to represent every shape.
 - **Chat** (`system/chatkit-server/`): `psi_tools.py` holds the seven tools
   the model calls (`query_test_runs`, `show_gap_map`,
   `compare_investigations`, `show_test_details`, `plot_results`,
-  `rank_results`, `show_mission_readiness`), and `psi_widgets.py` builds the
-  widgets. Widget buttons are answered by `main.py` `action()` with no model
-  call. Each tool streams its widget and returns a small summary the model
-  writes 2-4 sentences from. Narrative answers come from the MCP door
-  (`HANDBOOK_MCP_URL`); the PSI tools are local and work without it.
+  `rank_results`, `show_mission_readiness`), each wrapped by `_guarded` so an
+  exception anywhere in its body is recorded on the turn's `TurnGuard` before
+  the agents SDK converts it to its own generic error string — otherwise a
+  PSI tool's own failure was invisible to the reply guard (only a search/read
+  failure was). `psi_widgets.py` builds the widgets. Widget buttons are
+  answered by `main.py` `action()` with no model call. Each tool streams its
+  widget and returns a small summary the model writes 2-4 sentences from.
+  `turn_guard.check_citations()` finds a cited run id by shape (ids vary too
+  much for a `PSI-\d+:` regex — spaces, `#`, nested parens, non-PSI prefixes,
+  Unicode hyphen look-alikes) against the ids a PSI tool actually returned
+  this turn, and — for an id that IS real — cross-checks a stated value
+  against that run's own `data/runs.json` conditions/outcomes, so a real id
+  paired with an invented number (e.g. from an uploaded attachment) is still
+  caught. Narrative answers come from the MCP door (`HANDBOOK_MCP_URL`); the
+  PSI tools are local and work without it.
 - **Dashboard** (`system/site/app/(home)/page.tsx`): a server-rendered band
   above the chat — coverage heatmaps per geometry class
   (`components/dashboard/heatmap.tsx`) and mission-readiness cards
@@ -138,8 +166,12 @@ generated and committed; never hand-edit them.
 - **Never make the model retype numbers.** Tool replies give it compact,
   already-formatted values and forbid restating per-cell counts, merging runs'
   values, or writing button labels; each rule came from a live error. Groq's
-  free tier allows 8000 tokens per minute, so tool replies stay small (a test
-  enforces the size of `compact()`).
+  free tier allows 8000 tokens per minute, so tool replies stay small — not
+  just for one pinned query shape (a test enforces the size of `compact()`
+  for a wide, untuned query too, since a per-outcome citation tag can, for a
+  query with many long free-text outcomes and little repetition to compress
+  away, still push a narrower-tested payload over budget; `compact()`'s
+  `_shrink_to_budget()` is the hard guarantee, not the test alone).
 - **Not everything belongs in the system prompt.** An instruction is a
   request, not a guarantee — it will be followed inconsistently across
   models, fallbacks, and repeated calls to the same model. Before adding or
@@ -170,11 +202,24 @@ generated and committed; never hand-edit them.
   Next allows one `next dev` per project. After config changes a running dev
   server can wedge with "Jest worker encountered 2 child process exceptions":
   stop it, `rm -rf system/site/.next/dev`, and restart.
-- **Two PDF subagents** in `.claude/agents/`: `pdf-to-markdown.md` (converts
-  to a saved `.md` via the Nutrient skill) and `pdf-reader.md` (answers
-  in-conversation). Skills live in `.agents/skills/`, mirrored byte-identically
-  into `.claude/skills/` as a real copy, not a symlink (the checker enforces
-  it). Edit `.agents/skills/` and re-copy.
+- **Subagents in `.claude/agents/`**: two PDF agents (`pdf-to-markdown.md`
+  converts to a saved `.md` via the Nutrient skill; `pdf-reader.md` answers
+  in-conversation) and a QA/release-gate suite of nine specialists —
+  `reliability-regression`, `data-forensics`, `numerical-accuracy`,
+  `grounding-provenance`, `citation-verifier`, `chatbot-qa`, `red-team`,
+  `cross-layer-consistency`, `code-quality` — coordinated by
+  `qa-orchestrator`, which together answer one question: does a value or
+  citation the chatbot/dashboard shows actually trace to governed data,
+  never the model's invention or a code bug. Each specialist's own `.md`
+  documents its method. A confirmed, still-open defect they find is pinned
+  as `pytest.mark.xfail(strict=True, reason="...")` in a
+  `system/*/tests/test_qa_*.py` file (never edit `psi-data/raw/**`,
+  `knowledge/**`, or a generated file to make one pass) — the suite stays
+  green while the defect exists, and turns red (`XPASS`) the moment a fix
+  lands, which is the cue to remove that marker, not soften it. Skills live
+  in `.agents/skills/`, mirrored byte-identically into `.claude/skills/` as a
+  real copy, not a symlink (the checker enforces it). Edit `.agents/skills/`
+  and re-copy.
 
 ## The two worlds
 

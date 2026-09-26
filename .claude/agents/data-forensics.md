@@ -84,7 +84,7 @@ For a sampled run, everything below must trace back to one specific line in one 
 2. **Run the existing nets first.** `cd system/psi-ingest && uv run pytest` and `uv run psi-ingest --check`; `cd system/chatkit-server && GROQ_API_KEY=dummy uv run pytest`; `cd system/site && npm run test:psi`. These are golden tests against real ingested data (see `test_ingest.py`'s style: exact ids like `PSI-25:M7`, exact values, exact conflict fields) — they establish a baseline and may already fail in a way that's your finding. Don't stop here: passing tests only prove what they were written to check, and the bug shape in step 1 passed every existing test.
 
 3. **Sample deliberately, not randomly-only.** You cannot hand-check 1,948 runs. Cover:
-   - At least one run from every investigation in `registry.yaml` (20 investigations across all four geometry classes), so no adapter goes unchecked.
+   - At least one run from every investigation in `registry.yaml` (19 investigations, from the 20 PSI tables — PSI-10 and PSI-159 each split normal/inverse — across all four geometry classes), so no adapter goes unchecked.
    - Every run currently listed in `runs.json` with a non-empty `conflicts` array — these are exactly the cases the merge logic is supposed to handle carefully, and are cheap to find (`grep -c` or a short Python/`jq` pass over `runs.json`).
    - Any investigation whose `investigations.json` entry has `runs_with_outcomes` that looks low relative to how rich its governed doc's tables look when you read them — go find out why.
    - Values/cells flagged `unparsed` or `suspect_value` in a spot-check — confirm the source cell is *actually* unparseable/implausible, not an adapter bug misreading a well-formed cell.
