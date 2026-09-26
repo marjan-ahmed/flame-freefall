@@ -466,15 +466,12 @@ def gap_map_summary(q: dict, y_axis: str = "flow_cm_s") -> dict:
 # ── 3. horizontal comparison ─────────────────────────────────────────────────
 
 def _resolve_investigations(names: list[str], invs: dict[str, dict]) -> set[str]:
-    """User/model names → investigation ids. An exact id or name wins ("BASS" is
-    BASS, not BASS-II); otherwise a family name matches every member
-    ("SAFFIRE" → SAFFIRE-1, -2, -3, IV–VI; "ACME" → all ACME experiments)."""
-    norm = lambda s: s.lower().replace(" ", "").replace("_", "-")  # noqa: E731
+    """User/model names → investigation ids, unioned. One resolver
+    (psi_query._investigation_ids) shared with query()'s own investigation
+    filter, so this and query_test_runs agree on what a name means — see C7."""
     out: set[str] = set()
     for name in names:
-        n = norm(name)
-        exact = {i for i, inv in invs.items() if n in (norm(i), norm(inv["name"]))}
-        out |= exact or {i for i, inv in invs.items() if norm(i).startswith(n) or norm(inv["name"]).startswith(n)}
+        out |= psi_query._investigation_ids(name, invs)
     return out
 
 
@@ -486,6 +483,12 @@ def compare_data(q: dict, investigations: list[str] | None = None) -> list[dict]
         for v in result[tier]:
             tier_counts[v["investigation_id"]][tier] += 1
     wanted = _resolve_investigations(investigations or [], invs)
+    # Names were explicitly given but NONE resolved: an explicit filter to
+    # nothing, never silently widened to "no filter at all" (`wanted` empty
+    # used to be indistinguishable from investigations=None/[], and every
+    # investigation came back as if the caller had asked for it).
+    if investigations and not wanted:
+        return []
     rows = []
     by_inv: dict[str, list[dict]] = defaultdict(list)
     for r in _filtered_runs({k: v for k, v in q.items() if k != "investigation"} if wanted else q):
@@ -716,11 +719,24 @@ def _numeric_outcomes(runs: list[dict]) -> Counter:
                    if (o.get("measure") or {}).get("min") is not None)
 
 
+def _unresolved_investigation(q: dict) -> str | None:
+    """The investigation NAME in q, if q asked for one and it resolves to no
+    real investigation ("SAFFIRE-II" -- the real id is SAFFIRE-2) -- so an
+    empty result can say the name wasn't recognised, not just "no data"."""
+    name = q.get("investigation")
+    if not name:
+        return None
+    _, invs = psi_query.load()
+    return name if not psi_query._investigation_ids(name, invs) else None
+
+
 def results_data(q: dict, quantity: str | None = None, x_axis: str = "flow_cm_s") -> dict:
     runs = _filtered_runs(q)
     available = _numeric_outcomes(runs)
     if not available:
-        return {"quantity": None, "available": {}, "mode": None, "points": []}
+        unresolved = _unresolved_investigation(q)
+        return {"quantity": None, "available": {}, "mode": None, "points": [],
+                **({"investigation_unresolved": unresolved} if unresolved else {})}
     if quantity not in available:
         quantity = available.most_common(1)[0][0]
     pts = []  # (run, x, y, source_raw)
@@ -817,7 +833,8 @@ def results_summary(q: dict, quantity: str | None = None, x_axis: str = "flow_cm
             "tests": len({p["run"]["id"] for p in pts}),
             "range": [min(p["lo"] for p in pts), max(p["hi"] for p in pts)] if pts else None,
             "unit": next((p["unit"] for p in pts if p["unit"]), None),
-            "other_results_available": list(d["available"])}
+            "other_results_available": list(d["available"]),
+            **({"investigation_unresolved": d["investigation_unresolved"]} if "investigation_unresolved" in d else {})}
 
 
 # ── 6. ranking ───────────────────────────────────────────────────────────────

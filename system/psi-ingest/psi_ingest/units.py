@@ -195,7 +195,9 @@ def to_mm(m: Measure | None, default_unit: str | None = None) -> Measure | None:
         return m
     u = (m.unit or default_unit or "").lower()
     if u not in LENGTH_TO_MM:
-        return m.flag("unknown_unit")
+        # Numbers refused (null plus flag, never a guess); the unit stays the
+        # one actually read, never relabelled as mm.
+        return Measure(raw=m.raw, unit=m.unit or default_unit, flags=m.flags + ["unknown_unit"])
     if u == "mm":
         m.unit = "mm"
         return m
@@ -213,7 +215,7 @@ def to_atm(m: Measure | None, from_unit: str) -> Measure | None:
     u = (m.unit or from_unit).lower()
     factor = PRESSURE_TO_ATM.get(u)
     if factor is None:
-        return m.flag("unknown_unit")
+        return Measure(raw=m.raw, unit=m.unit or from_unit, flags=m.flags + ["unknown_unit"])
     if factor == 1.0:
         m.unit = "atm"
         return m

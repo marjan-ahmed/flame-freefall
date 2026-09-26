@@ -18,7 +18,7 @@ from . import fuels, knowledge, verify
 from .adapters import Ctx
 from .adapters.droplet import flex_extinction
 from .model import Outcome, Run, cat
-from .units import Measure, parse_measure, pct, to_atm, to_mm
+from .units import Measure, is_missing, parse_measure, pct, to_atm, to_mm
 
 REL_TOL = 0.01
 
@@ -246,6 +246,29 @@ def _saffire_run(m: Merger, sample: str) -> tuple[Run, str, bool]:
     return run, inv, True
 
 
+def _is_note_marker(cell: str) -> bool:
+    """Check if a cell contains only a footnote/reference marker, not a real value."""
+    c = cell.strip()
+    # Common note markers: "Note N", "(i)", "(ii)", "(iii)", "(iv)", "(v)", etc.
+    if re.match(r"^note\s+\d+$", c, re.I):
+        return True
+    if re.match(r"^\([ivx]+\)$", c, re.I):
+        return True
+    if re.match(r"^\(\d+\)$", c):
+        return True
+    if c in ("†", "‡", "§", "*", "**", "***"):
+        return True
+    return False
+
+
+def _is_not_applicable(cell: str) -> bool:
+    """A placeholder ("n/a", "—"), optionally qualified ("n/a (Nomex)"): no
+    measurement was made, so there is no outcome to record. A qualified real
+    result ("~0 (Nomex)") is not a placeholder and is kept."""
+    c = cell.strip()
+    return is_missing(c) or is_missing(re.sub(r"\s*\([^)]*\)$", "", c))
+
+
 def saffire_table_i(m: Merger) -> None:
     doc = m.ctx.registry["saffire-1"]["ksor_doc"]
     _, cond_rows, _ = knowledge.table_under(m.ctx.repo_root, doc, "Full sample matrix — Saffire-1 / Saffire-2 (Table I, conditions)")
@@ -267,21 +290,6 @@ def saffire_table_i(m: Merger) -> None:
         o2 = pct(parse_measure(row["Initial O₂ (%)"], "%"))
         m.condition(run, "o2_pct", o2, src)
 
-def _is_note_marker(cell: str) -> bool:
-    """Check if a cell contains only a footnote/reference marker, not a real value."""
-    c = cell.strip()
-    # Common note markers: "Note N", "(i)", "(ii)", "(iii)", "(iv)", "(v)", etc.
-    if re.match(r"^note\s+\d+$", c, re.I):
-        return True
-    if re.match(r"^\([ivx]+\)$", c, re.I):
-        return True
-    if re.match(r"^\(\d+\)$", c):
-        return True
-    if c in ("†", "‡", "§", "*", "**", "***"):
-        return True
-    return False
-
-
     for row in res_rows:
         run, inv, _ = _saffire_run(m, row["Sample"].strip())
         src = m.add_source(run, inv, "Table I (ignition and results)", row["__line__"], row)
@@ -298,7 +306,7 @@ def _is_note_marker(cell: str) -> bool:
             mm = parse_measure(cell, unit)
             if mm is not None and mm.usable:
                 m.outcome(run, Outcome(q, mm, source=src, note=note))
-            elif cell and cell not in ("—", "-") and not _is_note_marker(cell):
+            elif not _is_not_applicable(cell) and not _is_note_marker(cell):
                 m.outcome(run, Outcome(q, text=cell, source=src, note=note))
     m.stat(f"{doc} Table I", len(cond_rows), joined, alone)
 

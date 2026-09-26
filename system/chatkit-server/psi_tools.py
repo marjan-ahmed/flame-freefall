@@ -14,6 +14,7 @@ answer the user can steer without another model call.
 
 from __future__ import annotations
 
+import functools
 import json
 import time
 from typing import Literal
@@ -26,7 +27,6 @@ import psi_query
 import psi_widgets
 
 GeometryClass = Literal["solid-fuel", "droplet-combustion", "gaseous-flames", "smoke-aerosol"]
-RankableGeometryClass = Literal["solid-fuel", "droplet-combustion", "gaseous-flames"]
 FlowDirection = Literal["opposed", "concurrent", "coflow", "stagnation"]
 YAxis = Literal["flow_cm_s", "pressure_atm"]
 XAxis = Literal["flow_cm_s", "o2_pct", "pressure_atm", "thickness_mm", "droplet_d0_mm"]
@@ -58,6 +58,28 @@ def _is_repeat(ctx: RunContextWrapper[AgentContext], name: str, args: dict) -> b
     return repeat
 
 
+def _guarded(fn):
+    """Record on this turn's TurnGuard any exception a PSI tool raises (a
+    widget-stream failure, a bad payload, …), then re-raise so the agents
+    SDK still converts it to its own "An error occurred while running the
+    tool..." string exactly as before -- this only ADDS a trace for the
+    reply guard. main.py's on_tool_end failure check only recognises the
+    "search"/"read" tool names (the MCP door), so a PSI tool's own failure
+    was otherwise invisible to should_override_reply(): no widget shown, no
+    override set, and the model free to write "no tests match" instead of
+    an honest "couldn't run that query" (see C8). record_tool_result(name,
+    None) already classifies a None payload as a failure for ANY tool
+    name -- see TurnGuard._classify_failure -- so no guard changes needed."""
+    @functools.wraps(fn)
+    async def wrapper(ctx: RunContextWrapper[AgentContext], *args, **kwargs):
+        try:
+            return await fn(ctx, *args, **kwargs)
+        except Exception:
+            ctx.context._guard.record_tool_result(fn.__name__, None)
+            raise
+    return wrapper
+
+
 def _reply(repeat: bool, instructions: str, payload: dict, cite_run_ids: bool = True) -> str:
     head = ("You already showed this exact widget; do not call the tool again. " if repeat
             else "Widget shown to the user. ")
@@ -79,6 +101,7 @@ def _reply(repeat: bool, instructions: str, payload: dict, cite_run_ids: bool = 
         "ethylene, methane, propane, propylene."
     )
 )
+@_guarded
 async def query_test_runs(
     ctx: RunContextWrapper[AgentContext],
     o2_pct: float | None = None,
@@ -124,6 +147,7 @@ async def query_test_runs(
         "fuel / geometry / investigation."
     )
 )
+@_guarded
 async def show_gap_map(
     ctx: RunContextWrapper[AgentContext],
     o2_pct: float | None = None,
@@ -158,6 +182,7 @@ async def show_gap_map(
         "investigations: optional names like ['SAFFIRE-2','BASS-II']; omit to compare all that match the filters."
     )
 )
+@_guarded
 async def compare_investigations(
     ctx: RunContextWrapper[AgentContext],
     investigations: list[str] | None = None,
@@ -193,6 +218,7 @@ async def compare_investigations(
         "test id (e.g. PSI-25:M18, PSI-69:FLEX-157) or asks for details of one test."
     )
 )
+@_guarded
 async def show_test_details(ctx: RunContextWrapper[AgentContext], run_id: str) -> str:
     runs, _ = psi_query.load()
     run = next((r for r in runs if r["id"].lower() == run_id.strip().lower()), None)
@@ -202,8 +228,14 @@ async def show_test_details(ctx: RunContextWrapper[AgentContext], run_id: str) -
     repeat = _is_repeat(ctx, "test", {"id": run["id"]})
     if not repeat:
         await ctx.context.stream_widget(psi_widgets.test_widget(run["id"], site=_site(ctx)))
-    payload = {"id": run["id"], "results": [psi_query._fmt_outcome(o) for o in psi_query._outcome_summary(run, {})][:6],
-               "conflicts": run.get("conflicts", []), "sources": len(run["sources"])}
+    # This tool's own reply also cites the run id (see _reply below); without
+    # this, the guard has nothing to check a fabricated id from THIS tool
+    # against (query_test_runs already records its own matches/partials).
+    ctx.context._guard.record_valid_run_ids({run["id"]})
+    # Each result, and each side of a conflict, names the source that holds it
+    # (report table + title, or PSI line) -- never a bare index to guess at.
+    payload = {"id": run["id"], "results": [psi_query.fmt_sourced_outcome(o) for o in psi_query._outcome_summary(run, {})][:6],
+               "conflicts": psi_query.sourced_conflicts(run), "sources": len(run["sources"])}
     return _reply(repeat, "Reply in at most 60 words: what this test was and what it measured.", payload)
 
 
@@ -217,6 +249,7 @@ async def show_test_details(ctx: RunContextWrapper[AgentContext], run_id: str) -
         "unstated filter must stay None, even if that returns more tests than a narrower guess would."
     )
 )
+@_guarded
 async def plot_results(
     ctx: RunContextWrapper[AgentContext],
     quantity: str | None = None,
@@ -234,7 +267,9 @@ async def plot_results(
     if not repeat:
         await ctx.context.stream_widget(psi_widgets.results_widget(q, quantity, x_axis))
     return _reply(repeat, "Reply in at most 60 words: what the chart shows (quantity, how many tests, the range) — "
-                          "describe only what is plotted; do not infer trends the values don't show. If \"tests\" "
+                          "describe only what is plotted; do not infer trends the values don't show. If "
+                          "\"investigation_unresolved\" is present, say plainly that name isn't a recognized "
+                          "investigation — never present it as \"no data\" for a real one. Otherwise, if \"tests\" "
                           "is 0 or \"points\" is 0, say plainly there is no plottable data for these filters and "
                           "suggest widening them — do not invent a range or a test count.", summary, cite_run_ids=False)
 
@@ -251,9 +286,18 @@ async def plot_results(
         "the governed record. Explicit o2_pct/pressure_atm/flow_cm_s override the atmosphere if both are given."
     )
 )
+@_guarded
 async def rank_results(
     ctx: RunContextWrapper[AgentContext],
-    geometry_class: RankableGeometryClass,
+    # The full GeometryClass, not RankableGeometryClass: excluding
+    # smoke-aerosol from the schema made Groq reject a call naming it with a
+    # raw tool-validation error the model never sees as a normal reply (an
+    # APIError, not an APIStatusError, so _FallbackCompletions never even
+    # tries the next provider) -- the whole turn then showed a false
+    # "rate limit or quota exhausted" message instead of psi_query.rank()'s
+    # own honest "not rankable, here's what is" refusal (see C8). Accepting
+    # every real class here and letting rank() answer is the fix.
+    geometry_class: GeometryClass,
     quantity: str,
     atmosphere: MissionAtmosphere | None = None,
     o2_pct: float | None = None,
@@ -291,6 +335,7 @@ async def rank_results(
         "specific fuel or test."
     )
 )
+@_guarded
 async def show_mission_readiness(ctx: RunContextWrapper[AgentContext], atmosphere: MissionAtmosphere) -> str:
     result = psi_query.readiness(atmosphere)
     print(f"[show_mission_readiness] {atmosphere} -> "

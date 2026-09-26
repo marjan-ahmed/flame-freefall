@@ -855,14 +855,16 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
     ) -> AsyncIterator[ThreadStreamEvent]:
         # Short window: full history plus a tool result adds up fast against
         # Groq's 8000 TPM cap (see note above the Agent definition).
+        # Load the most recent 6 items (desc), then reverse for chronological order.
         items_page = await self.store.load_thread_items(
             thread.id,
             after=None,
             limit=6,
-            order="asc",
+            order="desc",
             context=context,
         )
-        input_items = await converter.to_agent_input(items_page.data)
+        recent_items = list(reversed(items_page.data))
+        input_items = await converter.to_agent_input(recent_items)
 
         agent_context = AgentContext(thread=thread, store=self.store, request_context=context)
         agent_context._guard = TurnGuard()  # type: ignore[attr-defined]

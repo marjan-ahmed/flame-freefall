@@ -25,6 +25,15 @@ export type CategoricalAxis = (typeof CATEGORICAL_AXES)[number];
 export type Query = Partial<Record<NumericAxis, number>> & Partial<Record<CategoricalAxis, string>>;
 
 const MISSING_PENALTY = 1.5;
+// Sentinel score for a near-tier run reporting NONE of the query's axes: it
+// is not "near" in any measured sense and must sort after every run that
+// reports the axis, however far off that reading is. Mirrors psi_query.py.
+const NO_AXES_REPORTED_SCORE = 1e6;
+// A target exactly one tolerance-width from a run's value must match from
+// either side. Plain float division (e.g. (1.1-1.0)/0.1) can land a hair
+// above 1.0, excluding it on one side only; this absorbs that noise without
+// ever admitting a run genuinely outside tolerance. Mirrors psi_query.py.
+const TOLERANCE_EPS = 1e-9;
 const GRANULARITY_RANK: Record<string, number> = { test: 0, "test-point": 0, day: 1, summary: 1, envelope: 2 };
 
 export type AxisResult =
@@ -70,10 +79,60 @@ function catValue(run: SlimRun, key: CategoricalAxis, invs: InvIndex): string | 
   return c && typeof c.value === "string" ? c.value : null;
 }
 
+// A trailing roman numeral, converted to its arabic digit -- so a real name
+// ending in one ("BASS-II") also answers to an informally arabic-typed query
+// ("BASS 2"). One-directional on purpose (see investigationIds): only ever
+// applied to the CANDIDATE id/name, never to the query itself, so a query
+// that itself uses a roman numeral ("SAFFIRE-II") is never treated as an
+// alias of an arabic-named investigation (SAFFIRE-2) -- that is a genuinely
+// wrong name, not an alias, and must stay unresolved. Mirrors psi_query.py.
+const ROMAN_TO_ARABIC: Record<string, string> = {
+  i: "1", ii: "2", iii: "3", iv: "4", v: "5", vi: "6", vii: "7", viii: "8", ix: "9", x: "10",
+};
+const TRAILING_NUMERAL_RE = new RegExp(
+  "(" + Object.keys(ROMAN_TO_ARABIC).sort((a, b) => b.length - a.length).join("|") + ")$",
+);
+const alnum = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** Alphanumeric-only, with a trailing ROMAN numeral (only) converted to
+ * arabic. A tail that's already a plain digit, or no numeral at all, is
+ * returned as-is -- this never invents an arabic->roman direction. */
+function numeralCanon(s: string): string {
+  const base = alnum(s);
+  const m = base.match(TRAILING_NUMERAL_RE);
+  return m ? base.slice(0, m.index) + ROMAN_TO_ARABIC[m[1]] : base;
+}
+
+/** Investigation ids a user/model name resolves to. An exact id or name
+ * match wins ("BASS" is BASS, not BASS-II); otherwise a family name matches
+ * every member ("SAFFIRE" -> SAFFIRE-1/-2/-3/IV-VI); otherwise a
+ * hyphen-insensitive exact match ("FLEX 2" -> FLEX-2); otherwise, if the
+ * query itself ends in a plain arabic digit (never a roman numeral -- see
+ * numeralCanon), a candidate whose OWN trailing roman numeral converts to
+ * that digit ("BASS 2" -> BASS-II). Shared by query()'s investigation
+ * filter -- see C7. */
+export function investigationIds(name: string, invs: InvIndex): Set<string> {
+  // A blank name resolves to nothing, never to "every investigation" (every
+  // id/name trivially starts with ""). Mirrors psi_query.py.
+  if (!name || !name.trim()) return new Set();
+  const norm = (s: string) => s.toLowerCase().replace(/ /g, "").replace(/_/g, "-");
+  const n = norm(name);
+  const exact = new Set(Object.keys(invs).filter((i) => n === norm(i) || n === norm(invs[i].name)));
+  if (exact.size) return exact;
+  const prefix = new Set(
+    Object.keys(invs).filter((i) => norm(i).startsWith(n) || norm(invs[i].name).startsWith(n)),
+  );
+  if (prefix.size) return prefix;
+  const an = alnum(name);
+  const alnumExact = new Set(Object.keys(invs).filter((i) => an === alnum(i) || an === alnum(invs[i].name)));
+  if (alnumExact.size) return alnumExact;
+  if (!/\d$/.test(an)) return new Set(); // query doesn't end in a plain digit: no roman-alias attempt
+  return new Set(Object.keys(invs).filter((i) => an === numeralCanon(i) || an === numeralCanon(invs[i].name)));
+}
+
 function catMatch(run: SlimRun, key: CategoricalAxis, want: string, invs: InvIndex): boolean {
   if (key === "investigation") {
-    const inv = invs[run.investigation];
-    return want === inv.id.toLowerCase() || want === inv.name.toLowerCase();
+    return investigationIds(want, invs).has(run.investigation);
   }
   const have = (catValue(run, key, invs) ?? "").toLowerCase();
   return key === "fuel_family" ? have.startsWith(want) : have === want;
@@ -137,7 +196,7 @@ export function query(
       }
       dists.push(d);
       axes[axis] = {
-        status: d <= 1 ? "within" : "outside",
+        status: d <= 1 + TOLERANCE_EPS ? "within" : "outside",
         raw: m.raw,
         min: m.min!,
         max: m.max!,
@@ -146,7 +205,7 @@ export function query(
         ...(m.flags?.length ? { flags: m.flags } : {}),
       };
     }
-    const within = dists.every((d) => d <= 1);
+    const within = dists.every((d) => d <= 1 + TOLERANCE_EPS);
     if (!catOk) {
       if (numQ.length && within && !missing.length) {
         const fam = catValue(run, "fuel_family", invs) ?? "unassigned";
@@ -163,7 +222,10 @@ export function query(
     if (!numQ.length) matched.push({ score: 0, run, axes });
     else if (within && !missing.length) matched.push({ score, run, axes });
     else if (within && dists.length) partial.push({ score, run, axes });
-    else near.push({ score, run, axes });
+    // A run reporting NONE of the query's axes has no measured information
+    // about it at all -- it must never rank as "nearer" than a run that DOES
+    // report an axis, however far off that value is.
+    else near.push({ score: dists.length ? score : NO_AXES_REPORTED_SCORE, run, axes });
   }
 
   const order = (a: Hit, b: Hit) =>
@@ -348,13 +410,25 @@ export function rank(
   }
   rows.sort((a, b) => (direction === "desc" ? b.median - a.median : a.median - b.median) || cmp(a.fuel_family, b.fuel_family));
 
-  const rankedFamilies = new Set(rows.map((r) => r.fuel_family));
-  const allFamilies = new Set(
+  // "Untested at these conditions" means no match/partial run at all under
+  // this query's OWN filters (categorical + numeric) -- not "every family in
+  // the geometry class" (which ignores the query's own fuel_family/etc.
+  // filter, so a filtered-out family like SIBAL under fuel_family='PMMA'
+  // would wrongly be called untested) and not "ranked" (a family can have
+  // match/partial runs at these conditions that simply don't report THIS
+  // quantity -- that is not the same as never having been tested here).
+  const catQ = CATEGORICAL_AXES.filter((k) => fullQ[k]).map((k) => [k, String(fullQ[k]).toLowerCase()] as const);
+  const candidateFamilies = new Set(
     runs
-      .filter((r) => invs[r.investigation].geometry_class === geometryClass)
+      .filter((r) => invs[r.investigation].geometry_class === geometryClass
+        && catQ.every(([k, v]) => catMatch(r, k, v, invs)))
       .map((r) => (catValue(r, "fuel_family", invs) ?? "unassigned") as string),
   );
-  const untested = [...allFamilies].filter((f) => !rankedFamilies.has(f)).sort(cmp);
+  const testedFamilies = new Set(
+    (["match", "partial"] as const).flatMap((tier) =>
+      result[tier].map((v) => (catValue(v.run, "fuel_family", invs) ?? "unassigned") as string)),
+  );
+  const untested = [...candidateFamilies].filter((f) => !testedFamilies.has(f)).sort(cmp);
 
   return {
     query: fullQ,

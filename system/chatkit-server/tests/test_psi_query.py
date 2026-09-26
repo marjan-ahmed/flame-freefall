@@ -75,6 +75,23 @@ def test_compact_fits_budget():
     assert len(json.dumps(c)) < 6000  # ≈1.5k tokens: Groq free tier is 8k TPM for the whole turn
 
 
+def test_compact_fits_budget_even_for_a_wide_query_with_many_report_citations():
+    # Found during the C1-C8 release gate: adding a per-outcome source tag
+    # (see fmt_sourced_outcome) is correct, but a query with many partial-tier
+    # BASS-II runs, each citing its OWN distinct report table with a long
+    # free-text "observation" outcome, pushed one real query's payload from
+    # 5983 to 6798 bytes -- over budget -- though the ONE pinned case above
+    # (narrowed by fuel_family) never showed it. _shrink_to_budget() trims
+    # the longest outcome strings (never a whole run first) until the
+    # payload fits, so this must hold for a broad, untuned query too.
+    c = psi_query.compact(psi_query.query({"o2_pct": 15, "flow_cm_s": 0}))
+    assert len(json.dumps(c, ensure_ascii=False)) < 6000
+    # Trimming must not silently produce a run with zero shown outcomes.
+    for tier in ("match", "partial", "near"):
+        for v in c[tier]:
+            assert v["outcomes"], v
+
+
 def test_compact_rank_fits_budget():
     for gc, quantity in (("droplet-combustion", "burning_rate_k"), ("gaseous-flames", "burn_time")):
         c = psi_query.compact_rank(psi_query.rank({}, quantity, gc))

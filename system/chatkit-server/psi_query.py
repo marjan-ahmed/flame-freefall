@@ -23,6 +23,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import re
 from collections import Counter, defaultdict
 from functools import lru_cache
 from pathlib import Path
@@ -41,6 +42,16 @@ NUMERIC_AXES: dict[str, tuple[str, float, str]] = {
 }
 CATEGORICAL_AXES = ("fuel_family", "geometry_class", "flow_direction", "fuel_form", "investigation")
 MISSING_PENALTY = 1.5  # a missing axis ranks like being 1.5 tolerances away
+# Sentinel score for a near-tier run reporting NONE of the query's axes: it
+# is not "near" in any measured sense and must sort after every run that
+# reports the axis, however far off that reading is. Finite (not inf) so it
+# stays ordinary JSON.
+NO_AXES_REPORTED_SCORE = 1e6
+# A target exactly one tolerance-width from a run's value must match from
+# either side. Plain float division (e.g. (1.1-1.0)/0.1) can land a hair
+# above 1.0, excluding it on one side only; this absorbs that noise without
+# ever admitting a run genuinely outside tolerance.
+TOLERANCE_EPS = 1e-9
 
 GRANULARITY_RANK = {"test": 0, "test-point": 0, "day": 1, "summary": 1, "envelope": 2}
 
@@ -62,12 +73,67 @@ def load() -> tuple[list[dict], dict[str, dict]]:
     return runs, {i["id"]: i for i in invs}
 
 
+# A trailing roman numeral, converted to its arabic digit -- so a real name
+# ending in one ("BASS-II") also answers to an informally arabic-typed query
+# ("BASS 2"). One-directional on purpose (see _investigation_ids): only ever
+# applied to the CANDIDATE id/name, never to the query itself, so a query
+# that itself uses a roman numeral ("SAFFIRE-II") is never treated as an
+# alias of an arabic-named investigation (SAFFIRE-2) -- that is a genuinely
+# wrong name, not an alias, and must stay unresolved.
+_ROMAN_TO_ARABIC = {"i": "1", "ii": "2", "iii": "3", "iv": "4", "v": "5",
+                    "vi": "6", "vii": "7", "viii": "8", "ix": "9", "x": "10"}
+_TRAILING_NUMERAL_RE = re.compile("(" + "|".join(sorted(_ROMAN_TO_ARABIC, key=len, reverse=True)) + r")$")
+_ALNUM = lambda s: re.sub(r"[^a-z0-9]", "", s.lower())  # noqa: E731
+
+
+def _numeral_canon(s: str) -> str:
+    """Alphanumeric-only, with a trailing ROMAN numeral (only) converted to
+    arabic. A tail that's already a plain digit, or no numeral at all, is
+    returned as-is -- this never invents an arabic->roman direction."""
+    base = _ALNUM(s)
+    m = _TRAILING_NUMERAL_RE.search(base)
+    return base[:m.start()] + _ROMAN_TO_ARABIC[m.group(1)] if m else base
+
+
+def _investigation_ids(name: str, invs: dict[str, dict]) -> set[str]:
+    """Investigation ids a user/model name resolves to. An exact id or name
+    match wins ("BASS" is BASS, not BASS-II); otherwise a family name matches
+    every member ("SAFFIRE" -> SAFFIRE-1/-2/-3/IV-VI, "ACME" -> every ACME
+    experiment); otherwise a hyphen-insensitive exact match ("FLEX 2" ->
+    FLEX-2); otherwise, if the query itself ends in a plain arabic digit
+    (never a roman numeral -- see _numeral_canon), a candidate whose OWN
+    trailing roman numeral converts to that digit ("BASS 2" -> BASS-II).
+    One resolver shared by query()'s investigation filter and
+    psi_widgets.compare_data/results_data, so all three agree on what a name
+    means (see AGENTS.md/C7 -- they used to disagree). A blank name resolves
+    to nothing, never to "every investigation" (every id/name trivially
+    starts with ""); query()'s own callers already filter blanks out before
+    this point, but compare_data's investigations list does not, and a stray
+    "" there must not silently defeat a real filter it's unioned with."""
+    if not name or not name.strip():
+        return set()
+    norm = lambda s: s.lower().replace(" ", "").replace("_", "-")  # noqa: E731
+    n = norm(name)
+    exact = {i for i, inv in invs.items() if n in (norm(i), norm(inv["name"]))}
+    if exact:
+        return exact
+    prefix = {i for i, inv in invs.items() if norm(i).startswith(n) or norm(inv["name"]).startswith(n)}
+    if prefix:
+        return prefix
+    an = _ALNUM(name)
+    alnum_exact = {i for i, inv in invs.items() if an in (_ALNUM(i), _ALNUM(inv["name"]))}
+    if alnum_exact:
+        return alnum_exact
+    if not re.search(r"\d$", an):  # query doesn't end in a plain digit: no roman-alias attempt
+        return set()
+    return {i for i, inv in invs.items() if an == _numeral_canon(i) or an == _numeral_canon(inv["name"])}
+
+
 def _cat_match(run: dict, key: str, want: str, invs: dict[str, dict]) -> bool:
     """Case-insensitive. fuel_family matches by prefix ("sibal" → "SIBAL
-    (cotton-fiberglass)", "wax" → every wax); investigation by id or name."""
+    (cotton-fiberglass)", "wax" → every wax); investigation by _investigation_ids."""
     if key == "investigation":
-        inv = invs[run["investigation"]]
-        return want in (inv["id"].lower(), inv["name"].lower())
+        return run["investigation"] in _investigation_ids(want, invs)
     have = (_cat_value(run, key, invs) or "").lower()
     return have.startswith(want) if key == "fuel_family" else have == want
 
@@ -107,12 +173,54 @@ def _citation(run: dict, invs: dict[str, dict]) -> list[dict]:
     return out
 
 
+def _source_ref(s: dict) -> dict:
+    """One run source, in the shape _citation() gives it."""
+    if s["kind"] == "report":
+        return {"kind": "report", "title": s.get("title"), "table": s["table"]}
+    return {"kind": s["kind"], "dataset": s["dataset"], "row": s.get("row"),
+            **({"sheet": s["sheet"]} if s.get("sheet") else {})}
+
+
+def source_label(ref: dict, report_keys: dict[tuple[str, str], str] | None = None) -> str:
+    """Where ONE value came from. A report is named by its table and title
+    (or, keyed by (table, title) into a short numeric tag, to keep a payload
+    with many repeated citations of the same table small -- see the
+    compact()-payload budget note in AGENTS.md)."""
+    if ref["kind"] == "report":
+        if report_keys is not None:
+            return f"report {report_keys[(ref['table'], ref['title'])]}"
+        return f"{ref['table']}, {ref['title']}"
+    if ref["kind"] == "psi-workbook":
+        return f"{ref['dataset']} workbook sheet {ref.get('sheet')} row {ref['row']}"
+    return f"{ref['dataset']} line {ref['row']}"
+
+
+def sourced_conflicts(run: dict) -> list[dict]:
+    """A run's conflicts (condition or outcome), with each disagreeing value
+    tagged by the source that actually reported it -- e.g. "PSI-99 line 7:
+    20 cm/s" vs "Table I (conditions), Results of Large-Scale Spacecraft
+    Flammability Tests: 25 cm/s" -- instead of a bare {"source": 0}/{"source":
+    1} the model would have to guess at. BOTH values are always kept; neither
+    is chosen."""
+    out = []
+    for c in run.get("conflicts", []):
+        tagged = [{**{k: val for k, val in v.items() if k != "source"},
+                   "source": source_label(_source_ref(run["sources"][v["source"]]))}
+                  for v in c["values"]]
+        out.append({"field": c["field"], "values": tagged})
+    return out
+
+
 def _outcome_summary(run: dict, q: dict) -> list[dict]:
-    """Outcomes, and for values measured at several flows, the one nearest the requested flow first."""
+    """Outcomes, and for values measured at several flows, the one nearest the requested flow first.
+    Each carries `from` (and `also_from` when a second source agrees): the source
+    that actually holds that value — never inferred from the run's other sources."""
     target_flow = q.get("flow_cm_s")
     outs = []
     for o in run["outcomes"]:
-        entry = {"quantity": o["quantity"]}
+        entry = {"quantity": o["quantity"], "from": _source_ref(run["sources"][o["source"]])}
+        if o.get("confirmed_by"):
+            entry["also_from"] = [_source_ref(run["sources"][i]) for i in o["confirmed_by"]]
         if "measure" in o:
             m = o["measure"]
             entry["value"] = m.get("value")
@@ -185,10 +293,10 @@ def query(q: dict, tolerances: dict | None = None, near_limit: int = 10, runs=No
                 axes[axis] = {"status": "not_reported"}
                 continue
             dists.append(d)
-            axes[axis] = {"status": "within" if d <= 1 else "outside", "raw": m["raw"], "min": m["min"],
+            axes[axis] = {"status": "within" if d <= 1 + TOLERANCE_EPS else "outside", "raw": m["raw"], "min": m["min"],
                           "max": m["max"], "unit": m.get("unit"), "distance": round(d, 3),
                           **({"flags": m["flags"]} if m.get("flags") else {})}
-        within = all(d <= 1 for d in dists)
+        within = all(d <= 1 + TOLERANCE_EPS for d in dists)
         if not cat_ok:
             if num_q and within and not missing:
                 relaxed[(_cat_value(run, "fuel_family", invs) or "unassigned", invs[run["investigation"]]["name"])] += 1
@@ -202,7 +310,15 @@ def query(q: dict, tolerances: dict | None = None, near_limit: int = 10, runs=No
         elif within and dists:
             partial.append((score, run, axes))
         else:
-            near.append((score, run, axes))
+            # A run reporting NONE of the query's axes has no measured
+            # information about it at all -- it must never rank as "nearer"
+            # than a run that DOES report an axis, however far off that
+            # value is. MISSING_PENALTY is a small constant meant only to
+            # nudge an otherwise-close multi-axis match that lacks one axis;
+            # alone (dists empty) it made "we have no idea" look nearer than
+            # "we measured, and it's far" -- e.g. the "nearest" results for
+            # an out-of-range o2_pct were runs with no O2 column at all.
+            near.append((score if dists else NO_AXES_REPORTED_SCORE, run, axes))
 
     # Individual tests outrank daily summaries, which outrank planned
     # envelopes: a matrix row "0.17–0.30 O2" is not a test at 0.30. Then by
@@ -324,13 +440,22 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
         })
     rows.sort(key=lambda r: (-r["median"] if direction == "desc" else r["median"], r["fuel_family"]))
 
-    ranked_families = {r["fuel_family"] for r in rows}
-    all_families = {(_cat_value(r, "fuel_family", invs) or "unassigned") for r in runs
-                    if invs[r["investigation"]]["geometry_class"] == geometry_class}
+    # "Untested at these conditions" means no match/partial run at all under
+    # this query's OWN filters (categorical + numeric) -- not "every family
+    # in the geometry class" (which ignores the query's own fuel_family/etc.
+    # filter, so a filtered-out family like SIBAL under fuel_family='PMMA'
+    # would wrongly be called untested) and not "ranked" (a family can have
+    # match/partial runs at these conditions that simply don't report THIS
+    # quantity -- that is not the same as never having been tested here).
+    cat_q = {k: str(v).lower() for k, v in full_q.items() if k in CATEGORICAL_AXES and v}
+    candidate_families = {(_cat_value(r, "fuel_family", invs) or "unassigned") for r in runs
+                          if invs[r["investigation"]]["geometry_class"] == geometry_class
+                          and all(_cat_match(r, k, v, invs) for k, v in cat_q.items())}
+    tested_families = {v["fuel_family"] or "unassigned" for t in ("match", "partial") for v in result[t]}
     return {
         "query": full_q, "quantity": quantity, "geometry_class": geometry_class, "direction": direction,
         "rows": rows[:limit], "total_ranked": len(rows),
-        "untested": sorted(all_families - ranked_families),
+        "untested": sorted(candidate_families - tested_families),
         "coverage": result["coverage"],
     }
 
@@ -380,6 +505,15 @@ def _fmt_outcome(o: dict) -> str:
     return f"{o['quantity']}={val}{at}"
 
 
+def fmt_sourced_outcome(o: dict, report_keys: dict[tuple[str, str], str] | None = None) -> str:
+    """A value and its provenance as ONE string, so the model can only repeat
+    them together: 'spread_rate=0.071 mm/s @ 9 cm/s [Table 5.1, report 1]',
+    or (report_keys given) '... [report 1]' with the table/title looked up
+    once in the payload's top-level "reports" map."""
+    tags = [source_label(r, report_keys) for r in [o["from"], *o.get("also_from", [])]]
+    return f"{_fmt_outcome(o)} [{'; also '.join(tags)}]"
+
+
 def _axis_for_compact(a: dict) -> str:
     """Format axis for compact view: normalized value with source cell if converted."""
     if a["status"] == "not_reported":
@@ -397,24 +531,64 @@ def _axis_for_compact(a: dict) -> str:
     return raw + (f" {unit}" if unit and unit not in raw else "")
 
 
-def compact(result: dict, max_runs: int = 10) -> dict:
+def _shrink_to_budget(payload: dict, max_bytes: int) -> None:
+    """Guarantee compact()'s output fits the token budget regardless of which
+    specific query produced it (AGENTS.md: Groq's free tier is 8000 TPM for
+    the whole turn, so tool replies must stay small -- a fixed per-outcome
+    citation tag can, for an unusual query with many long free-text
+    outcomes and little repetition to compress away, still push a payload
+    over budget; a single pinned test case is not proof every query shape
+    fits). Trims the single longest outcome string across every listed run
+    -- never the run itself first, so a run's remaining outcomes/axes/id
+    stay intact -- until the payload fits or nothing is left to trim. A run
+    left with zero outcomes is dropped entirely, so "no values recorded"
+    is never implied for a run that had some."""
+    tiers = ("match", "partial", "near")
+    while len(json.dumps(payload, ensure_ascii=False)) > max_bytes:
+        longest = None  # (tier, run_index, outcome_index, length)
+        for t in tiers:
+            for i, v in enumerate(payload.get(t, [])):
+                for j, o in enumerate(v["outcomes"]):
+                    if longest is None or len(o) > longest[3]:
+                        longest = (t, i, j, len(o))
+        if longest is None:
+            return  # nothing left to trim; leave the payload as-is
+        t, i, j, _ = longest
+        del payload[t][i]["outcomes"][j]
+        if not payload[t][i]["outcomes"]:
+            del payload[t][i]
+
+
+def compact(result: dict, max_runs: int = 10, max_bytes: int = 5800) -> dict:
     """The LLM-facing view: small enough for a tight token budget, still cited.
     The widget renders the full result; the model only needs enough to write
     a one-paragraph, cited summary."""
 
+    # A (table, title) pair is listed once and referenced by a short key, so
+    # a payload with many outcomes citing the same report table -- the common
+    # case -- doesn't repeat that table's full name every time (it did: one
+    # real query's payload went from 5983 to 6798 bytes, over the ~6000
+    # budget, purely from restating "Table A.5, p. 110, Burning and
+    # Suppression of Solids-II (BASS-II) Summary Report" per outcome).
+    report_keys: dict[tuple[str, str], str] = {}
+
     def slim(v: dict) -> dict:
-        cite = next((c for c in v["citations"] if c["kind"] == "psi"), v["citations"][0] if v["citations"] else {})
-        # The run id already names the dataset and test; dataset + line is the
-        # handle a reader opens the CSV at.
-        cite_s = f"{cite.get('dataset')} line {cite.get('row')}" if cite.get("kind") == "psi" else \
-            f"{cite.get('title')}, {cite.get('table')}"
+        outcomes = v["outcomes"][:3]
+        for o in outcomes:
+            for r in [o["from"], *o.get("also_from", [])]:
+                if r["kind"] == "report":
+                    key = (r["table"], r["title"])
+                    if key not in report_keys:
+                        report_keys[key] = str(len(report_keys) + 1)
+        # No run-level citation: a single per-run cite (it was always the PSI
+        # line) got copied as the source of values that came from a report
+        # table. Each value's source is the tag on that value instead.
         return {
             "id": v["id"], "inv": v["investigation"], "fuel": v["fuel"],
             **({"granularity": v["granularity"]} if v["granularity"] not in ("test", "test-point") else {}),
             "axes": {k: _axis_for_compact(a) for k, a in v["axes"].items()},
-            "outcomes": [_fmt_outcome(o) for o in v["outcomes"][:3]],
+            "outcomes": [fmt_sourced_outcome(o, report_keys) for o in outcomes],
             "conflicts": len(v["conflicts"]),
-            "cite": cite_s,
         }
 
     budget = max_runs
@@ -424,13 +598,14 @@ def compact(result: dict, max_runs: int = 10) -> dict:
         budget -= len(picks[tier])
         budget = max(budget, 2)  # always show a couple from each remaining tier
     measured = Counter(o["quantity"] for t in ("match", "partial") for v in result[t] for o in v["outcomes"])
-    return {
+    payload = {
         "query": result["query"],
         "counts": result["counts"],
         # across ALL matching/partial runs, not just the ones listed below — so
         # "no values recorded" can never be concluded from a truncated list
         "results_recorded": dict(measured.most_common(8)),
         **picks,
+        **({"reports": {v: f"{table}, {title}" for (table, title), v in report_keys.items()}} if report_keys else {}),
         "coverage": [
             {"inv": c["investigation"], "runs": c["runs"],
              **{k: (a.get("statement") or f"{a['min']}–{a['max']} ({a['reported_by']}/{a['of']} runs){'' if a['target_in_range'] else ' — target OUTSIDE tested range'}")
@@ -440,6 +615,8 @@ def compact(result: dict, max_runs: int = 10) -> dict:
         "relaxed": result["relaxed"][:5],
         "geometry_classes": result["geometry_classes"],
     }
+    _shrink_to_budget(payload, max_bytes)
+    return payload
 
 
 # ── Mission readiness ────────────────────────────────────────────────────────
@@ -461,6 +638,24 @@ def _findings() -> list[dict]:
     return yaml.safe_load(_FINDINGS_PATH.read_text(encoding="utf-8")) or []
 
 
+def _nearest_reported_value(m: dict | None, target: float) -> float | None:
+    """The number that actually put this axis within tolerance -- for a
+    multi-value cell (several distinct readings in one cell, e.g. an ACME BRE
+    run logging "21; 26.5; 40"), the ONE reading nearest target, never the
+    cell's bare minimum, which can be a different, unrelated reading. A plain
+    interval with no discrete readings falls back to its nearer endpoint; a
+    single value is returned as-is. Mirrors _norm_distance's own choice of
+    which number in the cell counts as "the" value at this target."""
+    if m is None or m.get("min") is None:
+        return None
+    if m.get("values"):
+        return min(m["values"], key=lambda v: abs(v - target))
+    if m.get("value") is not None:
+        return m["value"]
+    lo, hi = m["min"], m["max"]
+    return lo if abs(target - lo) <= abs(target - hi) else hi
+
+
 def readiness(atm_id: str, runs=None, invs=None) -> dict:
     atm = psi_atmospheres.ATMOSPHERES.get(atm_id)
     if atm is None:
@@ -468,6 +663,7 @@ def readiness(atm_id: str, runs=None, invs=None) -> dict:
     if runs is None or invs is None:
         runs, invs = load()
     base_q = {"o2_pct": atm["o2_pct"], "pressure_atm": atm["pressure_atm"]}
+    by_id = {r["id"]: r for r in runs}
 
     classes = []
     for gc in sorted({i["geometry_class"] for i in invs.values()}):
@@ -476,9 +672,10 @@ def readiness(atm_id: str, runs=None, invs=None) -> dict:
         nearest = None
         if best_pool:
             b = best_pool[0]
+            full = by_id[b["id"]]
             nearest = {"run_id": b["id"], "investigation": b["investigation"], "tier": b["tier"],
-                      "o2_pct": (b["axes"].get("o2_pct") or {}).get("min"),
-                      "pressure_atm": (b["axes"].get("pressure_atm") or {}).get("min")}
+                      "o2_pct": _nearest_reported_value(full["conditions"].get("o2_pct"), atm["o2_pct"]),
+                      "pressure_atm": _nearest_reported_value(full["conditions"].get("pressure_atm"), atm["pressure_atm"])}
         quantities = sorted({o["quantity"] for v in (result["match"] + result["partial"]) for o in v["outcomes"]
                              if o.get("value") is not None
                              or (o.get("min") is not None and o.get("max") is not None) or o.get("values")})
