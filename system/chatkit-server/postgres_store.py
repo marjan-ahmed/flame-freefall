@@ -88,16 +88,25 @@ async def _init_schema(pool: asyncpg.Pool) -> None:
             )
         """)
         
-        # Attachments table
+        # Attachments table. thread_id is nullable: ChatKit's two-phase upload
+        # creates the attachment (attachments.create) before any thread
+        # exists — it's only attached to a thread once the user sends the
+        # message. A NOT NULL here made every attachment.create insert fail
+        # with NotNullViolationError, surfacing to the browser as a generic
+        # "File upload failed" (confirmed live 2026-09-26).
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS chatkit_attachments (
                 id TEXT PRIMARY KEY,
-                thread_id TEXT NOT NULL REFERENCES chatkit_threads(id) ON DELETE CASCADE,
+                thread_id TEXT REFERENCES chatkit_threads(id) ON DELETE CASCADE,
                 name TEXT NOT NULL,
                 mime_type TEXT NOT NULL,
                 type TEXT NOT NULL,  -- 'file' or 'image'
                 metadata JSONB NOT NULL DEFAULT '{}'
             )
+        """)
+        # Migrate a table created before thread_id was made nullable.
+        await conn.execute("""
+            ALTER TABLE chatkit_attachments ALTER COLUMN thread_id DROP NOT NULL
         """)
         
         # Indexes for common queries
@@ -227,7 +236,7 @@ def _serialize_attachment(attachment: Attachment) -> dict[str, Any]:
     if isinstance(attachment, FileAttachment):
         return {
             "id": attachment.id,
-            "thread_id": attachment.metadata.get("thread_id") if attachment.metadata else None,
+            "thread_id": attachment.thread_id,
             "name": attachment.name,
             "mime_type": attachment.mime_type,
             "type": "file",
@@ -236,7 +245,7 @@ def _serialize_attachment(attachment: Attachment) -> dict[str, Any]:
     elif isinstance(attachment, ImageAttachment):
         return {
             "id": attachment.id,
-            "thread_id": attachment.metadata.get("thread_id") if attachment.metadata else None,
+            "thread_id": attachment.thread_id,
             "name": attachment.name,
             "mime_type": attachment.mime_type,
             "type": "image",
@@ -442,6 +451,7 @@ class PostgresChatKitStore(Store[dict]):
                 INSERT INTO chatkit_attachments (id, thread_id, name, mime_type, type, metadata)
                 VALUES ($1, $2, $3, $4, $5, $6)
                 ON CONFLICT (id) DO UPDATE SET
+                    thread_id = EXCLUDED.thread_id,
                     name = EXCLUDED.name,
                     mime_type = EXCLUDED.mime_type,
                     metadata = EXCLUDED.metadata

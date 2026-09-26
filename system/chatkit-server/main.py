@@ -11,6 +11,7 @@ Run: uv run uvicorn main:app --reload --port 8000
 from __future__ import annotations
 
 import asyncio
+import io
 import json
 import os
 import sys
@@ -32,7 +33,7 @@ from agents import Agent, AsyncOpenAI, ModelSettings, OpenAIChatCompletionsModel
 from agents.mcp import MCPServerStreamableHttp
 from chatkit.agents import AgentContext, ThreadItemConverter, stream_agent_response, stream_widget
 from chatkit.server import ChatKitServer, StreamingResult
-from chatkit.store import AttachmentStore
+from chatkit.store import AttachmentStore, NotFoundError
 from chatkit.types import (
     SyncCustomActionResponse,
     AssistantMessageContent,
@@ -57,7 +58,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from openai.types.responses import EasyInputMessageParam
+from openai.types.responses import EasyInputMessageParam, ResponseInputTextParam
+from pypdf import PdfReader
 
 import psi_widgets
 from chatkit.widgets import Caption, Card, Markdown, Text
@@ -354,6 +356,41 @@ assistant = Agent(
 )
 
 
+# Groq's free tier caps openai/gpt-oss-120b at 8000 tokens/minute for the
+# WHOLE request (system instructions + tool schemas + history + this text) —
+# same budget the "Never make the model retype numbers" rule in AGENTS.md
+# protects. An attached PDF's extracted text has to stay small enough to
+# leave room for everything else.
+MAX_ATTACHMENT_CHARS = 6000
+
+
+def _extract_pdf_text(data: bytes, max_chars: int = MAX_ATTACHMENT_CHARS) -> str | None:
+    """Best-effort text extraction for an uploaded PDF. None means "couldn't
+    read this" (encrypted, corrupt, or scanned pages with no text layer) —
+    the caller turns that into an honest message rather than silently
+    sending the model nothing and letting it guess."""
+    try:
+        reader = PdfReader(io.BytesIO(data))
+        chunks: list[str] = []
+        total = 0
+        for page in reader.pages:
+            text = (page.extract_text() or "").strip()
+            if not text:
+                continue
+            chunks.append(text)
+            total += len(text)
+            if total >= max_chars:
+                break
+    except Exception:
+        return None
+    text = "\n\n".join(chunks).strip()
+    if not text:
+        return None
+    if len(text) > max_chars:
+        text = text[:max_chars] + "\n[...truncated...]"
+    return text
+
+
 # The default ThreadItemConverter.assistant_message_to_input wraps prior
 # assistant turns in a Responses-API content part (type "output_text") — the
 # Chat Completions converter this backend's model uses (required for Groq,
@@ -367,6 +404,35 @@ class ChatCompletionsThreadItemConverter(ThreadItemConverter):
             role="assistant",
             content="\n".join(c.text for c in item.content),
         )
+
+    async def attachment_to_message_content(self, attachment: Attachment) -> ResponseInputTextParam:
+        # Every attachment this backend hands out is a FileAttachment (see
+        # InMemoryAttachmentStore.create_attachment below) — mime_type is
+        # what actually distinguishes a PDF from an image, not the Attachment
+        # subclass. The models in this app's fallback chain (Groq's
+        # gpt-oss-120b and its fallbacks) are text-only, so an image can
+        # never be described beyond its filename.
+        data = uploaded_files.get(attachment.id)
+        if attachment.mime_type == "application/pdf" and data is not None:
+            text = _extract_pdf_text(data)
+            if text is not None:
+                note = (
+                    f'The user attached a PDF named "{attachment.name}". '
+                    f"Extracted text follows:\n\n{text}"
+                )
+            else:
+                note = (
+                    f'The user attached a PDF named "{attachment.name}", but no text could be '
+                    "extracted from it (it may be scanned, image-only, or corrupt). Say so rather "
+                    "than guessing at its contents."
+                )
+        else:
+            note = (
+                f'The user attached a file named "{attachment.name}" ({attachment.mime_type}). '
+                "This assistant cannot read image or non-PDF file contents — acknowledge the "
+                "attachment without describing contents you cannot see."
+            )
+        return ResponseInputTextParam(type="input_text", text=note)
 
 
 converter = ChatCompletionsThreadItemConverter()
@@ -926,7 +992,13 @@ async def chatkit_endpoint(request: Request):
 
 @app.post("/chatkit/upload/{attachment_id}")
 async def upload_attachment(attachment_id: str, request: Request):
-    if attachment_id not in server.store.attachments:  # type: ignore[attr-defined]
+    # server.store.attachments is an InMemoryChatKitStore-only dict;
+    # PostgresChatKitStore has no such attribute, so this raised
+    # AttributeError (a 500) on every upload once the DB store was in use
+    # (confirmed live 2026-09-26). load_attachment() exists on both.
+    try:
+        await server.store.load_attachment(attachment_id, context={"site": _site_for(request)})
+    except NotFoundError:
         raise HTTPException(status_code=404, detail="unknown attachment id")
     uploaded_files[attachment_id] = await request.body()
     return {"status": "ok"}
