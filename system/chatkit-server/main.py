@@ -710,27 +710,6 @@ def _item_text(item) -> str:
     return " ".join(getattr(c, "text", "") for c in content).strip()
 
 
-async def generate_short_title(items) -> str:
-    """One small, cheap LLM call — not the main assistant — so titling
-    doesn't compete with the real answer for the tight Groq/HF token
-    budgets. Goes through the same provider fallback chain as everything
-    else (chat_client.chat.completions.create ignores the `model` kwarg
-    here; each tier substitutes its own, same as the main model)."""
-    transcript = "\n".join(t for t in (_item_text(i) for i in reversed(items)) if t)[:800]
-    resp = await chat_client.chat.completions.create(
-        model=_providers[0][1],
-        messages=[
-            {
-                "role": "system",
-                "content": "Reply with ONLY a 3-6 word title summarizing this chat. No quotes, no trailing punctuation.",
-            },
-            {"role": "user", "content": transcript},
-        ],
-        max_tokens=20,
-    )
-    return (resp.choices[0].message.content or "").strip().strip('"')
-
-
 # Widget buttons → the widget they open. Answered by the server directly: no
 # model call, no tokens, instant — the user steers the data from the chat.
 def _action_widget(kind: str, payload: dict, site: str | None = None):
@@ -806,6 +785,12 @@ def _clean_query(raw: dict) -> dict:
 
 
 class FlameFreefallChatKitServer(ChatKitServer[dict]):
+    async def handle_stream_cancelled(self, thread, pending_items, context):
+        run = context.pop("_active_agent_run", None)
+        if run is not None:
+            run.cancel()
+        await super().handle_stream_cancelled(thread, pending_items, context)
+
     async def sync_action(self, thread, action, sender, context):
         """Sync (streaming=False) actions update the widget that was clicked,
         in place: ChatKit replaces it with `updated_item`. Used by an evidence
@@ -866,17 +851,13 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         recent_items = list(reversed(items_page.data))
         input_items = await converter.to_agent_input(recent_items)
 
+        await self._maybe_update_thread_title(thread, context, input_user_message)
+
         agent_context = AgentContext(thread=thread, store=self.store, request_context=context)
         agent_context._guard = TurnGuard()  # type: ignore[attr-defined]
         result = Runner.run_streamed(assistant, input_items, context=agent_context, hooks=tool_call_hooks)
+        context["_active_agent_run"] = result
 
-        # Started before the main stream, awaited after: title generation
-        # runs concurrently with the real answer rather than adding latency
-        # to it. thread.title update()s the SAME object the "thread not
-        # found" check above already validated — save_thread persists it,
-        # and chatkit's own protocol layer emits the ThreadUpdatedEvent the
-        # client's history list picks up.
-        title_task = asyncio.create_task(self._maybe_update_thread_title(thread, context))
         try:
             async for event in _guard_response_text(
                 agent_context, _uniquify_fake_item_ids(stream_agent_response(agent_context, result))
@@ -905,35 +886,30 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
                     created_at=datetime.now(),
                 )
             )
-        await title_task
 
-    async def _maybe_update_thread_title(self, thread: ThreadMetadata, context: dict) -> None:
-        # Whole body guarded, not just the LLM call — a Postgres hiccup here
-        # (e.g. Neon waking from idle) must never surface anywhere; this is
-        # cosmetic background work, run as a fire-and-forget task and
-        # awaited only to prevent an orphaned task, never something a chat
-        # response's success should depend on (confirmed live 2026-09-22).
-        try:
-            if thread.title is not None:
-                return
-            items_page = await self.store.load_thread_items(
-                thread.id, after=None, limit=6, order="desc", context=context
-            )
-            if not items_page.data:
-                return
-            title = await generate_short_title(items_page.data)
-            if not title:
-                return
-            thread.title = title
-            await self.store.save_thread(thread, context=context)
-        except Exception as exc:
-            print(f"[thread-title] update failed: {exc}")
+    async def _maybe_update_thread_title(
+        self, thread: ThreadMetadata, context: dict, input_user_message: UserMessageItem | None
+    ) -> None:
+        if (thread.title and thread.title.strip().casefold() != "new thread") or input_user_message is None:
+            return
+
+        title = " ".join(_item_text(input_user_message).split())
+        if not title and input_user_message.attachments:
+            title = input_user_message.attachments[0].name
+        if not title:
+            return
+        if len(title) > 64:
+            title = title[:61].rstrip() + "..."
+
+        thread.title = title
+        await self.store.save_thread(thread, context=context)
 
 
-# Initialize Postgres store (falls back to in-memory if DB not configured)
+# In-memory threads are intentional for this deployment. Uncomment the
+# selector below to persist threads in PostgreSQL instead.
 def _make_store():
-    if os.environ.get("KSOR_DB_URL") or os.environ.get("DATABASE_URL"):
-        return PostgresChatKitStore()
+    # if os.environ.get("KSOR_DB_URL") or os.environ.get("DATABASE_URL"):
+    #     return PostgresChatKitStore()
     return InMemoryChatKitStore()
 
 

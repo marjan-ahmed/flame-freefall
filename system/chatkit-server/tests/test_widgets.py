@@ -78,6 +78,39 @@ def test_action_router_rejects_junk():
     assert main._action_widget("gap_map", {"q": {"o2_pct": 15}, "y": "../../etc"}) is not None
 
 
+def test_store_defaults_to_memory_even_when_database_url_is_set(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "postgresql://unused")
+    monkeypatch.setenv("KSOR_DB_URL", "postgresql://unused")
+
+    assert isinstance(main._make_store(), main.InMemoryChatKitStore)
+
+
+def test_first_user_message_is_saved_as_thread_title():
+    import asyncio
+    from datetime import datetime
+
+    from chatkit.types import InferenceOptions, ThreadMetadata, UserMessageItem, UserMessageTextContent
+    from store import InMemoryChatKitStore
+
+    async def go():
+        store = InMemoryChatKitStore()
+        srv = main.FlameFreefallChatKitServer(store=store, attachment_store=main.attachment_store)
+        thread = ThreadMetadata(id="thr_title", created_at=datetime.now(), title="New thread")
+        await store.save_thread(thread, context={})
+        message = UserMessageItem(
+            id="msg_title",
+            thread_id=thread.id,
+            created_at=datetime.now(),
+            content=[UserMessageTextContent(text="  Compare PMMA tests at 15% oxygen  ")],
+            inference_options=InferenceOptions(),
+        )
+        await srv._maybe_update_thread_title(thread, {}, message)
+        saved = await store.load_thread(thread.id, context={})
+        return saved.title
+
+    assert asyncio.run(go()) == "Compare PMMA tests at 15% oxygen"
+
+
 @pytest.mark.parametrize("gc,quantity", [
     ("solid-fuel", "spread_rate"),
     ("droplet-combustion", "burning_rate_k"),
@@ -268,3 +301,30 @@ def test_details_expands_in_place_through_the_chatkit_protocol():
     text = json.dumps(opened)
     assert '"Hide details"' in text and '"Conditions"' in text and '"Sources"' in text
     assert '"Hide details"' not in json.dumps(closed)
+
+
+def test_cancelled_stream_stops_the_active_agent_run():
+    import asyncio
+    from datetime import datetime
+
+    from chatkit.types import ThreadMetadata
+    from store import InMemoryChatKitStore
+
+    class FakeRun:
+        cancelled = False
+
+        def cancel(self):
+            self.cancelled = True
+
+    async def go():
+        srv = main.FlameFreefallChatKitServer(store=InMemoryChatKitStore(), attachment_store=main.attachment_store)
+        thread = ThreadMetadata(id="thr_cancel", created_at=datetime.now())
+        await srv.store.save_thread(thread, context={})
+        run = FakeRun()
+        context = {"_active_agent_run": run}
+        await srv.handle_stream_cancelled(thread, [], context)
+        return run, context
+
+    run, context = asyncio.run(go())
+    assert run.cancelled
+    assert "_active_agent_run" not in context
