@@ -4,22 +4,20 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "patch-package",
     "dev": "npm --prefix system/site run dev",
     "build": "ksor build && npm --prefix system/site run build",
     "preview": "node system/site/preview.mjs",
     "check": "node .agents/skills/format-checker/check.mjs",
     "provision": "npm run schema && npm run grant",
-    "serve": "node scripts/ksor-local.mjs serve",
+    "serve": "ksor serve",
     "refresh": "ksor build && npm run ingest && npm run gc",
-    "schema": "node scripts/ksor-local.mjs schema --instance instance.md --apply",
-    "grant": "node scripts/ksor-local.mjs grant --instance instance.md",
-    "ingest": "node scripts/ksor-local.mjs ingest --instance instance.md --flip",
-    "gc": "node scripts/ksor-local.mjs gc --instance instance.md"
+    "schema": "ksor schema --instance instance.md --apply",
+    "grant": "ksor grant --instance instance.md",
+    "ingest": "ksor ingest --instance instance.md --flip",
+    "gc": "ksor gc --instance instance.md"
   },
   "dependencies": {
-    "@panaversity/ksor": "0.0.60",
-    "patch-package": "^8.0.1"
+    "@panaversity/ksor": "0.0.60"
   },
   "engines": {
     "node": ">=24"

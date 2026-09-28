@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node next-no-telemetry.mjs build --webpack",
-    "dev": "node next-no-telemetry.mjs dev --webpack",
+    "dev": "node next-no-telemetry.mjs dev",
     "test:psi": "node --test lib/psi-query.test.ts"
   },
   "dependencies": {
