@@ -305,7 +305,7 @@ mission-readiness view cites.
 | --- | --- | --- |
 | Site (static export) | GitHub Pages | Free, zero-config for a pure static export. |
 | Chat backend (FastAPI) | Vercel | Native `pyproject.toml`/`uv.lock` support; serverless fits a request-scoped LLM call. |
-| MCP door (`ksor serve`) | Vercel *(container runtime)* | Fly.io and Render both gate free accounts behind a card; Vercel's `services`/container runtime doesn't, and ksor's own deploy guide names Vercel as a supported target. |
+| MCP door and embeddings API | Vercel *(container runtime)* | Separate `door` and `embeddings` containers; `/mcp` and `/v1/*` route to their respective services. |
 | Corpus store | Neon (Postgres + pgvector) | Managed, scales to zero, free tier includes pgvector. |
 
 Verify any of the three independently, the same way the [ksor deploy
@@ -369,6 +369,34 @@ or serving the MCP door. Local npm KSOR commands target the dedicated
 `flame_freefall_sentence_transformers` database derived from `KSOR_DB_URL`,
 leaving any existing embedding database untouched. Setup details are in
 [`system/sentence-transformers/README.md`](system/sentence-transformers/README.md).
+
+### Production Embedding Cutover
+
+Do not switch the production MCP door directly from Gemini to Sentence
+Transformers on the existing database. Embedding vectors are model-specific.
+Use this staged migration:
+
+1. Create a separate Neon database named `flame_freefall_sentence_transformers`
+  with pgvector enabled. Keep the existing Gemini database unchanged.
+2. Configure Vercel Preview variables for the MCP project: `KSOR_DB_URL` to the
+  new database, `SENTENCE_TRANSFORMERS_BASE_URL` to the Preview deployment's
+  `/v1` route, `SENTENCE_TRANSFORMERS_API_TOKEN` to a generated random token,
+  and `KSOR_SNAPSHOT_KEYS` to a stable key. The embeddings container requires
+  that same token; it fails closed if missing.
+3. Deploy this branch as a Preview. Confirm its `/v1/health` works with bearer
+  auth and its MCP `/health` reports the Sentence Transformers space.
+4. Put the new database DSN and Preview embeddings URL in local `.env`, then run
+  `npm run provision`, `npm run refresh`, and
+  `npm run calibrate -- --queries-file <calibration-queries.json>`. Use the
+  same model, dimensions, and token for ingestion and serving. Apply the
+  measured retrieval floor to `instance.md` and rebuild.
+5. Verify search against Preview, then set Production `KSOR_DB_URL` to the new
+  database, `SENTENCE_TRANSFORMERS_BASE_URL` to
+  `https://flamefreefall-sor.vercel.app/v1`, and the matching token. Merge the
+  branch to `main` only after the new database is fully ingested and calibrated.
+
+Never put a DSN, API token, or snapshot key in Git or paste one into chat. Add
+secrets directly to Neon/Vercel and the local ignored `.env` file.
 
 Each layer needs `.env` filled in — copy `.env.example` and see the comments
 inline; the chat backend additionally reads a Groq (and optionally Hugging Face)

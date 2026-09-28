@@ -5,10 +5,16 @@
       "root": ".",
       "runtime": "container",
       "entrypoint": "Dockerfile"
+    },
+    "embeddings": {
+      "root": "system/sentence-transformers",
+      "runtime": "container",
+      "entrypoint": "Dockerfile"
     }
   },
   "rewrites": [
     { "source": "/mcp(.*)", "destination": { "service": "door" } },
+    { "source": "/v1/(.*)", "destination": { "service": "embeddings" } },
     {
       "source": "/.well-known/oauth-protected-resource(.*)",
       "destination": { "service": "door" }

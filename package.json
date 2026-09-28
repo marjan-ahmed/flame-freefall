@@ -15,7 +15,8 @@
     "schema": "node scripts/ksor-local.mjs schema --instance instance.md --apply",
     "grant": "node scripts/ksor-local.mjs grant --instance instance.md",
     "ingest": "node scripts/ksor-local.mjs ingest --instance instance.md --flip",
-    "gc": "node scripts/ksor-local.mjs gc --instance instance.md"
+    "gc": "node scripts/ksor-local.mjs gc --instance instance.md",
+    "calibrate": "node scripts/ksor-local.mjs calibrate --instance instance.md"
   },
   "dependencies": {
     "@panaversity/ksor": "0.0.60",

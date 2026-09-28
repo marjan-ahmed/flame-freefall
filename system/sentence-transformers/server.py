@@ -33,8 +33,23 @@ def load_model() -> Any:
 app = FastAPI(title="Local Sentence Transformers embeddings")
 
 
+def _authorize(authorization: str | None) -> None:
+    token = os.environ.get("SENTENCE_TRANSFORMERS_API_TOKEN")
+    require_token = os.environ.get("SENTENCE_TRANSFORMERS_REQUIRE_TOKEN", "").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+    if require_token and not token:
+        raise HTTPException(status_code=503, detail="Embedding service token is not configured")
+    if token and not secrets.compare_digest(authorization or "", f"Bearer {token}"):
+        raise HTTPException(status_code=401, detail="Invalid bearer token")
+
+
 @app.get("/health")
+@app.get("/v1/health")
 def health() -> dict[str, str | int]:
+    _authorize(None)
     model = load_model()
     return {
         "status": "ok",
@@ -48,9 +63,7 @@ def health() -> dict[str, str | int]:
 def create_embeddings(
     request: EmbeddingRequest, authorization: str | None = Header(default=None)
 ) -> dict[str, object]:
-    token = os.environ.get("SENTENCE_TRANSFORMERS_API_TOKEN")
-    if token and not secrets.compare_digest(authorization or "", f"Bearer {token}"):
-        raise HTTPException(status_code=401, detail="Invalid bearer token")
+    _authorize(authorization)
     if request.model != MODEL_ID:
         raise HTTPException(status_code=400, detail=f"Configured model is {MODEL_ID!r}")
 

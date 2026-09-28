@@ -20,10 +20,10 @@ Invoke-RestMethod http://127.0.0.1:8001/health
 
 Set the KSOR embedding URL for `npm run refresh` and the serving process to
 `http://127.0.0.1:8001/v1`. Both processes must reach the same model service.
-For a deployed KSOR door, localhost means the door's own container, so deploy
-this service alongside it or provide a private/reachable service URL. Do not
-point a public service at an unauthenticated embedding endpoint. Set
-`SENTENCE_TRANSFORMERS_API_TOKEN` on both processes to require a bearer token.
+In production, the MCP Vercel project routes `/v1/*` to this service, so the
+door uses `https://flamefreefall-sor.vercel.app/v1`. The embeddings container
+requires `SENTENCE_TRANSFORMERS_API_TOKEN`; configure the same random token on
+the MCP door and embeddings container. Do not expose unauthenticated inference.
 
 The model in `instance.md` must match `SENTENCE_TRANSFORMER_MODEL`, and its
 `dim` must match `SENTENCE_TRANSFORMER_OUTPUT_DIM` (1536 by default). The
@@ -32,6 +32,12 @@ appends zeros to 1536. Zero-padding normalized vectors preserves cosine
 similarity while matching the existing `vector(1536)` database schema. Changing
 the model or output dimension means re-ingesting the corpus and recalibrating
 the retrieval floor.
+
+Sentence Transformer vectors are incompatible with Gemini vectors. Create a
+new Neon database named `flame_freefall_sentence_transformers`, provision its
+pgvector schema, and ingest the entire corpus with this model before switching
+the production MCP door. Never change embedding model or database under an
+already-ingested corpus.
 
 Run the API contract tests without installing model weights:
 

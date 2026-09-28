@@ -79,3 +79,31 @@ def test_optional_service_token_is_enforced(monkeypatch):
         "/v1/embeddings", json=body, headers={"Authorization": "Bearer local-secret"}
     )
     assert response.status_code == 200
+
+
+def test_required_service_token_fails_closed_when_missing(monkeypatch):
+    monkeypatch.setattr(server, "MODEL_ID", "test-model")
+    monkeypatch.setattr(server, "OUTPUT_DIM", 3)
+    monkeypatch.setattr(server, "load_model", lambda: FakeModel())
+    monkeypatch.delenv("SENTENCE_TRANSFORMERS_API_TOKEN", raising=False)
+    monkeypatch.setenv("SENTENCE_TRANSFORMERS_REQUIRE_TOKEN", "1")
+
+    response = TestClient(server.app).post(
+        "/v1/embeddings",
+        json={"model": "test-model", "input": "query", "dimensions": 3},
+    )
+
+    assert response.status_code == 503
+
+
+def test_routed_health_endpoint_uses_service_health(monkeypatch):
+    monkeypatch.setattr(server, "MODEL_ID", "test-model")
+    monkeypatch.setattr(server, "OUTPUT_DIM", 3)
+    monkeypatch.setattr(server, "load_model", lambda: FakeModel())
+    monkeypatch.delenv("SENTENCE_TRANSFORMERS_API_TOKEN", raising=False)
+    monkeypatch.delenv("SENTENCE_TRANSFORMERS_REQUIRE_TOKEN", raising=False)
+
+    response = TestClient(server.app).get("/v1/health")
+
+    assert response.status_code == 200
+    assert response.json()["model"] == "test-model"

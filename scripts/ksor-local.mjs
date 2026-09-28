@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const allowedCommands = new Set(["schema", "grant", "ingest", "gc", "serve"]);
+const allowedCommands = new Set(["schema", "grant", "ingest", "gc", "serve", "calibrate"]);
 const [command, ...args] = process.argv.slice(2);
 const databaseName = "flame_freefall_sentence_transformers";
 

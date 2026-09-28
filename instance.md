@@ -14,10 +14,10 @@ toolchain:
 # `npm run provision` once (schema + grant), then `npm run refresh` to PUBLISH the
 # record, then `npm run serve`. Serving does not publish — that is deliberate, and
 # skipping refresh serves nothing.
-# Local Sentence Transformers supplies normalized 384-dimensional vectors,
-# zero-padded to the existing pgvector schema's 1536 dimensions; this preserves
-# cosine similarity and avoids changing the deployed database schema.
-# Start system/sentence-transformers before ingesting or serving the record.
+# Sentence Transformers supplies normalized 384-dimensional vectors, zero-padded
+# to a 1536-dimensional schema. This is a different space from Gemini: use a new
+# database, then provision and ingest it before serving. Ingest and query must use
+# the same model and dimensions.
 # Leaving `retrieval:` out starts with the abstention gate off; calibrate it
 # afterwards with `ksor calibrate --queries-file` to avoid LLM-synthesized probes.
 database:
