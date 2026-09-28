@@ -215,9 +215,26 @@ model = OpenAIChatCompletionsModel(model=_providers[0][1], openai_client=chat_cl
 # corpus, cited retrieval rather than the model's own (ungrounded) knowledge.
 # Connected once at FastAPI startup (see lifespan below), not per-request.
 handbook_mcp_url = os.environ.get("HANDBOOK_MCP_URL", "http://127.0.0.1:8080/mcp")
+# MCP SDK's per-request timeout defaults to 5s, measured against the door's real
+# search latency (4-7s on the Neon scale-to-zero server: wake + query + embedding
+# round trip). Every narrative search therefore died with "Request 'tools/call'
+# timed out" while the door was still computing a correct answer (confirmed live
+# 2026-09-28), which the code-level abstention then reported as "can't retrieve
+# the record". TWO knobs must move together: params.timeout (the HTTP request
+# budget) and client_session_timeout_seconds (the MCP ClientSession read timeout,
+# which is the one that actually raises the -32001 timeout). The door's own
+# budget is generous (a wake from sleep alone can exceed 5s), so the client must
+# be too. 90s keeps a dead door from hanging a turn for minutes; the door is
+# fail-closed, so a slow-but-alive door is preferred over a fast wrong answer.
+HANDBOOK_MCP_TIMEOUT_S = float(os.environ.get("HANDBOOK_MCP_TIMEOUT_S", "90"))
 handbook_mcp = MCPServerStreamableHttp(
     name="handbook",
-    params={"url": handbook_mcp_url},
+    params={
+        "url": handbook_mcp_url,
+        "timeout": HANDBOOK_MCP_TIMEOUT_S,
+        "sse_read_timeout": HANDBOOK_MCP_TIMEOUT_S,
+    },
+    client_session_timeout_seconds=HANDBOOK_MCP_TIMEOUT_S,
     cache_tools_list=True,
 )
 
