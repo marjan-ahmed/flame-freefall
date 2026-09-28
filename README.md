@@ -338,6 +338,20 @@ uv run uvicorn main:app --reload --port 8000    # the chat backend
 GROQ_API_KEY=dummy uv run pytest                # query, ranking, readiness + widget tests (no network)
 ```
 
+For local narrative answers, start the Sentence Transformers service before
+refreshing the record, then start the KSOR door before ChatKit. The chatbot's
+`HANDBOOK_MCP_URL` defaults to `http://127.0.0.1:8080/mcp`:
+
+```powershell
+cd system/sentence-transformers
+uv sync --extra model
+uv run uvicorn server:app --host 127.0.0.1 --port 8001
+```
+
+In another terminal, run `npm run refresh` and `npm run serve` from the repo
+root, then start the ChatKit backend above. Local KSOR npm scripts select the
+dedicated Sentence Transformers database automatically.
+
 ```sh
 npm --prefix system/site run test:psi           # the in-browser query/ranking matches the Python one
 npm run check                                   # the record's format checker (what CI runs)
@@ -345,9 +359,16 @@ npm run check                                   # the record's format checker (w
 
 ```sh
 npm run provision        # once: schema + grant
-npm run refresh          # publish the record
+npm run refresh          # publish the record; requires Sentence Transformers below
 npm run serve             # the MCP door, at http://localhost:8080
 ```
+
+The governed-record embeddings use a local Sentence Transformers model, not a
+Gemini or OpenAI embedding API. Start the embedding service before refreshing
+or serving the MCP door. Local npm KSOR commands target the dedicated
+`flame_freefall_sentence_transformers` database derived from `KSOR_DB_URL`,
+leaving any existing embedding database untouched. Setup details are in
+[`system/sentence-transformers/README.md`](system/sentence-transformers/README.md).
 
 Each layer needs `.env` filled in — copy `.env.example` and see the comments
 inline; the chat backend additionally reads a Groq (and optionally Hugging Face)

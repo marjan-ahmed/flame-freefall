@@ -24,6 +24,8 @@ WORKDIR /app
 
 # Only the manifest first, so this layer caches until the ksor pin changes.
 COPY package.json ./
+# The patched KSOR provider must be installed before the runtime is copied.
+COPY patches/ ./patches/
 RUN npm install --omit=dev --no-audit --no-fund
 
 # The record's identity and configuration, and this door's own MCP registration.

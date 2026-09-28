@@ -14,12 +14,18 @@ toolchain:
 # `npm run provision` once (schema + grant), then `npm run refresh` to PUBLISH the
 # record, then `npm run serve`. Serving does not publish — that is deliberate, and
 # skipping refresh serves nothing.
-# Nothing else here is required:
-# `embedding:` already defaults to Gemini at 1536 dimensions, and leaving
-# `retrieval:` out starts you with the abstention gate off and honest about it
-# (turn it on afterwards with `ksor calibrate`, once the record is serving).
+# Local Sentence Transformers supplies normalized 384-dimensional vectors,
+# zero-padded to the existing pgvector schema's 1536 dimensions; this preserves
+# cosine similarity and avoids changing the deployed database schema.
+# Start system/sentence-transformers before ingesting or serving the record.
+# Leaving `retrieval:` out starts with the abstention gate off; calibrate it
+# afterwards with `ksor calibrate --queries-file` to avoid LLM-synthesized probes.
 database:
   dsn_env: KSOR_DB_URL
+embedding:
+  provider: sentence-transformers
+  model: sentence-transformers/all-MiniLM-L6-v2
+  dim: 1536
 # Where agents reach this record's MCP surface, and the semver it publishes as.
 # Both go into /.well-known/mcp/server.json, the document an agent reads to
 # DISCOVER this record instead of being told the URL. Leave mcp_url out until
