@@ -23,6 +23,10 @@
   <strong><a href="https://marjan-ahmed.github.io/flame-freefall/">Open the dashboard →</a></strong>
   &nbsp;·&nbsp;
   <a href="https://marjan-ahmed.github.io/flame-freefall/docs/">Browse the governed record →</a>
+  &nbsp;·&nbsp;
+  <a href="https://flamefreefall-sor.vercel.app/mcp">MCP door →</a>
+  &nbsp;·&nbsp;
+  <a href="https://marjan-ahmed.github.io/flame-freefall/explore/">Test-data explorer →</a>
 </p>
 
 ---
@@ -288,10 +292,8 @@ text. The 12 approved on 2026-09-24 (BASS, BASS-II requirements, FLEX-2, CFI, AC
 BRE, ACME s-Flame, SPICE, SAME, SAME-R and the three data-sources documents) are not
 yet marked as human-verified, the page-by-page quote check the original 8 carry.
 
-The chatbot's narrative search (the MCP door) still holds only the original 8
-documents. Running `npm run refresh` ingests the other 12. The test-data tools
-don't depend on it: they already cite the new documents for SPICE, SAME, SAME-R,
-CFI, FLEX-2, ACME BRE and ACME s-Flame.
+The MCP door now serves all 20 documents (generation 7, sentence-transformers
+embeddings). The test-data tools cite all documents directly.
 
 The test data itself lives in `psi-data/`, which has its own
 [README](psi-data/README.md): `raw/` holds the files exactly as downloaded from PSI,
@@ -370,6 +372,14 @@ or serving the MCP door. Local npm KSOR commands target the dedicated
 leaving any existing embedding database untouched. Setup details are in
 [`system/sentence-transformers/README.md`](system/sentence-transformers/README.md).
 
+> [!NOTE]
+> **Windows dev:** Git Bash rewrites `/flame-freefall` in env vars to a Windows
+> path. Prefix builds with `MSYS_NO_PATHCONV=1 MSYS2_ENV_CONV_EXCL='*'`.
+> Clone with `git -c core.longpaths=true` (long PDF names in `narrative_reports/`).
+> Only one `next dev` per project. After config changes, if the dev server
+> wedges with "Jest worker encountered 2 child process exceptions":
+> stop it, `rm -rf system/site/.next/dev`, and restart.
+>
 ### Production Embedding Cutover
 
 Do not switch the production MCP door directly from Gemini to Sentence

@@ -13,7 +13,7 @@ report table or a governed document, and the model never states values itself.
 
 | Part | Where | What it is |
 | --- | --- | --- |
-| The record | `knowledge/` | 20 governed docs, all `stable`, each with a `.summary.md`. The 12 approved 2026-09-24 (BASS, BASS-II requirements, FLEX-2, CFI, ACME BRE, ACME s-Flame, SPICE, SAME, SAME-R, `data-sources/` ×3) carry no `verified:` stamp yet, and are NOT yet ingested into the MCP door (`npm run refresh` does that; the owner has held it back) |
+| The record | `knowledge/` | 20 governed docs, all `stable`, each with a `.summary.md`. The 12 approved 2026-09-24 (BASS, BASS-II requirements, FLEX-2, CFI, ACME BRE, ACME s-Flame, SPICE, SAME, SAME-R, `data-sources/` ×3) carry no `verified:` stamp yet; all 20 are now ingested into the MCP door (generation 7, sentence-transformers/all-MiniLM-L6-v2 embeddings) |
 | The test data | `psi-data/` + `system/psi-ingest/` | 20 PSI experimental tables → 1,948 normalized run records (`psi-data/derived/runs.json`) |
 | The chatbot | `system/chatkit-server/` (FastAPI, Groq) + `system/site/` (ChatKit UI) | answers through ChatKit **widgets**; the site also hosts a linked Explorer at `/explore` |
 
@@ -94,24 +94,13 @@ generated and committed; never hand-edit them.
   `_shrink_to_budget()` trims the longest outcome strings, never a whole run
   first, until the payload provably fits, rather than trusting one pinned
   query shape to represent every shape.
-- **Chat** (`system/chatkit-server/`): `psi_tools.py` holds the seven tools
-  the model calls (`query_test_runs`, `show_gap_map`,
-  `compare_investigations`, `show_test_details`, `plot_results`,
-  `rank_results`, `show_mission_readiness`), each wrapped by `_guarded` so an
-  exception anywhere in its body is recorded on the turn's `TurnGuard` before
-  the agents SDK converts it to its own generic error string — otherwise a
-  PSI tool's own failure was invisible to the reply guard (only a search/read
-  failure was). `psi_widgets.py` builds the widgets. Widget buttons are
-  answered by `main.py` `action()` with no model call. Each tool streams its
-  widget and returns a small summary the model writes 2-4 sentences from.
-  `turn_guard.check_citations()` finds a cited run id by shape (ids vary too
-  much for a `PSI-\d+:` regex — spaces, `#`, nested parens, non-PSI prefixes,
-  Unicode hyphen look-alikes) against the ids a PSI tool actually returned
-  this turn, and — for an id that IS real — cross-checks a stated value
-  against that run's own `data/runs.json` conditions/outcomes, so a real id
-  paired with an invented number (e.g. from an uploaded attachment) is still
-  caught. Narrative answers come from the MCP door (`HANDBOOK_MCP_URL`); the
-  PSI tools are local and work without it.
+- **Chat** (`system/chatkit-server/`): see `main.py` for implementation. Seven
+  PSI tools (`query_test_runs`, `show_gap_map`, `compare_investigations`,
+  `show_test_details`, `plot_results`, `rank_results`, `show_mission_readiness`)
+  wrapped by `_guarded` for error capture; widgets built in `psi_widgets.py`;
+  button actions in `main.py` `action()` (no model call). `TurnGuard` enforces
+  citation integrity and run-id cross-checks. Narrative answers via MCP door
+  (`HANDBOOK_MCP_URL`); PSI tools are local.
 - **Dashboard** (`system/site/app/(home)/page.tsx`): a server-rendered band
   above the chat — coverage heatmaps per geometry class
   (`components/dashboard/heatmap.tsx`) and mission-readiness cards
@@ -195,13 +184,7 @@ generated and committed; never hand-edit them.
   credentials.** It is gitignored and no tool ever opens it.
 - **ChatKit widgets** use the directly-constructed classes (deprecated but
   supported). `ListView` is root-only, so it can't nest inside a `Card`.
-- **Windows dev:** Git Bash rewrites `/flame-freefall` in environment
-  variables into a Windows path, so prefix builds with
-  `MSYS_NO_PATHCONV=1 MSYS2_ENV_CONV_EXCL='*'`. Cloning needs
-  `git -c core.longpaths=true` (a long PDF name in `narrative_reports/`).
-  Next allows one `next dev` per project. After config changes a running dev
-  server can wedge with "Jest worker encountered 2 child process exceptions":
-  stop it, `rm -rf system/site/.next/dev`, and restart.
+
 - **Subagents in `.claude/agents/`**: two PDF agents (`pdf-to-markdown.md`
   converts to a saved `.md` via the Nutrient skill; `pdf-reader.md` answers
   in-conversation) and a QA/release-gate suite of nine specialists —
