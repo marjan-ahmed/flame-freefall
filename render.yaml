@@ -26,7 +26,11 @@ services:
         value: disabled-public
       - key: KSOR_DB_URL
         sync: false
-      - key: GEMINI_API_KEY
+      # Set this to the deployed Sentence Transformers service endpoint.
+      - key: SENTENCE_TRANSFORMERS_BASE_URL
+        sync: false
+      # Optional bearer token when the embedding service is not private-network-only.
+      - key: SENTENCE_TRANSFORMERS_API_TOKEN
         sync: false
       # Without this, a search's snapshot pin is unverifiable across
       # restarts/redeploys (ephemeral per-process key) — read silently
