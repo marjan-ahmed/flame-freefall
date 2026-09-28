@@ -17,10 +17,6 @@
 # The manifest, which pins @panaversity/ksor and is what `npm install` reads.
 !package.json
 
-# The pinned KSOR provider extension is applied by patch-package at install.
-!patches
-!patches/**
-
 # The record's identity and configuration. Its prose is the MCP server's
 # instructions, so the door genuinely needs the file.
 !instance.md
