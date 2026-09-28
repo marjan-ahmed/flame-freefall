@@ -1,0 +1,33 @@
+# Fly.io configuration for ksor serve (MCP door)
+# Deploy with: fly deploy
+
+app = "flame-freefall-ksor"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # These will be overridden by secrets at deploy time
+  KSOR_AUTH = "disabled-public"
+  # KSOR_DB_URL = "postgresql://..."  # Set via fly secrets
+  # KSOR_SNAPSHOT_KEYS = "v1=..."   # Set via fly secrets
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "10s"
+    timeout = "5s"
+    grace_period = "5s"
+    method = "get"
+    path = "/ready"
+
+[vm]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

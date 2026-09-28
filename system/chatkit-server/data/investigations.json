@@ -1,0 +1,1005 @@
+{
+ "generated_at": "2026-09-26T21:49:23+00:00",
+ "generator": "system/psi-ingest",
+ "investigations": [
+  {
+   "id": "bass",
+   "name": "BASS",
+   "full_name": "Burning and Suppression of Solids",
+   "psi_id": "PSI-26",
+   "geometry_class": "solid-fuel",
+   "citation": {
+    "doc": "knowledge/investigations/solid-fuel/bass-ii",
+    "doc_title": "BASS-II: Burning and Suppression of Solids-II",
+    "doc_status": "stable",
+    "source_id": "bass-ii-tm-2021",
+    "title": "Burning and Suppression of Solids-II (BASS-II) Summary Report",
+    "url": "https://ntrs.nasa.gov/citations/20210011385"
+   },
+   "runs": 121,
+   "granularity": {
+    "test": 121
+   },
+   "runs_with_report_data": 4,
+   "runs_with_outcomes": 4,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "comment": 4
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 4,
+     "min": 21.0,
+     "max": 21.0,
+     "unit": "%"
+    },
+    "flow_cm_s": {
+     "runs": 4,
+     "min": 5.0,
+     "max": 19.0,
+     "unit": "cm/s"
+    },
+    "fuel_family": {
+     "PMMA": 48,
+     "unassigned": 30,
+     "SIBAL (cotton-fiberglass)": 12,
+     "wax (Japan)": 10,
+     "wax (paraffin)": 7,
+     "Nomex": 6,
+     "wax (unspecified)": 6,
+     "Ultem": 2
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-26_Experimental table_BASS.csv"
+   ]
+  },
+  {
+   "id": "bass-ii",
+   "name": "BASS-II",
+   "full_name": "Burning and Suppression of Solids-II",
+   "psi_id": "PSI-25",
+   "geometry_class": "solid-fuel",
+   "citation": {
+    "doc": "knowledge/investigations/solid-fuel/bass-ii",
+    "doc_title": "BASS-II: Burning and Suppression of Solids-II",
+    "doc_status": "stable",
+    "source_id": "bass-ii-tm-2021",
+    "title": "Burning and Suppression of Solids-II (BASS-II) Summary Report",
+    "url": "https://ntrs.nasa.gov/citations/20210011385"
+   },
+   "runs": 129,
+   "granularity": {
+    "test": 129
+   },
+   "runs_with_report_data": 126,
+   "runs_with_outcomes": 129,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "observation": 125,
+    "final_co_ppm": 124,
+    "final_co2_pct": 123,
+    "spread_rate": 41,
+    "burn_time": 20,
+    "ignited": 10,
+    "end_mode": 9,
+    "comment": 1
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 129,
+     "min": 13.5,
+     "max": 22.2,
+     "unit": "%"
+    },
+    "flow_cm_s": {
+     "runs": 47,
+     "min": 2.0,
+     "max": 53.0,
+     "unit": "cm/s"
+    },
+    "thickness_mm": {
+     "runs": 42,
+     "min": 0.1,
+     "max": 5.0,
+     "unit": "mm"
+    },
+    "fuel_family": {
+     "PMMA": 98,
+     "SIBAL (cotton-fiberglass)": 27,
+     "Nomex": 3,
+     "wax (Japan)": 1
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-25_Experimental table_BASS-II.csv"
+   ]
+  },
+  {
+   "id": "saffire-1",
+   "name": "SAFFIRE-1",
+   "full_name": "Spacecraft Fire Experiment (Saffire-I)",
+   "psi_id": "PSI-98",
+   "geometry_class": "solid-fuel",
+   "citation": {
+    "doc": "knowledge/investigations/solid-fuel/saffire",
+    "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+    "doc_status": "stable",
+    "source_id": "saffire-results-2017",
+    "title": "Results of Large-Scale Spacecraft Flammability Tests",
+    "url": "https://ntrs.nasa.gov/citations/20170008805"
+   },
+   "runs": 2,
+   "granularity": {
+    "test": 2
+   },
+   "runs_with_report_data": 2,
+   "runs_with_outcomes": 2,
+   "conflicts": 6,
+   "outcome_quantities": {
+    "burn_time": 2,
+    "spread_extent": 2,
+    "spread_rate": 2,
+    "burn_extent_1g": 2,
+    "spread_rate_1g": 1
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 2,
+     "min": 21.5,
+     "max": 21.7,
+     "unit": "%"
+    },
+    "flow_cm_s": {
+     "runs": 2,
+     "min": 20.0,
+     "max": 20.0,
+     "unit": "cm/s"
+    },
+    "thickness_mm": {
+     "runs": 2,
+     "min": 0.37,
+     "max": 3.7,
+     "unit": "mm"
+    },
+    "fuel_family": {
+     "SIBAL (cotton-fiberglass)": 2
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-98_Experimental table_SAFFIRE-1.csv"
+   ]
+  },
+  {
+   "id": "saffire-2",
+   "name": "SAFFIRE-2",
+   "full_name": "Spacecraft Fire Experiment (Saffire-II)",
+   "psi_id": "PSI-99",
+   "geometry_class": "solid-fuel",
+   "citation": {
+    "doc": "knowledge/investigations/solid-fuel/saffire",
+    "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+    "doc_status": "stable",
+    "source_id": "saffire-results-2017",
+    "title": "Results of Large-Scale Spacecraft Flammability Tests",
+    "url": "https://ntrs.nasa.gov/citations/20170008805"
+   },
+   "runs": 9,
+   "granularity": {
+    "test": 9
+   },
+   "runs_with_report_data": 9,
+   "runs_with_outcomes": 9,
+   "conflicts": 2,
+   "outcome_quantities": {
+    "spread_extent": 12,
+    "burn_time": 9,
+    "burn_extent_1g": 9,
+    "spread_rate_1g": 8,
+    "spread_rate": 5
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 9,
+     "min": 21.5,
+     "max": 22.1,
+     "unit": "%"
+    },
+    "flow_cm_s": {
+     "runs": 9,
+     "min": 20.0,
+     "max": 25.0,
+     "unit": "cm/s"
+    },
+    "thickness_mm": {
+     "runs": 8,
+     "min": 0.27,
+     "max": 10.0,
+     "unit": "mm"
+    },
+    "fuel_family": {
+     "silicone": 4,
+     "SIBAL (cotton-fiberglass)": 2,
+     "PMMA": 2,
+     "PMMA/Nomex composite": 1
+    }
+   },
+   "table_notes": [
+    "Note 1 Derived from measured CO2 production and referenced to initial O2 concentration reported by ISS.",
+    "Note 2 The PMMA portion was completely consumed but the Nomex was not ignited.",
+    "Note 3 This is the length of fuel with significant visible damage.",
+    "Note 4 The flames remain anchored at the base of the sample which has a very slow regression rate (0.01 to 0.04 mm/s)"
+   ],
+   "psi_files": [
+    "PSI-99_Experimental table_SAFFIRE-2.csv"
+   ]
+  },
+  {
+   "id": "saffire-3",
+   "name": "SAFFIRE-3",
+   "full_name": "Spacecraft Fire Experiment (Saffire-III)",
+   "psi_id": "PSI-100",
+   "geometry_class": "solid-fuel",
+   "citation": {
+    "doc": "knowledge/investigations/solid-fuel/saffire",
+    "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+    "doc_status": "stable"
+   },
+   "runs": 2,
+   "granularity": {
+    "test": 2
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 0,
+   "conflicts": 0,
+   "outcome_quantities": {},
+   "coverage": {
+    "flow_cm_s": {
+     "runs": 2,
+     "min": 30.0,
+     "max": 30.0,
+     "unit": "cm/s"
+    },
+    "thickness_mm": {
+     "runs": 2,
+     "min": 3.3,
+     "max": 3.3,
+     "unit": "mm"
+    },
+    "fuel_family": {
+     "SIBAL (cotton-fiberglass)": 2
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-100_Experimental table_SAFFIRE-3.csv"
+   ]
+  },
+  {
+   "id": "saffire-iv-vi",
+   "name": "SAFFIRE IV–VI",
+   "full_name": "Spacecraft Fire Experiment (Saffire IV–VI)",
+   "psi_id": null,
+   "geometry_class": "solid-fuel",
+   "citation": {
+    "doc": "knowledge/investigations/solid-fuel/saffire",
+    "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+    "doc_status": "stable",
+    "source_id": "saffire-vi-ices-2024",
+    "title": "Preliminary Results from the Saffire VI Experiment",
+    "url": "https://ntrs.nasa.gov/citations/20240002981"
+   },
+   "runs": 5,
+   "granularity": {
+    "test": 5
+   },
+   "runs_with_report_data": 5,
+   "runs_with_outcomes": 5,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "burn_time": 5,
+    "max_temp_sfu_outlet": 5,
+    "co2_increase_ppm": 5,
+    "co_increase_ppm": 5,
+    "avg_heat_release_o2": 3,
+    "total_heat_release_o2": 3,
+    "peak_heat_release": 3,
+    "total_heat_release_imaging": 3
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 5,
+     "min": 22.0,
+     "max": 31.0,
+     "unit": "%"
+    },
+    "flow_cm_s": {
+     "runs": 5,
+     "min": 20.0,
+     "max": 20.0,
+     "unit": "cm/s"
+    },
+    "pressure_atm": {
+     "runs": 5,
+     "min": 0.533925,
+     "max": 0.986923,
+     "unit": "atm"
+    },
+    "fuel_family": {
+     "SIBAL (cotton-fiberglass)": 2,
+     "PMMA": 2,
+     "cotton": 1
+    }
+   },
+   "table_notes": [],
+   "psi_files": []
+  },
+  {
+   "id": "flex",
+   "name": "FLEX",
+   "full_name": "Flame Extinguishment Experiment",
+   "psi_id": "PSI-69",
+   "geometry_class": "droplet-combustion",
+   "citation": {
+    "doc": "knowledge/investigations/droplet-combustion/flex",
+    "doc_title": "FLEX: Flame Extinguishment Experiment",
+    "doc_status": "stable",
+    "source_id": "flex-tp-2015",
+    "title": "Detailed Results From the Flame Extinguishment Experiment (FLEX) March 2009 to December 2011",
+    "url": "https://ntrs.nasa.gov/citations/20150023456"
+   },
+   "runs": 276,
+   "granularity": {
+    "test": 276
+   },
+   "runs_with_report_data": 275,
+   "runs_with_outcomes": 276,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "test_end": 276,
+    "burn_time": 270,
+    "burning_rate_k": 260,
+    "extinction_diameter": 198
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 276,
+     "min": 12.0,
+     "max": 34.0,
+     "unit": "%"
+    },
+    "pressure_atm": {
+     "runs": 275,
+     "min": 0.6925,
+     "max": 3.0525,
+     "unit": "atm"
+    },
+    "droplet_d0_mm": {
+     "runs": 264,
+     "min": 1.1,
+     "max": 4.67,
+     "unit": "mm"
+    },
+    "fuel_family": {
+     "methanol": 157,
+     "n-heptane": 119
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-69_Experimental table_FLEX.csv"
+   ]
+  },
+  {
+   "id": "flex-2",
+   "name": "FLEX-2",
+   "full_name": "Fundamental Studies in Droplet Combustion and Flame Extinguishment in Microgravity",
+   "psi_id": "PSI-68",
+   "geometry_class": "droplet-combustion",
+   "citation": {
+    "doc": "knowledge/investigations/droplet-combustion/flex-2",
+    "doc_title": "FLEX-2: Fundamental Studies in Droplet Combustion and Flame Extinguishment",
+    "doc_status": "stable",
+    "source_id": "flex-2-srd",
+    "title": "Fundamental Studies in Droplet Combustion and Flame Extinguishment in Microgravity (FLEX-2) — Science Requirements Document, SRD Rev. 1",
+    "url": null,
+    "descriptor": "FLEX-2 Science Requirements Document, research team lead Forman A. Williams (UC San Diego), project scientist Michael C. Hicks (NASA Glenn), dated March 15, 2010; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'FLEX-2 SRD Final.pdf'"
+   },
+   "runs": 8,
+   "granularity": {
+    "envelope": 8
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 0,
+   "conflicts": 0,
+   "outcome_quantities": {},
+   "coverage": {
+    "o2_pct": {
+     "runs": 8,
+     "min": 17.0,
+     "max": 30.0,
+     "unit": "%"
+    },
+    "flow_cm_s": {
+     "runs": 8,
+     "min": 0.1,
+     "max": 5.0,
+     "unit": "cm/s"
+    },
+    "pressure_atm": {
+     "runs": 8,
+     "min": 0.5,
+     "max": 3.0,
+     "unit": "atm"
+    },
+    "droplet_d0_mm": {
+     "runs": 8,
+     "min": 1.5,
+     "max": 5.0,
+     "unit": "mm"
+    },
+    "fuel_family": {
+     "propanol/glycerol": 2,
+     "iso-octane": 1,
+     "n-octane": 1,
+     "n-heptane": 1,
+     "n-decane": 1,
+     "ethanol": 1,
+     "n-heptane/iso-octane": 1
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-68_Experimental table_Flex2.csv"
+   ]
+  },
+  {
+   "id": "cfi",
+   "name": "CFI",
+   "full_name": "Cool Flame Investigation",
+   "psi_id": "PSI-39",
+   "geometry_class": "droplet-combustion",
+   "citation": {
+    "doc": "knowledge/investigations/droplet-combustion/cfi",
+    "doc_title": "CFI: Cool Flame Investigation",
+    "doc_status": "stable",
+    "source_id": "cfi-final-report",
+    "title": "Cool Flame Investigation (CFI) — Science Final Report",
+    "url": null,
+    "descriptor": "CFI science final report by Vedha Nayagam (CWRU/LTX) and Daniel L. Dietrich (NASA/LTX); distributed in the NASA Physical Sciences Informatics (PSI) archive as 'CFI Science Final Report.pdf'. The title-page date did not survive text extraction legibly."
+   },
+   "runs": 79,
+   "granularity": {
+    "test": 79
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 67,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "reignitions": 67,
+    "burning_rate_k_hot": 66,
+    "extinction_diameter_hot": 64,
+    "burn_time_hot_flame": 64,
+    "burning_rate_k_cool": 50,
+    "extinction_diameter_cool": 43
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 79,
+     "min": 17.0,
+     "max": 21.0,
+     "unit": "%"
+    },
+    "pressure_atm": {
+     "runs": 79,
+     "min": 0.5,
+     "max": 5.0,
+     "unit": "atm"
+    },
+    "droplet_d0_mm": {
+     "runs": 66,
+     "min": 3.793,
+     "max": 6.447,
+     "unit": "mm"
+    },
+    "fuel_family": {
+     "n-dodecane/iso-dodecane": 57,
+     "n-dodecane": 22
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "CFI_DataSummary_Spreadsheet_Jan2021.xlsx",
+    "PSI-39_Experimental table_CFI.csv"
+   ]
+  },
+  {
+   "id": "cfi-g",
+   "name": "CFI-G",
+   "full_name": null,
+   "psi_id": "PSI-159",
+   "geometry_class": "gaseous-flames",
+   "citation": null,
+   "runs": 333,
+   "granularity": {
+    "test": 333
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 333,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "hot_ignition": 333,
+    "burn_time": 329,
+    "peak_burner_temp_c": 284,
+    "end_mode": 272,
+    "flame_color": 120,
+    "comment": 83,
+    "cool_flame": 8
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 179,
+     "min": 17.939183,
+     "max": 39.97,
+     "unit": "%"
+    },
+    "pressure_atm": {
+     "runs": 333,
+     "min": 0.488904,
+     "max": 3.266617,
+     "unit": "atm"
+    },
+    "fuel_fraction_pct": {
+     "runs": 179,
+     "min": 0.0,
+     "max": 100.0,
+     "unit": "%"
+    },
+    "oxidizer_stream_o2_pct": {
+     "runs": 154,
+     "min": 12.0,
+     "max": 85.0,
+     "unit": "%"
+    },
+    "fuel_family": {
+     "butane": 140,
+     "propane": 99,
+     "ethane": 94
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-159_Experimental table_CFI-G_Inverse Flames.csv",
+    "PSI-159_Experimental table_CFI-G_Normal Flames.csv"
+   ]
+  },
+  {
+   "id": "acme-flame-design",
+   "name": "ACME Flame Design",
+   "full_name": "Flame Design (ACME)",
+   "psi_id": "PSI-10",
+   "geometry_class": "gaseous-flames",
+   "citation": {
+    "doc": "knowledge/investigations/gaseous-flames/acme",
+    "doc_title": "ACME: Advanced Combustion via Microgravity Experiments",
+    "doc_status": "stable",
+    "source_id": "acme-ps-03403",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME) on the International Space Station (ISS)",
+    "url": "https://ntrs.nasa.gov/citations/20210015913"
+   },
+   "runs": 327,
+   "granularity": {
+    "test": 327
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 0,
+   "conflicts": 0,
+   "outcome_quantities": {},
+   "coverage": {
+    "o2_pct": {
+     "runs": 207,
+     "min": 19.747526,
+     "max": 40.0,
+     "unit": "%"
+    },
+    "pressure_atm": {
+     "runs": 327,
+     "min": 0.42460704,
+     "max": 3.02872746,
+     "unit": "atm"
+    },
+    "fuel_fraction_pct": {
+     "runs": 147,
+     "min": 4.984099,
+     "max": 100.0,
+     "unit": "%"
+    },
+    "oxidizer_stream_o2_pct": {
+     "runs": 109,
+     "min": 21.201718,
+     "max": 84.997793,
+     "unit": "%"
+    },
+    "fuel_family": {
+     "ethylene": 307,
+     "propane": 20
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-10_Experimental table_Flame Design_Inverse Flame.csv",
+    "PSI-10_Experimental table_Flame Design_Normal Flame.csv"
+   ]
+  },
+  {
+   "id": "acme-bre",
+   "name": "ACME BRE",
+   "full_name": "Burning Rate Emulator (ACME)",
+   "psi_id": "PSI-20",
+   "geometry_class": "gaseous-flames",
+   "citation": {
+    "doc": "knowledge/investigations/gaseous-flames/acme-bre",
+    "doc_title": "ACME BRE: Burning Rate Emulator",
+    "doc_status": "stable",
+    "source_id": "acme-bre-final-report",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME) Burning Rate Emulator (BRE) — ACME/BRE Final Report (2022)",
+    "url": null,
+    "descriptor": "ACME/BRE final report prepared by Dennis P. Stocker (NASA Glenn), James G. Quintiere and Peter B. Sunderland (University of Maryland), John L. de Ris (FM Global, retired) and Parham Dehghani (University of Maryland), dated 1 Feb. 2022; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'BRE_final_report_20220201.pdf'"
+   },
+   "runs": 18,
+   "granularity": {
+    "day": 18
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 18,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "flames_ignited": 18
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 16,
+     "min": 21.0,
+     "max": 40.0,
+     "unit": "%"
+    },
+    "fuel_family": {
+     "ethylene": 16,
+     "methane": 2
+    }
+   },
+   "table_notes": [
+    "Oxygen Conc. (as diluted with nitrogen on a volume basis) was varied between tests where approximate concentrations for tests that ignited are listed. The chamber pressures were also varied but are not identified in this summary table.",
+    "Flames Ignited is the number ignited on that day (neglecting the day change on ISS)."
+   ],
+   "psi_files": [
+    "PSI-20_Experimental table_ACME BRE.csv"
+   ]
+  },
+  {
+   "id": "acme-cld",
+   "name": "ACME CLD Flame",
+   "full_name": "Coflow Laminar Diffusion Flame (ACME)",
+   "psi_id": "PSI-21",
+   "geometry_class": "gaseous-flames",
+   "citation": {
+    "doc": "knowledge/investigations/gaseous-flames/acme",
+    "doc_title": "ACME: Advanced Combustion via Microgravity Experiments",
+    "doc_status": "stable",
+    "source_id": "acme-ps-03403",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME) on the International Space Station (ISS)",
+    "url": "https://ntrs.nasa.gov/citations/20210015913"
+   },
+   "runs": 32,
+   "granularity": {
+    "day": 32
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 32,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "flames_ignited": 32
+   },
+   "coverage": {
+    "fuel_fraction_pct": {
+     "runs": 32,
+     "min": 0.0,
+     "max": 100.0,
+     "unit": "%"
+    },
+    "fuel_family": {
+     "methane": 15,
+     "ethylene": 13,
+     "ethane": 2,
+     "unassigned": 2
+    }
+   },
+   "table_notes": [
+    "Test Day - includes the year as the first two digits followed by the 3-digit day of the year (where any late-hour transition to the next day is neglected). MFC - identifies the maximum flow rate of the specified ACME Mass Flow Controller (MFC) in slpm on a nitrogen basis. Fuel conc. - (as diluted with nitrogen on a volume basis) was varied between tests and sometimes during tests where the listing here accounts for both. However, it does not account for extinction that sometimes occurred before the flame fully reached the lowest concentration. Flames ignited is the number ignited on that test day."
+   ],
+   "psi_files": [
+    "PSI-21_Experimental table_CLD Flame.csv"
+   ]
+  },
+  {
+   "id": "acme-efield",
+   "name": "ACME E-FIELD Flames",
+   "full_name": "Electric-Field Effects on Laminar Diffusion Flames (ACME)",
+   "psi_id": "PSI-22",
+   "geometry_class": "gaseous-flames",
+   "citation": {
+    "doc": "knowledge/investigations/gaseous-flames/acme",
+    "doc_title": "ACME: Advanced Combustion via Microgravity Experiments",
+    "doc_status": "stable",
+    "source_id": "acme-ps-03403",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME) on the International Space Station (ISS)",
+    "url": "https://ntrs.nasa.gov/citations/20210015913"
+   },
+   "runs": 20,
+   "granularity": {
+    "day": 20
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 20,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "flames_ignited": 20
+   },
+   "coverage": {
+    "fuel_fraction_pct": {
+     "runs": 20,
+     "min": 25.0,
+     "max": 100.0,
+     "unit": "%"
+    },
+    "fuel_family": {
+     "methane": 11,
+     "ethylene": 9
+    }
+   },
+   "table_notes": [
+    "Test day is formatted YYDDD where YY identifies year and DDD identifies day of year (GMT).",
+    "Mesh polarity refers to the polarity of the high-voltage power supply and the copper electrode relative to the burner.",
+    "Fuel Conc. (diluted with nitrogen on a volume basis) was varied between tests, but typically matched the bottle. The list only accounts for flames ignited.",
+    "Flames Ignited is the number ignited on that day (neglecting the day change on ISS)."
+   ],
+   "psi_files": [
+    "PSI-22_Experimental table_ACME E-FIELD Flames.csv"
+   ]
+  },
+  {
+   "id": "acme-s-flame",
+   "name": "ACME s-Flame",
+   "full_name": "Structure and Response of Spherical Diffusion Flames (ACME)",
+   "psi_id": "PSI-23",
+   "geometry_class": "gaseous-flames",
+   "citation": {
+    "doc": "knowledge/investigations/gaseous-flames/acme-s-flame",
+    "doc_title": "ACME s-Flame: Structure and Response of Spherical Diffusion Flames",
+    "doc_status": "stable",
+    "source_id": "acme-s-flame-final-report",
+    "title": "Advanced Combustion via Microgravity Experiments (ACME) Structure and Response of Spherical Diffusion Flames (s-Flame) — ACME/s-Flame Final Report (2021)",
+    "url": null,
+    "descriptor": "ACME/s-Flame final report prepared by Dennis P. Stocker (NASA Glenn) and Chung K. Law (Princeton University) with the s-Flame team, dated 29 July 2021; distributed in the NASA Physical Sciences Informatics (PSI) archive as 's_Flame_final_report_20210729.pdf'"
+   },
+   "runs": 18,
+   "granularity": {
+    "day": 18
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 18,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "flames_ignited": 18
+   },
+   "coverage": {
+    "o2_pct": {
+     "runs": 18,
+     "min": 21.0,
+     "max": 30.0,
+     "unit": "%"
+    },
+    "pressure_atm": {
+     "runs": 18,
+     "min": 1.0,
+     "max": 1.0,
+     "unit": "atm"
+    },
+    "fuel_family": {
+     "ethylene": 6,
+     "hydrogen/methane": 5,
+     "hydrogen": 4,
+     "methane": 3
+    }
+   },
+   "table_notes": [
+    "*Test Day is formatted YYDDD where YY identfies year and DDD identifies day of year (GMT).",
+    "*Atmosphere is ~1 atm but pressure increases and O2% drops with vitiation.",
+    "*Flames Ignited is the number ignited on that day (neglecting the day change on ISS)."
+   ],
+   "psi_files": [
+    "19304A1_mfcSetpoints.csv",
+    "PSI-23_Experimental table_ACME s-Flame.csv"
+   ]
+  },
+  {
+   "id": "spice",
+   "name": "SPICE",
+   "full_name": "Smoke Point in Co-flow Experiment",
+   "psi_id": "PSI-107",
+   "geometry_class": "gaseous-flames",
+   "citation": {
+    "doc": "knowledge/investigations/gaseous-flames/spice",
+    "doc_title": "SPICE: Smoke Point in Co-flow Experiment",
+    "doc_status": "stable",
+    "source_id": "spice-final-report",
+    "title": "Smoke Point in Co-flow Experiment (SPICE): Laminar Smoke Point Properties of Non-buoyant Round-Jet Diffusion Flames — Final Report",
+    "url": null,
+    "descriptor": "SPICE final report by David L. Urban (NASA Glenn), Peter B. Sunderland (University of Maryland) and Zeng-Guang Yuan (NCSER), dated 2 December 2011; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'SPICE Final Report 12_2_2012.pdf'"
+   },
+   "runs": 440,
+   "granularity": {
+    "test-point": 435,
+    "summary": 5
+   },
+   "runs_with_report_data": 5,
+   "runs_with_outcomes": 5,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "smoke_point_length": 5,
+    "smoke_points_observed": 5
+   },
+   "coverage": {
+    "flow_cm_s": {
+     "runs": 420,
+     "min": -5.92,
+     "max": 85.28,
+     "unit": "cm/s"
+    },
+    "fuel_fraction_pct": {
+     "runs": 227,
+     "min": 50.0,
+     "max": 75.0,
+     "unit": "%"
+    },
+    "fuel_family": {
+     "propylene": 342,
+     "propane": 51,
+     "ethylene": 43,
+     "methane": 4
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-107_Experimental table_Spice.csv"
+   ]
+  },
+  {
+   "id": "slice",
+   "name": "SLICE",
+   "full_name": null,
+   "psi_id": "PSI-106",
+   "geometry_class": "gaseous-flames",
+   "citation": null,
+   "runs": 12,
+   "granularity": {
+    "day": 12
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 0,
+   "conflicts": 0,
+   "outcome_quantities": {},
+   "coverage": {
+    "fuel_fraction_pct": {
+     "runs": 12,
+     "min": 20.0,
+     "max": 100.0,
+     "unit": "%"
+    },
+    "fuel_family": {
+     "methane": 8,
+     "ethylene": 3,
+     "ethane": 1
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-106_Experimental table_Slice.csv"
+   ]
+  },
+  {
+   "id": "same",
+   "name": "SAME",
+   "full_name": "Smoke Aerosol Measurement Experiment",
+   "psi_id": "PSI-102",
+   "geometry_class": "smoke-aerosol",
+   "citation": {
+    "doc": "knowledge/investigations/smoke-aerosol/same",
+    "doc_title": "SAME: Smoke Aerosol Measurement Experiment",
+    "doc_status": "stable",
+    "source_id": "same-final-report",
+    "title": "Smoke Aerosol Measurement Experiment (SAME) — Final Report, November 1, 2000 - April 14, 2009",
+    "url": null,
+    "descriptor": "SAME final report by David L. Urban, Gary A. Ruff, William Sheredy (NASA Glenn), Thomas Cleary, Jiann Yang (NIST), George Mulholland (University of Maryland) and Zeng-Guang Yuan (NCSER), dated March 15, 2010, with conference papers attached; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'SAME Final Science report  03 18 10 with papers attached.pdf'"
+   },
+   "runs": 8,
+   "granularity": {
+    "test": 8
+   },
+   "runs_with_report_data": 0,
+   "runs_with_outcomes": 4,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "weight_loss_rate": 4
+   },
+   "coverage": {
+    "flow_cm_s": {
+     "runs": 4,
+     "min": 5.0,
+     "max": 10.0,
+     "unit": "cm/s"
+    },
+    "fuel_family": {
+     "Teflon": 4,
+     "Kapton": 1,
+     "silicone": 1,
+     "lampwick": 1,
+     "dibutyl phthalate": 1
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-102_Experimental table_SAME.csv"
+   ]
+  },
+  {
+   "id": "same-r",
+   "name": "SAME-R",
+   "full_name": "Smoke Aerosol Measurement Experiment Re-flight",
+   "psi_id": "PSI-101",
+   "geometry_class": "smoke-aerosol",
+   "citation": {
+    "doc": "knowledge/investigations/smoke-aerosol/same-r",
+    "doc_title": "SAME-R: Smoke Aerosol Measurement Experiment Re-flight",
+    "doc_status": "stable",
+    "source_id": "samer-final-report",
+    "title": "Smoke Aerosol Measurement Experiment Re-flight (SAMER) — Final Report, June 2, 2014",
+    "url": null,
+    "descriptor": "SAMER final report by David L. Urban, Gary A. Ruff, William Sheredy, Marit Meyer (NASA Glenn), Thomas Cleary, Jiann Yang (NIST), George Mulholland (University of Maryland) and Zeng-Guang Yuan (NCSER), covering 01 November 2000 - June 2, 2014, with appendices including the paper 'Particle Morphology and Size Results from the Smoke Aerosol Measurement Experiment-2'; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'SAMER_Final 0602 2014.pdf'"
+   },
+   "runs": 109,
+   "granularity": {
+    "test": 109
+   },
+   "runs_with_report_data": 7,
+   "runs_with_outcomes": 7,
+   "conflicts": 0,
+   "outcome_quantities": {
+    "tem_particles_counted_unaged": 5,
+    "tem_particles_counted_aged": 5
+   },
+   "coverage": {
+    "flow_cm_s": {
+     "runs": 109,
+     "min": 0.0,
+     "max": 8.1,
+     "unit": "cm/s"
+    },
+    "fuel_family": {
+     "Kapton": 29,
+     "silicone": 22,
+     "lampwick": 20,
+     "Pyrell": 20,
+     "Teflon": 18
+    }
+   },
+   "table_notes": [],
+   "psi_files": [
+    "PSI-101_Experimental table_SAME-R.csv"
+   ]
+  }
+ ]
+}

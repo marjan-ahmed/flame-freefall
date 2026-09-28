@@ -1,0 +1,62 @@
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build static export
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - run: npm install
+      - run: npm run build
+        env:
+          # Project-pages subpath (repo isn't named <user>.github.io) — see
+          # next.config.mjs's basePath wiring.
+          KSOR_BASE_PATH: /flame-freefall
+          # Inlined into the static bundle at build time (Next reads
+          # NEXT_PUBLIC_* only then, never at request time — this IS a
+          # static export). Points at the deployed chatkit backend, not
+          # localhost.
+          NEXT_PUBLIC_CHATKIT_API_URL: https://flame-freefall-site.vercel.app/chatkit
+          # chatkit.js (OpenAI's CDN-loaded widget) validates this against an
+          # org-level domain allowlist for any non-localhost domain — a wrong
+          # or placeholder value makes the widget silently fail to init on
+          # the real GitHub Pages domain (confirmed live 2026-09-22). Issued
+          # for https://marjan-ahmed.github.io at
+          # https://platform.openai.com/settings/organization/security/domain-allowlist.
+          # Not a secret — it ends up in the public JS bundle either way, so
+          # it's committed here rather than tucked behind a repo Variable.
+          NEXT_PUBLIC_CHATKIT_DOMAIN_KEY: domain_pk_6ab2b44f43988194baaf6eb47e6d4b3e07b6a6661deab903
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: system/site/out
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

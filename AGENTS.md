@@ -5,74 +5,221 @@ here; every coding agent reads this file first.
 
 ## This instance: Flame in Freefall
 
-This is a KSoR instance for **Flame in Freefall** — a governed,
-citation-backed corpus of NASA microgravity combustion investigations
-(BASS-II, SAFFIRE, FLEX, ACME) and the fire-safety standards and
-decadal-survey research priorities that frame them (NASA-STD-6001B, Liao et
-al., Miller et al., "Thriving in Space"). Built for NASA Space Apps 2026's
-"Flame in Freefall" challenge track. Everything below this section is the
-generic KSoR framework contract; this section is what's specific to this
-corpus.
+A KSoR instance for **Flame in Freefall** (NASA Space Apps 2026): a governed,
+citation-backed record of NASA microgravity combustion investigations, a
+unified table of their PSI test data, and a chatbot that answers from both.
+Three parts, one rule: every number shown traces to a PSI table line, a
+report table or a governed document, and the model never states values itself.
 
-There is no unit-test suite here — this is a content corpus, not an
-application. The closest things to tests:
+| Part | Where | What it is |
+| --- | --- | --- |
+| The record | `knowledge/` | 20 governed docs, all `stable`, each with a `.summary.md`. The 12 approved 2026-09-24 (BASS, BASS-II requirements, FLEX-2, CFI, ACME BRE, ACME s-Flame, SPICE, SAME, SAME-R, `data-sources/` ×3) carry no `verified:` stamp yet, and are NOT yet ingested into the MCP door (`npm run refresh` does that; the owner has held it back) |
+| The test data | `psi-data/` + `system/psi-ingest/` | 20 PSI experimental tables → 1,948 normalized run records (`psi-data/derived/runs.json`) |
+| The chatbot | `system/chatkit-server/` (FastAPI, Groq) + `system/site/` (ChatKit UI) | answers through ChatKit **widgets**; the site also hosts a linked Explorer at `/explore` |
 
-- `npm run check` validates the entire record (frontmatter, citation
-  linkage, filenames, links).
-- `node .agents/skills/add-sources/verify.mjs <extraction.txt> <knowledge-doc.md>`
-  validates ONE document: every number/date/proper-noun-run in its body must
-  appear in the raw source extraction it's cited from. Run this after editing
-  any file under `knowledge/investigations/` or `knowledge/foundations/`.
+Everything below "The two worlds" is the generic KSoR contract.
 
-**Folder layout encodes comparability, not just topic.** Under
-`knowledge/investigations/`, each subfolder is a *geometry class* —
-`solid-fuel/` (BASS-II, SAFFIRE), `droplet-combustion/` (FLEX),
-`gaseous-flames/` (ACME) — because two investigations are only honestly
-comparable if they share a geometry class. Every investigation document also
-carries a custom `geometry_class:` frontmatter key for the same reason.
-`knowledge/foundations/` holds narrative-only context (the standard and the
-three decadal-survey papers) with no `geometry_class` key and no numeric
-structured-facts tables.
+### Commands
 
-**One footnote definition per source, not per claim.** The format checker
-(rule `ksor-footnote-unkeyed`) requires every footnote LABEL to exactly equal
-a `sources[].id` declared in that document's frontmatter — a document with
-one source may have only ONE footnote definition, however many claims it
-backs. Each document's single footnote is itemized internally by section
-(`§1.2: "quote..." §1.4: "quote..."`) rather than split into per-claim
-footnotes. Keep citation density to roughly **one reference per paragraph**,
-not per sentence — GFM renders every reference to a shared footnote as its
-own numbered backlink arrow (↩ ↩2 ↩3…), and citing every sentence
-individually produces a long, broken-looking wall of arrows at the bottom of
-the page on the rendered site.
+```sh
+npm run check                                   # the record's format checker (CI: Validate)
+npm run build                                   # ksor build + static site (CI: Deploy Pages)
+node .agents/skills/add-sources/verify.mjs <extraction> <knowledge-doc.md>   # one doc vs its source text
 
-**Raw PDF extractions live outside `knowledge/`, as verification ground
-truth.** `investigation_reports/_converted/` and
-`narrative_reports/_converted/` hold the full text of every source PDF,
-converted via the `pdf-to-markdown` skill. These are scratch/staging files
-(not part of the governed record) — `verify.mjs` checks a `knowledge/`
-document's claims against them. When a SAFFIRE claim needs two sources
-reconciled, the combined check file is
-`investigation_reports/_converted/saffire-combined.extracted.md`.
+cd system/psi-ingest
+uv run psi-ingest        # raw PSI + knowledge tables + extractions -> psi-data/derived/*.json (+ copy to chatkit-server/data/)
+uv run psi-extract       # converted report text -> psi-data/extracted/report-outcomes.csv
+uv run psi-inventory     # raw-file inventory -> psi-data/derived/source-inventory.md
+uv run pytest            # ingest invariants; single test: uv run pytest tests/test_ingest.py -k conflicts
 
-**Corpus state: everything is still `draft`.** All 8 knowledge documents are
-`status: draft` pending a human quote-verification pass (nothing reaches
-`stable` until every extracted quote is checked against its source PDF page
-by a person). A plain `npm run build` therefore publishes zero documents —
-`llms.txt`, the search index, and the site's document pages are all empty by
-design, not broken. Use `KSOR_DRAFTS=show npm run build` to preview the
-pipeline against draft content without approving anything.
+cd system/chatkit-server
+uv run uvicorn main:app --port 8000        # chat backend (needs GROQ_API_KEY in the repo-root .env)
+GROQ_API_KEY=dummy uv run pytest           # query + widget tests, no network
+uv run python tests/gen_query_fixtures.py  # regenerate golden query cases after an intentional change
 
-**Two project-scoped subagents handle PDF work**, in `.claude/agents/`:
-`pdf-to-markdown.md` (converts a PDF to a saved `.md` file via the installed
-Nutrient `pdf-to-markdown` skill) and `pdf-reader.md` (reads/answers
-questions about a PDF in-conversation without writing any file). The
-installed skill itself lives in `.agents/skills/pdf-to-markdown/`, mirrored
-byte-identically into `.claude/skills/pdf-to-markdown/` — the format checker
-enforces this mirror (a real file copy, not a symlink — this Windows/git
-setup stores symlinks as plain text, which the checker treats as missing),
-edit the `.agents/skills/` copy and re-sync, never edit the
-`.claude/skills/` copy directly.
+cd system/site
+npm run test:psi         # TypeScript query parity against the same golden cases
+```
+
+After changing ingest rules or data: `psi-ingest`, then regenerate fixtures,
+then run all three test suites. `psi-data/derived/`,
+`psi-data/query-fixtures.json` and `system/chatkit-server/data/` are
+generated and committed; never hand-edit them.
+
+### Architecture of the test data and chatbot
+
+- **Ingest** (`system/psi-ingest/psi_ingest/`): one adapter per PSI file
+  (`adapters/solid|droplet|gaseous|smoke.py`) maps its columns onto a `Run`
+  (`model.py`). `units.py` parses cells into a `Measure` that ALWAYS keeps the
+  raw cell and flags any interpretation; unreadable cells become null plus a
+  flag, never a guess. `reports.py` then joins per-test tables from
+  `knowledge/` docs and verified PDF extractions, recording source
+  disagreements as `conflicts` (both values kept, the interval widened,
+  nothing chosen). `registry.yaml` holds investigation identity only;
+  citations are read from each doc's `sources:` frontmatter.
+- **Query** (`system/chatkit-server/psi_query.py`): tiers `match` / `partial`
+  (within tolerance on every axis it reports, silent on one) / `near`, plus
+  per-investigation coverage and `relaxed` (same conditions, other
+  materials). Categorical filters are hard. `rank()` aggregates match/partial
+  runs per material (n, min, median, max, every contributing run id) within
+  ONE geometry class (`RANKABLE` names which (class, quantity) pairs have
+  enough data — never ranks across classes). `readiness()` reports
+  match/partial/near coverage per geometry class near a named mission
+  atmosphere (`psi_atmospheres.py`: `iss`/`gateway`/`lunar`, each preset's
+  numbers copied from a governed doc and checked verbatim by
+  `tests/test_atmospheres.py`), paired with governed-doc quotes from
+  `psi-data/findings.yaml` (also checked verbatim, by
+  `tests/test_findings.py`). **Twin implementation** of `query()`/`rank()` in
+  `system/site/lib/psi-query.ts` (atmospheres twinned in
+  `psi-atmospheres.ts`): change both together; `psi-data/query-fixtures.json`
+  pins them to identical output. `readiness()` has no TS twin — the
+  dashboard's mission-readiness cards (`system/site/lib/dashboard-data.ts`)
+  compute coverage directly from the twinned `query()` instead, so there is
+  no third reimplementation of the match/partial/near tiers. A tolerance
+  boundary is inclusive on both sides (`TOLERANCE_EPS`, both twins — plain
+  float division can land a query's own axis a hair past `1.0`); a near-tier
+  run reporting NONE of the query's axes never outranks one that reports the
+  axis however far off (`NO_AXES_REPORTED_SCORE`). Investigation names
+  (`query()`'s `investigation` filter, `compare_investigations`,
+  `results_data`/`plot_results`) all resolve through one function,
+  `_investigation_ids`/`investigationIds`: exact id/name, then family prefix
+  ("SAFFIRE" → every SAFFIRE), then hyphen-insensitive, then a **one-way**
+  roman-numeral alias (a real name's own trailing numeral, e.g. `BASS-II`,
+  answers to an arabic query `"BASS 2"` — never the reverse, so a query that
+  itself types a roman numeral, e.g. `"SAFFIRE-II"`, is never aliased onto
+  the arabic-named `SAFFIRE-2`). Every outcome `compact()` hands the model
+  carries its own source tag (`fmt_sourced_outcome`; a run's `conflicts` via
+  `sourced_conflicts`) — never a single per-run citation, which used to get
+  copied as the source of a value from a different table entirely — and
+  `_shrink_to_budget()` trims the longest outcome strings, never a whole run
+  first, until the payload provably fits, rather than trusting one pinned
+  query shape to represent every shape.
+- **Chat** (`system/chatkit-server/`): `psi_tools.py` holds the seven tools
+  the model calls (`query_test_runs`, `show_gap_map`,
+  `compare_investigations`, `show_test_details`, `plot_results`,
+  `rank_results`, `show_mission_readiness`), each wrapped by `_guarded` so an
+  exception anywhere in its body is recorded on the turn's `TurnGuard` before
+  the agents SDK converts it to its own generic error string — otherwise a
+  PSI tool's own failure was invisible to the reply guard (only a search/read
+  failure was). `psi_widgets.py` builds the widgets. Widget buttons are
+  answered by `main.py` `action()` with no model call. Each tool streams its
+  widget and returns a small summary the model writes 2-4 sentences from.
+  `turn_guard.check_citations()` finds a cited run id by shape (ids vary too
+  much for a `PSI-\d+:` regex — spaces, `#`, nested parens, non-PSI prefixes,
+  Unicode hyphen look-alikes) against the ids a PSI tool actually returned
+  this turn, and — for an id that IS real — cross-checks a stated value
+  against that run's own `data/runs.json` conditions/outcomes, so a real id
+  paired with an invented number (e.g. from an uploaded attachment) is still
+  caught. Narrative answers come from the MCP door (`HANDBOOK_MCP_URL`); the
+  PSI tools are local and work without it.
+- **Dashboard** (`system/site/app/(home)/page.tsx`): a server-rendered band
+  above the chat — coverage heatmaps per geometry class
+  (`components/dashboard/heatmap.tsx`) and mission-readiness cards
+  (`components/dashboard/readiness-cards.tsx`), both fed by
+  `lib/dashboard-data.ts`. Same O₂/pressure bins and color scale as the
+  chat's gap map (`--heat-0`…`--heat-4` in `app/global.css`), so the two
+  surfaces read as one system.
+- **Deploys**: the site is a static export on GitHub Pages
+  (`KSOR_BASE_PATH=/flame-freefall`). The chat backend
+  (`flame-freefall-site`) and MCP door (`flame-freefall-mcp`) are Vercel
+  projects that redeploy on every push to `main`.
+
+### Rules and gotchas specific to this repo
+
+- **`CLAUDE.md` must stay exactly `@AGENTS.md`** (rule `ksor-pointer-changed`).
+  Project memory goes here, never there.
+- **Folder = geometry class = comparability.** `investigations/` subfolders
+  are `solid-fuel/`, `droplet-combustion/`, `gaseous-flames/` and
+  `smoke-aerosol/` (heated, non-burning samples); every investigation doc
+  carries a matching `geometry_class:` key. The chatbot and Explorer warn when
+  results span classes. `foundations/` and `data-sources/` are narrative, with
+  no `geometry_class`.
+- **One footnote per source.** Every footnote label must equal a
+  `sources[].id` (rule `ksor-footnote-unkeyed`), and that one footnote is
+  itemized internally (`§1.2: "quote..." §1.4: "quote..."`). Cite about once
+  per paragraph: GFM renders each reference as its own ↩ backlink.
+- **Verify against source text, not memory.** Extractions are verification
+  ground truth, not part of the record: `investigation_reports/_converted/`,
+  `narrative_reports/_converted/`, `psi-data/derived/report-extractions/`
+  (the PSI report PDFs), and `psi-data/derived/source-inventory.md` (for
+  `data-sources/` docs). For a multi-source doc, concatenate its extractions
+  into one scratch file and verify against that. `verify.mjs` cannot see
+  numbers written as words; count those by hand.
+- **Mission-atmosphere presets and mission-readiness findings are the same
+  rule, enforced by pytest instead of `verify.mjs`.** `psi_atmospheres.py`
+  (ISS/Gateway/Lunar O₂ %/pressure) and `psi-data/findings.yaml` (the
+  governed-doc quotes the readiness view shows beside a coverage gap) each
+  carry a `quote` checked verbatim (whitespace-normalized) against its `doc`
+  by `tests/test_atmospheres.py` / `tests/test_findings.py`. Editing either
+  file's numbers or quotes without updating the source citation fails that
+  test — don't loosen it to make a new preset or finding pass.
+- **Editing a `stable` doc's body forces re-approval**: `generated.at` must
+  move past the edit, and `stable` needs an approval no earlier than it. Add a
+  sibling draft instead, as `bass-ii-requirements.md` does. Never record an
+  approval the owner didn't give.
+- **Report quirks are recorded, not fixed.** When a source contradicts itself
+  (SPICE: 52 vs 55 smoke points) or a column's meaning is ambiguous (SAME's
+  diameter columns; BASS-II "Air display" panel readings with no unit), keep
+  both readings and write an Open question. BASS-II flow velocities in cm/s
+  exist only in report Tables 5.1 and 7.1 and in the test video; never
+  convert panel readings.
+- **Never make the model retype numbers.** Tool replies give it compact,
+  already-formatted values and forbid restating per-cell counts, merging runs'
+  values, or writing button labels; each rule came from a live error. Groq's
+  free tier allows 8000 tokens per minute, so tool replies stay small — not
+  just for one pinned query shape (a test enforces the size of `compact()`
+  for a wide, untuned query too, since a per-outcome citation tag can, for a
+  query with many long free-text outcomes and little repetition to compress
+  away, still push a narrower-tested payload over budget; `compact()`'s
+  `_shrink_to_budget()` is the hard guarantee, not the test alone).
+- **Not everything belongs in the system prompt.** An instruction is a
+  request, not a guarantee — it will be followed inconsistently across
+  models, fallbacks, and repeated calls to the same model. Before adding or
+  editing any instruction in `main.py` (`BASE_INSTRUCTIONS`,
+  `WITH_TOOLS_INSTRUCTIONS`, `WITHOUT_TOOLS_INSTRUCTIONS`) or a tool's
+  `description_override`/`_reply()` text in `psi_tools.py`, ask: *if the
+  model silently ignored this exact sentence on some fraction of calls,
+  would anything actually break?* If yes, it needs a code-level guarantee,
+  not better wording — a citation, id, unit conversion, aggregate, tier
+  label, or set-difference the model is told to state or compute is a
+  candidate for moving into `psi_query.py`/`psi_widgets.py` (precomputed
+  into the tool's payload) or into a `RunHooks`/`on_tool_end` callback that
+  renders from the tool's own JSON, independent of what the model's text
+  says — the pattern already proven for narrative citations (`_cite_sources`
+  in `main.py`) and for `cite_run_ids=False` on tools whose payload carries
+  no per-run id. Prompt text stays fine for genuinely linguistic choices:
+  prose length, tone, which 2-3 results to mention, whether a caveat reads
+  well. It is not fine for anything with a right answer a human could check
+  against source data.
+- **`psi-data/raw/matrices/BASS Test Matrix 050213.xlsx` contains
+  credentials.** It is gitignored and no tool ever opens it.
+- **ChatKit widgets** use the directly-constructed classes (deprecated but
+  supported). `ListView` is root-only, so it can't nest inside a `Card`.
+- **Windows dev:** Git Bash rewrites `/flame-freefall` in environment
+  variables into a Windows path, so prefix builds with
+  `MSYS_NO_PATHCONV=1 MSYS2_ENV_CONV_EXCL='*'`. Cloning needs
+  `git -c core.longpaths=true` (a long PDF name in `narrative_reports/`).
+  Next allows one `next dev` per project. After config changes a running dev
+  server can wedge with "Jest worker encountered 2 child process exceptions":
+  stop it, `rm -rf system/site/.next/dev`, and restart.
+- **Subagents in `.claude/agents/`**: two PDF agents (`pdf-to-markdown.md`
+  converts to a saved `.md` via the Nutrient skill; `pdf-reader.md` answers
+  in-conversation) and a QA/release-gate suite of nine specialists —
+  `reliability-regression`, `data-forensics`, `numerical-accuracy`,
+  `grounding-provenance`, `citation-verifier`, `chatbot-qa`, `red-team`,
+  `cross-layer-consistency`, `code-quality` — coordinated by
+  `qa-orchestrator`, which together answer one question: does a value or
+  citation the chatbot/dashboard shows actually trace to governed data,
+  never the model's invention or a code bug. Each specialist's own `.md`
+  documents its method. A confirmed, still-open defect they find is pinned
+  as `pytest.mark.xfail(strict=True, reason="...")` in a
+  `system/*/tests/test_qa_*.py` file (never edit `psi-data/raw/**`,
+  `knowledge/**`, or a generated file to make one pass) — the suite stays
+  green while the defect exists, and turns red (`XPASS`) the moment a fix
+  lands, which is the cue to remove that marker, not soften it. Skills live
+  in `.agents/skills/`, mirrored byte-identically into `.claude/skills/` as a
+  real copy, not a symlink (the checker enforces it). Edit `.agents/skills/`
+  and re-copy.
 
 ## The two worlds
 
@@ -118,11 +265,10 @@ npm run check       # the format checker — run before handing off any knowledg
 ## Serving to agents
 
 `ksor serve` runs an MCP server over the record with cited retrieval and
-honest abstention — not required for `npm run dev`, and **not wired up for
-this project yet** (no `.env`, no database). `README.md` has the full
-runbook (Neon/Postgres setup, embedding key, `npm run provision` /
-`refresh` / `serve`, calibrating the abstention gate with
-`npx ksor calibrate`, deployment). Worth knowing without reading it:
+honest abstention — not required for `npm run dev`. For this project it is
+deployed on Vercel (`flame-freefall-mcp`, backed by Neon Postgres), and the
+chat backend reaches it through `HANDBOOK_MCP_URL`. `README.md` has the
+deployment table and quick start. Worth knowing:
 
 - **Serving does not publish.** `npm run refresh` publishes (builds +
   ingests the record); `npm run serve` just opens the door on whatever was

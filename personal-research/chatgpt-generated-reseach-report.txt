@@ -1,0 +1,213 @@
+The evidence points to a narrower and more concrete problem than “NASA has lots of fire data.” The core issue is that the experiments are individually usable, but cross-experiment scientific reuse still requires substantial human interpretation, extraction, categorization, and normalization.
+Who has the problem
+1. Microgravity combustion PIs and researchers
+This is the clearest directly documented user group.
+NASA's PSI program explicitly exists to make completed space-experiment data available for researchers to reuse, and NASA describes its purpose as removing barriers to reviewing and analyzing benchmark physical-science data. �
+NASA Science +1
+The strongest evidence comes from a current NASA-funded Task Book project specifically analyzing previous combustion experiments. Its researchers are trying to extract and compare flame spread rate, flame length, appearance, color, and flammability boundaries across BASS, BASS-II, SAFFIRE-I, II and III. The stated scientific questions are explicitly cross-experiment: what can be learned from data collected under different conditions, and how can normal- and microgravity data be used to understand partial gravity? �
+NASA Task Book +1
+That makes the user more specific than “a scientist.” It is a combustion PI or research group attempting secondary analysis of historical microgravity experiments.
+There is also direct evidence that newer researchers are part of this problem. The Task Book records an undergraduate student being brought onto the project specifically to study PSI's structure, perform literature review, categorize the data, and begin processing the BASS-II datasets. �
+NASA Task Book
+2. New PIs entering microgravity combustion
+NASA-funded work on PSI data explicitly identifies new PIs as an important user population. A separate NASA Task Book project states that much image data remains underutilized because research has historically centered on individual investigations, and identifies lowering the barrier for new researchers as an objective. �
+NASA Task Book +1
+This is important because the problem isn't restricted to the scientists who originally ran BASS, FLEX or SAFFIRE. The historical investigators possess contextual knowledge about their own experiments. A new researcher has to reconstruct that context from the repository, papers, technical documentation and files.
+3. Spacecraft fire-safety designers and materials engineers
+NASA's Saffire documentation is unusually explicit here. The Saffire VI paper states that the absence of appropriate experimental data had forced spacecraft designers to base designs and safety precautions on 1-g understanding of flame spread, self-extinguishment, detection and suppression. �
+NASA Technical Reports Server +1
+BASS-II similarly states that its results contribute to computational models used for designing fire detection and suppression systems, and that the work helps engineers select safer materials and improve firefighting methods for future missions. �
+NASA Science
+So there is a second distinct user group:
+engineers responsible for material selection, fire detection, suppression, and spacecraft fire-safety analysis.
+The evidence does not establish that an engineer currently sits down and searches PSI specifically before every material decision. That would be an inference. What is directly established is that these engineering decisions depend on the underlying combustion knowledge.
+4. Computational combustion modelers
+BASS-II was explicitly designed to bridge NASA's normal-gravity flammability test, ground-based microgravity testing, and actual microgravity material behavior, with its results feeding combustion computational models. �
+NASA Science
+The Saffire research likewise describes the data as being used for verification of detailed numerical models and development of predictive models. �
+ScienceDirect
+These researchers need experimental conditions and measured outcomes to line up sufficiently well for model validation. That makes them another direct consumer of historical datasets.
+What it looks like in practice
+The strongest evidence is not a general complaint about “data being hard to find.” It is what researchers actually have to do.
+The repository contains many separate investigations
+NASA's current PSI research-area listing contains 18 entries under Combustion Science, including BASS, BASS-II, FLEX, FLEX-2, SAFFIRE-I, SAFFIRE-II, SAFFIRE-III, SPICE, SLICE, CFI, ACME experiments, SAME and others. �
+NASA
+That list itself demonstrates that “microgravity combustion data” is not one dataset. It is a collection of separately named investigations with different experimental purposes and conditions.
+And the broader historical record is considerably larger. The 2023 Decadal Survey says there have been dozens of microgravity combustion and fire studies across drop facilities, parabolic aircraft, spacecraft and the ISS, while noting that those studies vary in flame/fire size, diagnostics, pressure and gravity conditions. �
+National Academies
+The investigations span different generations of experiments
+BASS was conducted from 2010 to 2014 according to the National Academies' midterm assessment. FLEX ran from 2007 through 2016 according to its PSI record. BASS-II's PSI record spans 2010 through 2022. �
+NCBI +2
+SAFFIRE then extended the scale substantially. The Saffire research program ultimately reached six flights, with Saffire VI examining large samples under practical spacecraft conditions. �
+NASA Technical Reports Server
+The result is not simply a chronological archive. The experiments differ in:
+gravity environment
+material
+geometry
+sample size
+oxygen concentration
+pressure
+airflow velocity
+flow direction
+confinement
+diagnostics
+experimental duration
+The Decadal Survey specifically notes these variations and says existing combustion studies have been limited in flame/fire size, diagnostics, pressure, and lunar and Martian gravity conditions. �
+National Academies
+The files themselves are heterogeneous
+BASS-II's current PSI record contains 694 files added in its latest repository version, including metadata packages, engineering requirements and raw MP4 video. �
+NASA Science
+SAFFIRE-I's repository contains engineering documents, raw-data ZIP archives, PDFs, metadata packages and experimental tables. Its experiment recorded flame images, thermocouple measurements, radiation, pressure, CO₂, O₂ and airflow measurements. �
+NASA Science
+SPICE provides another example. Its current PSI record lists 186 files added in a documentation release and includes PDFs, DOC files, reports and metadata. �
+NASA Science
+So “data” here means a mixture of:
+raw video, images, metadata packages, engineering documents, PDFs, reports, experimental tables, presentations, numerical/modeling material and other files.
+The problem is therefore not simply discovering a PDF.
+The actual researcher workflow is already documented
+The most revealing evidence is the current Task Book project.
+Researchers say they began by:
+conducting a literature review
+learning the structure of PSI
+categorizing the available PSI data
+identifying relevant BASS/BASS-II experiments
+processing images and videos
+writing MATLAB code to detect flame edges
+determining experiment-specific thresholds to distinguish flame from background
+extracting airflow information embedded in the images
+obtaining flame position versus time
+extending the process to other experiments
+comparing the extracted characteristics across experiments
+�
+NASA Task Book +1
+The FY2025 report is even more revealing: researchers report that PSI remains unstructured and that piecing together science-requirement documentation, hardware details and flight-related operational records is cumbersome and time-consuming. They also encountered blurry or poorly illuminated images requiring additional correction before analysis. �
+NASA Task Book
+That is direct evidence of the practical pain behind “hard to find, compare and understand.”
+It is not merely:
+“I cannot locate the experiment.”
+It is closer to:
+“I found the experiment, but now I have to reconstruct what the files mean, determine which files correspond to which experimental conditions, extract the measurements from raw media, and make the resulting variables comparable to another experiment.”
+That second statement is partly an analytical synthesis of the documented workflow, rather than a quotation from NASA.
+Root cause
+The evidence suggests historical experimental heterogeneity, rather than one single failure of the PSI repository.
+Experiments were designed as individual scientific investigations
+The Task Book explicitly describes the historical problem as an emphasis on individual investigations, despite more than two decades of accumulated physical-science data. �
+NASA Task Book +1
+That matters because BASS was answering one scientific question, FLEX another, and SAFFIRE another.
+BASS examined solid-fuel ignition, flame growth, spread and extinction under controlled forced flow. �
+NASA Science
+FLEX investigated liquid-droplet combustion, extinction and gaseous suppressants. �
+NASA Science
+SAFFIRE investigated large-scale solid-fuel fire behavior at spacecraft-relevant dimensions. �
+NASA Science
+They were not originally designed as three installments of one standardized longitudinal dataset.
+The experiments also use fundamentally different experimental structures
+The Saffire research describes its large samples, airflow, oxygen conditions and instrumentation, while BASS uses small samples in a Microgravity Science Glovebox and controlled forced flow. �
+ScienceDirect +1
+The difference is scientifically meaningful. A 94-cm SIBAL sample in Saffire is not simply a larger BASS sample. Confinement, sample scale, flow and experimental geometry affect flame behavior. Researchers subsequently had to study those differences rather than simply assume that measurements were interchangeable. �
+Springer Nature +1
+The data were originally generated for experiments, not for cross-experiment analysis
+This is the most defensible structural explanation.
+NASA created PSI specifically to archive and expose physical-science data from completed experiments. It was opened in 2015 and initially contained data from 14 investigations; by 2021 NASA reported 72 investigations across its physical-science disciplines. �
+NASA Technical Reports Server
+The 2023 Decadal Survey describes PSI as containing most original data, including images and videos, from ISS, Shuttle and free-flyer experiments, plus some ground studies. It also notes that NASA had funded 42 PSI reuse awards across several disciplines. �
+National Academies
+That is an important distinction:
+PSI solved the archival/access problem. It did not automatically solve the scientific harmonization problem.
+The current Task Book evidence confirms this boundary. Researchers can access the data, but still describe the data as unstructured and the reconstruction of experimental context as cumbersome. �
+NASA Task Book
+There is direct evidence of the missing standardization layer
+The G-SPACE Task Book is unusually explicit. Its project goal includes creating structured image/video datasets with:
+standard file formats
+clear labeling
+traceability to terrestrial data
+The same report says the PSI data remain unstructured and that the documentation needed to interpret them is difficult to assemble. �
+NASA Task Book
+That is probably the strongest direct evidence for the root cause.
+The structural problem is therefore:
+individual experiments accumulated their own data, documentation, terminology, experimental configurations and file structures; the later archive made those materials publicly accessible, but cross-experiment scientific comparability still requires researchers to reconstruct and normalize them.
+That final sentence is a synthesis of the evidence, not a NASA quotation.
+Cost of leaving it unsolved
+There are two separate costs, and the evidence supports both.
+1. Fire-safety decisions continue to carry uncertainty
+Saffire's authors explicitly connect the missing experimental evidence to spacecraft design.
+The Saffire VI report states that insufficient experimental data had forced spacecraft designers to base fire-safety designs and precautions on 1-g understanding of flame spread, self-extinguishment, detection and suppression. �
+NASA Technical Reports Server
+The 2015 fire-safety paper similarly describes the objective as reducing uncertainty and risk in spacecraft fire-safety-system design. �
+ScienceDirect
+The 2023 Decadal Survey adds an important current dimension: Artemis-era spacecraft atmospheres are expected to differ from the ISS environment, and because fire behavior depends strongly on oxygen concentration, pressure, materials and gravity, safety practices established for the ISS may not retain the same factor of safety or may be inapplicable to future exploration missions. �
+National Academies
+The Survey therefore calls for more systematic investigation of material flammability to improve space-mission fire safety and predictive models. �
+National Academies
+This is a documented downstream consequence, not speculation.
+2. Existing scientific data remains underused
+The current NASA Task Book provides direct evidence here.
+It says that much of the accumulated image data remains underutilized because research has continued to focus on individual investigations. �
+NASA Task Book
+The same project reports difficulty validating extracted results against published data because of limited transparency, while describing PSI as unstructured and the assembly of science requirements, hardware information and flight records as cumbersome. �
+NASA Task Book
+So the cost is not only “someone spends longer searching.”
+A substantial amount of previously collected experimental evidence does not automatically become reusable comparative knowledge. Researchers have to spend new research effort turning archived experimental artifacts into comparable scientific measurements.
+That is directly documented.
+3. The research problem persists into partial gravity
+The current Task Book project is explicitly motivated by a gap between microgravity knowledge and future lunar/Martian environments. It asks how historical normal- and microgravity data can be used to understand material flammability in partial gravity. �
+NASA Task Book
+The 2023 Decadal Survey likewise says existing experiments have not adequately covered lunar and Martian gravity conditions and identifies material flammability in partial gravity as requiring further systematic investigation. �
+National Academies +1
+This means the value of being able to reuse historical data increases as new partial-gravity experiments need to be interpreted against the older microgravity record.
+Prior attempts and where they stop
+There have actually been several layers of partial progress.
+NASA PSI itself
+PSI was created as an archive for physical-science research in microgravity and has made completed investigation data publicly available since 2014/2015. �
+NASA Technical Reports Server +1
+This solved an important part of the original problem:
+the data can be archived, identified and accessed.
+But PSI does not turn every historical experiment into directly comparable measurements.
+The current repository still presents individual investigations separately, each with its own files, documentation and experimental tables. �
+NASA +2
+The BASS/Saffire scientific literature
+There has already been meaningful cross-experiment scientific comparison.
+The 2019 Urban, Ferkul, Olson, T'ien and collaborators paper, “Flame spread: Effects of microgravity and scale,” directly compares the large Saffire experiments with smaller previous experiments. It used the same SIBAL fabric across different experimental scales and examined how flame spread changes with microgravity and scale. �
+ScienceDirect
+The 2015 Saffire paper likewise explicitly says that SIBAL was selected so that Saffire data could be compared with BASS data and Saffire-2 samples. �
+University of Edinburgh Research
+So the researchers themselves have already been doing the scientific comparison.
+But those comparisons remain research papers addressing particular scientific questions, rather than a comprehensive cross-experiment representation of the entire underlying evidence base.
+That boundary is important.
+Existing review papers
+The paper “Fire safety in space: beyond flammability testing of small samples” reviewed the state of spacecraft fire safety and motivated Saffire partly because previous experiments were generally small-scale and constrained. �
+ScienceDirect
+The 2019 “Flame spread: Effects of microgravity and scale” paper then combined results from different scales and experiments. �
+ScienceDirect
+These represent a higher level of synthesis than individual experiment papers.
+But neither attempts to systematically normalize every relevant historical PSI combustion dataset into a common analytical representation.
+Current NASA-funded cross-experiment analysis
+This is the most revealing prior attempt because it essentially exposes the remaining edge.
+A NASA-funded project is currently undertaking:
+BASS + BASS-II + SAFFIRE-I + SAFFIRE-II + SAFFIRE-III + other PSI combustion datasets
+and intends to extract flame characteristics, document them and compare them across projects. �
+NASA Task Book +1
+The researchers have already written MATLAB processing code for BASS/BASS-II imagery, extracted flame positions and airflow information, and begun applying the analysis to LUCI partial-gravity data. �
+NASA Task Book
+Yet their own progress report says the PSI data remains unstructured and that assembling the required experimental context is cumbersome. �
+NASA Task Book
+That is the clearest statement of the current boundary.
+They are not starting from a clean comparative dataset.
+They are first having to create the comparable representation themselves.
+The problem, reduced to its actual shape
+The evidence supports this formulation:
+NASA has already made a large body of microgravity combustion data publicly accessible. The unresolved problem is what happens after access.
+A researcher who wants to answer a cross-experiment question cannot necessarily take “BASS,” “BASS-II,” and “SAFFIRE” and compare equivalent variables immediately.
+They have to reconstruct the experiment.
+They have to determine what each file represents, understand the experimental configuration, locate the relevant material and conditions, interpret images or video, extract measurements, deal with different documentation structures, decide which variables are genuinely comparable, and then perform the scientific comparison.
+The historical experiments are scientifically rich precisely because they were performed at different scales, pressures, oxygen concentrations, flow conditions, geometries and gravity environments. That same heterogeneity makes synthesis difficult. �
+ScienceDirect +1
+And there is direct evidence that researchers are already spending funded research time doing this reconstruction and extraction work. �
+NASA Task Book +1
+So the deepest version of the “Flame in Freefall” problem is not simply:
+“NASA has too much data.”
+It is:
+The evidence exists, is increasingly accessible, and has already produced valuable individual findings, but the knowledge remains fragmented at the level where researchers actually need to compare experiments. Turning decades of separately conducted combustion experiments into comparable evidence still requires substantial expert reconstruction and manual analysis.
+That is the strongest problem statement supported by the current NASA, NTRS, Task Book, PSI and Decadal Survey evidence.
+Evidence strength
+Directly established: PSI contains many separate combustion investigations; their files are heterogeneous; researchers report PSI as unstructured; assembling experimental context is cumbersome; researchers are manually extracting and comparing flame characteristics; spacecraft desig

@@ -1,12 +1,21 @@
-import { HomeLayout } from "fumadocs-ui/layouts/home";
+import type { ReactNode } from "react";
 
-import { baseOptions } from "@/lib/layout.shared";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { SiteHeader } from "@/components/landing/site-header";
+import { appTitle } from "@/lib/shared";
 
-// The front door stands ALONE: a navbar with the record's name, search and the
-// theme switch, and nothing else. It wore the full docs chrome briefly
-// (2026-08-22) so the sidebar was present from the first second; the owner's
-// call is that a landing page should land — the sidebar belongs to the record's
-// pages, and `Open the record` is the door to them.
+// The root `/` is the landing page (2026-09-25 decision, replacing the
+// full-screen ChatKit interface this route group carried before): a judge or
+// researcher lands somewhere that explains what the product is and offers
+// three clear destinations — the AI assistant (now at /chat), the Test-data
+// Explorer, and the System of Record — rather than an empty chat composer.
+// No chatkit.js here: nothing on this page loads the widget.
 export default function Layout({ children }: LayoutProps<"/">) {
-  return <HomeLayout {...baseOptions()}>{children}</HomeLayout>;
+  return (
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <SiteHeader title={appTitle} />
+      <main className="flex-1">{children}</main>
+      <SiteFooter title={appTitle} />
+    </div>
+  );
 }
