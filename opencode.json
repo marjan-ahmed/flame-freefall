@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.dev/schema.json",
+  "mcp": {
+    "servers": {
+      "flame-freefall": {
+        "type": "http",
+        "url": "https://flame-freefall-45lyjvxnu-marjan-ahmeds-projects.vercel.app/mcp"
+      }
+    }
+  }
+}
