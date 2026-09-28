@@ -5,6 +5,10 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
+    # Declared directly (not only via sentence-transformers) so the CPU wheel
+    # source below actually pins it; a sources entry does not reach transitive
+    # dependencies.
+    "torch>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -18,3 +22,16 @@ dev = [
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+
+# Pin torch to the CPU wheel index. MiniLM inference needs no GPU, and the
+# default CUDA build drags in ~7 GB of nvidia wheels — which blew the Vercel
+# container builder's disk ("no space left on device", confirmed live
+# 2026-09-28) for a service that never touches a GPU. `explicit = true` keeps
+# everything else on PyPI; the lockfile must be regenerated after changing this.
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
