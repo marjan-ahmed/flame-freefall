@@ -2,7 +2,7 @@
 
 Runs the actual ChatKit server protocol (openai-chatkit has no documented
 wire format to hand-roll; ChatKitServer.process() is the real implementation)
-and answers through Groq's OpenAI-compatible API rather than OpenAI's own,
+and answers through XKIRO's OpenAI-compatible API (qwen/qwen3.7-max:free)
 via the openai-agents SDK's custom-provider path.
 
 Run: uv run uvicorn main:app --reload --port 8000
@@ -20,7 +20,6 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from types import SimpleNamespace
 
 # stdout is fully buffered (not line-buffered) once redirected to a file —
 # our own print()s (llm-fallback, etc.) were sitting unflushed in that
@@ -124,91 +123,15 @@ set_tracing_disabled(True)
 # are already exhausted -- it only helps when one model's daily quota still
 # has headroom while the other's doesn't, which is exactly what was
 # happening live 2026-09-24.
-class _FallbackCompletions:
-    def __init__(self, providers: list[tuple[AsyncOpenAI, str]]) -> None:
-        self._providers = providers
+# NOW USING XKIRO: env vars GROQ_API_KEY/GROQ_API_KEY_FALLBACK/HF_TOKEN hold XKIRO keys
+# XKIRO_BASE_URL and XKIRO_MODEL from env configure the endpoint and model.
+_xkiro_key = os.environ["GROQ_API_KEY"]
+_xkiro_base = os.environ.get("XKIRO_BASE_URL", "https://api.xkiro.com/v1")
+_xkiro_model = os.environ.get("XKIRO_MODEL", "qwen/qwen3.7-max:free")
 
-    async def create(self, **kwargs):
-        last_exc: Exception | None = None
-        for index, (client, model_id) in enumerate(self._providers):
-            try:
-                return await client.chat.completions.create(**{**kwargs, "model": model_id})
-            except openai.APIStatusError as exc:
-                last_exc = exc
-                print(f"[llm-fallback] provider {index} ({model_id}) failed ({type(exc).__name__}: {exc}), trying next")
-        raise last_exc  # type: ignore[misc]
-
-
-class FallbackAsyncOpenAI:
-    """Duck-typed AsyncOpenAI substitute. `.chat` is the only thing actually
-    overridden (the fallback logic); everything else the SDK reads off the
-    client (e.g. `.base_url`, used for tracing metadata) proxies to the
-    FIRST real client via __getattr__ — fine for metadata, since it's only
-    used for trace labeling, never for the actual request routing."""
-
-    def __init__(self, providers: list[tuple[AsyncOpenAI, str]]) -> None:
-        self._providers = providers
-        self.chat = SimpleNamespace(completions=_FallbackCompletions(providers))
-
-    def __getattr__(self, name: str):
-        return getattr(self._providers[0][0], name)
-
-
-# Primary/fallback are both Groq-hosted (separate quota buckets per Caveat
-# 5, confirmed real Groq model ids via GET /openai/v1/models, not guessed).
-#
-# Caveat 6: qwen/qwen3.8-27b briefly WAS primary (2026-09-24) to dodge
-# gpt-oss-120b's exhausted daily quota, but its rate limit is on INPUT
-# tokens per MINUTE (ITPM), not tokens per day, and its limit (7000) is
-# smaller than gpt-oss-120b's TPM (8000) that this app's whole token budget
-# (BASE_INSTRUCTIONS length, search k=2, read token_budget, history window
-# -- see notes above the Agent definition) was actually sized around.
-# Confirmed live in production logs: real requests with a tool result in
-# them run 7000-13000+ input tokens, so qwen 413'd on nearly every non-trivial
-# turn ("Request too large... on input tokens per minute (ITPM): Limit
-# 7000"), fell through gpt-oss-120b (still exhausted from the day before)
-# to HF (still out of monthly credits), and EVERY turn hit the
-# every-provider-exhausted fallback -- confirmed via Vercel runtime logs,
-# not guessed. gpt-oss-120b is primary again; qwen tried second (cheap, and
-# its tight ITPM means it still helps on genuinely small turns), HF last.
-GROQ_PRIMARY_MODEL_ID = "openai/gpt-oss-120b"
-GROQ_FALLBACK_MODEL_ID = "qwen/qwen3.8-27b"
-HF_MODEL_ID = "Qwen/Qwen2.5-72B-Instruct"
-
-_groq_keys = [os.environ["GROQ_API_KEY"]]
-if fallback_key := os.environ.get("GROQ_API_KEY_FALLBACK"):
-    _groq_keys.append(fallback_key)
-
-# max_retries=0 on every client: the openai SDK's OWN retry-with-backoff on
-# 429s runs INSIDE client.chat.completions.create(), before
-# _FallbackCompletions ever gets a chance to move to the next provider --
-# confirmed live 2026-09-24 in production ("Retrying request in 17.000000
-# seconds (retry 1 of 2)" in the Vercel logs), and with gpt-oss-120b back as
-# primary while still rate-limited, that SDK-level sleep-and-retry across
-# multiple provider attempts blew Vercel's 60s function budget outright
-# ("Vercel Runtime Timeout Error: Task timed out after 60 seconds") -- the
-# whole function got killed by the platform before our own fallback logic,
-# or even the except-Exception guard in respond(), ever ran. We want a rate
-# limit to fail INSTANTLY so _FallbackCompletions can try the next provider
-# in milliseconds, not have the SDK silently retry the SAME exhausted one.
-_groq_clients = [
-    AsyncOpenAI(api_key=k, base_url="https://api.groq.com/openai/v1", max_retries=0) for k in _groq_keys
-]
-
-# Every Groq key tried on the primary model before any key is tried on the
-# fallback model -- see Caveat 5 above for why this ordering (not "strong
-# model then weak model") is the one that actually buys independent quota.
-_providers: list[tuple[AsyncOpenAI, str]] = (
-    [(client, GROQ_PRIMARY_MODEL_ID) for client in _groq_clients]
-    + [(client, GROQ_FALLBACK_MODEL_ID) for client in _groq_clients]
-)
-if hf_token := os.environ.get("HF_TOKEN"):
-    _providers.append(
-        (AsyncOpenAI(api_key=hf_token, base_url="https://router.huggingface.co/v1", max_retries=0), HF_MODEL_ID)
-    )
-
-chat_client = FallbackAsyncOpenAI(_providers) if len(_providers) > 1 else _providers[0][0]
-model = OpenAIChatCompletionsModel(model=_providers[0][1], openai_client=chat_client)
+_xkiro_client = AsyncOpenAI(api_key=_xkiro_key, base_url=_xkiro_base, max_retries=0)
+chat_client = _xkiro_client
+model = OpenAIChatCompletionsModel(model=_xkiro_model, openai_client=chat_client)
 
 # The Flame in Freefall record's own MCP door (`ksor serve`, run separately —
 # see AGENTS.md "Serving to agents"). search/outline/read over the actual
@@ -1001,4 +924,4 @@ async def upload_attachment(attachment_id: str, request: Request):
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "providers": [model_id for _, model_id in _providers]}
+    return {"status": "ok", "providers": [os.environ.get("XKIRO_MODEL", "qwen/qwen3.7-max:free")]}
