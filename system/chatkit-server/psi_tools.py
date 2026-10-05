@@ -2,6 +2,11 @@
 (psi_widgets.py) into the chat and hands the model a small, cited summary to
 write 2-4 sentences from — the model supplies CONDITIONS, never values.
 
+Tool arguments are normalized before the agents SDK validates them (see
+_normalize_tool_args): the live model sometimes types every argument as a
+string ("30", "null", ""), which pydantic's strict schema rejects before the
+tool body runs — every tool is wrapped with _harden_args below.
+
 Replaces the old show_comparison tool, which asked the model for one flame
 spread rate per investigation (BASS-II alone ran 129 tests; one number per
 investigation is either an average nobody published or a value picked from
@@ -35,6 +40,143 @@ RankDirection = Literal["asc", "desc"]
 
 REPEAT_WINDOW_S = 120
 _recent_calls: dict[tuple[str, str], float] = {}  # (thread id, tool+args) → last call time
+
+# --- Tolerant tool-argument handling -------------------------------------
+#
+# The live model (XKIRO qwen, seen 2026-10-05) emits tool arguments as JSON
+# but types every value as a STRING and writes "not stated" as the strings
+# "null" or "": {"o2_pct": "30", "flow_cm_s": "null", "fuel_family": ""}.
+# The agents SDK builds a strict schema for these tools (o2_pct: number|null,
+# every key required) and validates BEFORE the tool body runs; pydantic
+# coerces "30"→30.0 but rejects "null"/"" outright, so the call died as
+# ModelBehaviorError("Invalid JSON input for tool ...") with no widget, no
+# [query_test_runs] log, and no _guarded trace — the transcript shows the
+# model retrying the same broken shape until it gave up and blamed a generic
+# "tool error". plot_results survived only because all of its parameters are
+# strings. An instruction cannot fix this (the model does not see its own
+# argument types as wrong), so this is the code-level guarantee: each tool's
+# on_invoke_tool is wrapped to rewrite the raw JSON to schema-typed values
+# first — numeric strings to floats, null-ish strings to "key absent",
+# out-of-vocabulary enum strings dropped, real JSON passed through.
+_NULLISH_STRINGS = {"", "null", "none", "nan", "undefined"}
+
+
+def _prop_variants(prop: dict) -> list[dict]:
+    """Unwrap the anyOf/allOf shells pydantic puts around Optional/Literal
+    annotations into the flat list of leaf schemas."""
+    flat: list[dict] = []
+    for v in prop.get("anyOf") or [prop]:
+        flat.extend(v.get("allOf") or [v])
+    return flat
+
+
+def _schema_kind(prop: dict) -> str:
+    """number | enum | string | unknown, for one JSON-schema property."""
+    if not prop:
+        return "unknown"
+    types: set[str] = set()
+    values: set = set()
+    for v in _prop_variants(prop):
+        if "enum" in v:
+            values.update(v["enum"])
+        elif "const" in v:
+            values.add(v["const"])
+        if "type" in v:
+            types.add(v["type"])
+    if types & {"number", "integer"}:
+        return "number"
+    if values:
+        return "enum"
+    if "string" in types:
+        return "string"
+    return "unknown"
+
+
+def _schema_enum_values(prop: dict) -> set:
+    values: set = set()
+    for v in _prop_variants(prop):
+        values.update(v.get("enum") or [])
+        if "const" in v:
+            values.add(v["const"])
+    return values
+
+
+def _schema_is_nullable(prop: dict) -> bool:
+    return any(v.get("type") == "null" for v in _prop_variants(prop))
+
+
+def _normalize_tool_args(tool_name: str, props: dict, required: set[str], raw_json: str) -> str:
+    """Rewrite one tool call's raw JSON arguments to schema-typed values.
+
+    Invalid JSON is returned untouched so the SDK raises its own consistent
+    "Invalid JSON input" error; a dict always comes back, so pydantic never
+    sees a string where the schema says number. Dropping an unparseable
+    numeric axis widens the query — and the evidence widget always shows the
+    query it actually answered, so the broadening is visible, never silent.
+    """
+    try:
+        parsed = json.loads(raw_json) if raw_json and raw_json.strip() else {}
+    except (TypeError, ValueError):
+        return raw_json
+    if not isinstance(parsed, dict):
+        return raw_json
+    out: dict = {}
+    for key, value in parsed.items():
+        prop = props.get(key)
+        kind = _schema_kind(prop) if prop is not None else "unknown"
+        if isinstance(value, str):
+            s = value.strip()
+            if s.lower() in _NULLISH_STRINGS:
+                if kind == "unknown":
+                    out[key] = value  # not our schema's key: let the SDK decide
+                elif kind == "string" and not _schema_is_nullable(prop) and key in required:
+                    out[key] = s  # required non-nullable string: the tool answers honestly
+                # else: the model's "null"/"" for an optional axis means not-stated
+                continue
+            if kind == "number":
+                try:
+                    out[key] = float(s)
+                except ValueError:
+                    pass  # unparseable number -> omit this axis
+                continue
+            if kind == "enum":
+                if s in _schema_enum_values(prop):
+                    out[key] = s
+                continue
+            out[key] = s
+        else:
+            out[key] = value  # JSON-native number/bool/null/list: schema-valid
+    return json.dumps(out)
+
+
+def _harden_args(tool) -> None:
+    """Wrap one FunctionTool's on_invoke_tool with _normalize_tool_args, and
+    make argument/validation failures visible to the TurnGuard the same way
+    _guarded makes body failures visible. The SDK's failure formatter catches
+    those exceptions INSIDE on_invoke_tool and returns the string
+    "An error occurred..." to the model — so the wrapper inspects the RESULT,
+    not just exceptions (nothing else this server returns starts with that
+    prefix; honest refusals are worded differently)."""
+    invoke = tool.on_invoke_tool
+    props = tool.params_json_schema.get("properties", {})
+    required = set(tool.params_json_schema.get("required", []))
+
+    @functools.wraps(invoke)
+    async def wrapper(ctx, input_json: str):
+        try:
+            result = await invoke(ctx, _normalize_tool_args(tool.name, props, required, input_json))
+        except Exception:
+            guard = getattr(getattr(ctx, "context", None), "_guard", None)
+            if guard is not None:
+                guard.record_tool_result(tool.name, None)
+            raise
+        if isinstance(result, str) and result.startswith("An error occurred"):
+            guard = getattr(getattr(ctx, "context", None), "_guard", None)
+            if guard is not None:
+                guard.record_tool_result(tool.name, None)
+        return result
+
+    tool.on_invoke_tool = wrapper
 
 
 def _site(ctx: RunContextWrapper[AgentContext]) -> str | None:
@@ -354,3 +496,11 @@ async def show_mission_readiness(ctx: RunContextWrapper[AgentContext], atmospher
 
 TOOLS = [query_test_runs, show_gap_map, compare_investigations, show_test_details, plot_results, rank_results,
          show_mission_readiness]
+
+# Activate the tolerant-argument wrapper (see _harden_args above) on every
+# tool. The live model sent o2_pct="30"/flow_cm_s="null"-style string
+# arguments that the SDK's strict schema rejected before our tool bodies ever
+# ran — wrapping here fixes every tool in one place, whatever the model's
+# next argument-format quirk is.
+for _tool in TOOLS:
+    _harden_args(_tool)

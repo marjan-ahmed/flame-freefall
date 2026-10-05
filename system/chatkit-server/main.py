@@ -724,6 +724,21 @@ def _clean_query(raw: dict) -> dict:
     return q
 
 
+def _normalize_thread_for_store(thread: ThreadMetadata) -> ThreadMetadata:
+    """Store invariant: save_thread must only ever receive plain
+    ThreadMetadata. threads.create hands respond() a full Thread (metadata +
+    items); if that object is re-saved — our title update mutates it inside
+    the stream, and the framework's end-of-stream diff re-saves it — the
+    stored dump carries an `items` key, and the framework's
+    _load_full_thread (Thread(**thread_meta.model_dump(),
+    items=thread_items)) then raises "got multiple values for keyword
+    argument 'items'" on EVERY threads.get_by_id for that thread: a
+    permanently broken conversation (confirmed live 2026-10-05)."""
+    if type(thread) is ThreadMetadata:
+        return thread
+    return ThreadMetadata(**thread.model_dump(exclude={"items"}))
+
+
 class FlameFreefallChatKitServer(ChatKitServer[dict]):
     async def handle_stream_cancelled(self, thread, pending_items, context):
         run = context.pop("_active_agent_run", None)
@@ -735,6 +750,9 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         """Sync (streaming=False) actions update the widget that was clicked,
         in place: ChatKit replaces it with `updated_item`. Used by an evidence
         card's Details / Hide details buttons."""
+        # Same store-invariant as respond(): save_thread must never see a
+        # full Thread (see _normalize_thread_for_store).
+        thread = _normalize_thread_for_store(thread)
         payload = action.payload or {}
         kind = str(action.type).removeprefix("psi.")
         if kind != "expand" or sender is None:
@@ -778,6 +796,11 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         input_user_message: UserMessageItem | None,
         context: dict,
     ) -> AsyncIterator[ThreadStreamEvent]:
+        # threads.create hands this handler a full Thread; every later save
+        # must be metadata-only (see _normalize_thread_for_store). Normalize
+        # ONCE here so every store write this turn is ThreadMetadata,
+        # including the framework's own end-of-stream re-save of this object.
+        thread = _normalize_thread_for_store(thread)
         # Short window: full history plus a tool result adds up fast against
         # Groq's 8000 TPM cap (see note above the Agent definition).
         # Load the most recent 6 items (desc), then reverse for chronological order.
