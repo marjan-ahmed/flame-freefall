@@ -27,6 +27,8 @@
   <a href="https://flamefreefall-sor.vercel.app/mcp">MCP door →</a>
   &nbsp;·&nbsp;
   <a href="https://marjan-ahmed.github.io/flame-freefall/explore/">Test-data explorer →</a>
+  &nbsp;·&nbsp;
+  <a href="https://drive.google.com/file/d/1Y4UFMcmlY_sxeYVmw2GR1Ms9nt2vTRQD/view">Project demo (PDF) →</a>
 </p>
 
 ---
@@ -140,6 +142,7 @@ Three things, built as one product:
 
 - **[Try it live](https://marjan-ahmed.github.io/flame-freefall/)** — no setup, no
   login. The dashboard is the first thing you see.
+- **[Project demonstration (PDF)](https://drive.google.com/file/d/1Y4UFMcmlY_sxeYVmw2GR1Ms9nt2vTRQD/view)** — the project walkthrough in one document, for anyone who can't run the code.
 - What's actually novel isn't the chat UI. It's four things:
   - **The data.** 19 investigations' tables normalized into one queryable record,
     with the raw cell kept beside every value.
