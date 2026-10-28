@@ -20,15 +20,17 @@
 </p>
 
 <p align="center">
-  <strong><a href="https://marjan-ahmed.github.io/flame-freefall/">Open the dashboard →</a></strong>
+  <strong><a href="https://marjan-ahmed.github.io/flame-freefall/">Open the dashboard</a></strong>
   &nbsp;·&nbsp;
-  <a href="https://marjan-ahmed.github.io/flame-freefall/docs/">Browse the governed record →</a>
+  <a href="https://marjan-ahmed.github.io/flame-freefall/docs/">Browse the governed record</a>
   &nbsp;·&nbsp;
-  <a href="https://flamefreefall-sor.vercel.app/mcp">MCP door →</a>
+  <a href="https://flamefreefall-sor.vercel.app/mcp">MCP door</a>
   &nbsp;·&nbsp;
-  <a href="https://marjan-ahmed.github.io/flame-freefall/explore/">Test-data explorer →</a>
+  <a href="https://marjan-ahmed.github.io/flame-freefall/explore/">Test-data explorer</a>
   &nbsp;·&nbsp;
-  <a href="https://drive.google.com/file/d/1Y4UFMcmlY_sxeYVmw2GR1Ms9nt2vTRQD/view">Project demo (PDF) →</a>
+  <a href="https://drive.google.com/file/d/1Y4UFMcmlY_sxeYVmw2GR1Ms9nt2vTRQD/view">Project demo Technical (PDF)</a>
+    &nbsp;·&nbsp;
+  <a href="https://drive.google.com/file/d/1ct7No0Hwhc6qO0wirH2W6fGdpW6MizIy/view?usp=sharing"> Project Demo (PDF) </a>
 </p>
 
 ---
