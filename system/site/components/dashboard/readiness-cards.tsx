@@ -1,5 +1,7 @@
 import type { ReactElement } from "react";
 
+import Link from "next/link";
+
 import type { ReadinessSummary } from "@/lib/dashboard-data";
 
 // One card per named mission atmosphere: which geometry classes the PSI data
@@ -12,12 +14,13 @@ export function ReadinessCards({ readiness }: { readiness: ReadinessSummary[] })
     <div className="grid gap-3 sm:grid-cols-3">
       {readiness.map((r) => {
         const covered = r.classes.filter((c) => c.covered).length;
+        const evidenceHref = `/explore/?o2_pct=${r.atmosphere.o2_pct}&pressure_atm=${r.atmosphere.pressure_atm}`;
         return (
           <div key={r.atmosphere.id} className="rounded-lg border bg-card p-3">
             <div className="flex items-baseline justify-between gap-2">
               <span className="text-sm font-medium">{r.atmosphere.label}</span>
               <span className="text-xs text-muted-foreground">
-                {covered}/{r.classes.length} classes covered
+                {covered}/{r.classes.length} classes with evidence
               </span>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -34,6 +37,9 @@ export function ReadinessCards({ readiness }: { readiness: ReadinessSummary[] })
                 </li>
               ))}
             </ul>
+            <Link href={evidenceHref} className="mt-3 inline-block text-xs font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              Inspect matching and partial evidence
+            </Link>
           </div>
         );
       })}

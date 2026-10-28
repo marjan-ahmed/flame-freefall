@@ -63,6 +63,30 @@ cover the atmosphere a mission will actually use?) applies anywhere materials ar
 qualified for an oxygen-enriched environment — hyperbaric medicine and submarines
 included, not just spacecraft.
 
+## A reproducible Lunar evidence brief
+
+The landing page opens a concrete mission question before asking a visitor to
+prompt an AI: what does this table cover at the proposed Lunar-habitat
+atmosphere of **34% O₂ and 56.5 kPa**? The answer is intentionally narrow:
+
+- The deterministic condition query finds **10 at-condition** and **75 partial**
+  gaseous-flame records. Its representative fully reported record is
+  `PSI-159:21153 F1`, from `PSI-159_Experimental table_CFI-G_Normal Flames.csv`,
+  row 129.
+- The same query finds **zero at-condition and zero partial solid-fuel records**.
+  The nearest solid-fuel record is `saffire-iv-vi:VI-2`: SIBAL fabric at 31% O₂
+  and 54.1 kPa, reported in the SAFFIRE VI report tables. It remains a *near*
+  result and is never presented as Lunar-atmosphere coverage.
+
+The app links both claims directly to the filtered Explorer, where a judge can
+open the representative run and inspect its original PSI row or NASA report
+table. The proposed atmosphere and the interpretation boundary are traceable to
+the governed [Spacecraft Materials Fire Safety](https://marjan-ahmed.github.io/flame-freefall/docs/foundations/decadal-survey/miller-spacecraft-materials-fire-safety/)
+record and its NASA source. The contrast is an evidence-coverage finding, **not**
+a material ranking, a safety claim, certification evidence, or a prediction of
+Lunar-gravity combustion. Gaseous and solid fuel geometries are not compared as
+equivalent experiments.
+
 ## What this is
 
 Three things, built as one product:

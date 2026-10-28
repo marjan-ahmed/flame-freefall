@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { FlameComparison } from "@/components/landing/flame-comparison";
 import { Heatmap, HeatmapLegend } from "@/components/dashboard/heatmap";
+import { LunarEvidenceBrief } from "@/components/dashboard/lunar-evidence-brief";
 import { ReadinessCards } from "@/components/dashboard/readiness-cards";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,7 @@ import {
   missionReadinessSummary,
   totalCoverageGaps,
 } from "@/lib/dashboard-data";
+import { lunarEvidenceBrief } from "@/lib/mission-evidence";
 import { appDescription, appTitle } from "@/lib/shared";
 
 const SITE_URL = "https://marjan-ahmed.github.io/flame-freefall/";
@@ -70,10 +72,12 @@ export default function HomePage(): ReactElement {
   const markers = atmosphereMarkers();
   const readiness = missionReadinessSummary();
   const totalGaps = totalCoverageGaps(heatmaps, readiness);
+  const lunarBrief = lunarEvidenceBrief();
 
   return (
     <>
       <Hero />
+      <LunarEvidenceBrief brief={lunarBrief} />
       <NumberStrip totals={totals} />
       <Destinations />
       <EvidenceSection heatmaps={heatmaps} markers={markers} readiness={readiness} totalGaps={totalGaps} />
@@ -99,10 +103,10 @@ function Hero(): ReactElement {
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
-            <Link href="/chat/">Ask the assistant</Link>
+            <Link href="/explore/">Explore the test evidence</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
-            <Link href="/docs/">Browse the System of Record</Link>
+            <Link href="/chat/">Ask the assistant</Link>
           </Button>
         </div>
       </div>
@@ -145,7 +149,7 @@ function Destinations(): ReactElement {
     { term: "Evidence, tiered", body: "at-conditions, partial and nearest tests — never one number picked and passed off as the answer." },
     { term: "Gap map", body: "O₂ × flow bands shaded by test count, so an untested condition is visible, not silent." },
     { term: "Ranking", body: "materials ranked by a measured result within one geometry class — median, range, every run id." },
-    { term: "Mission readiness", body: "how much data exists near a named mission atmosphere, with a citation on why a gap matters." },
+    { term: "Mission evidence coverage", body: "which compatible test data exists near a named mission atmosphere, with a citation on why a gap matters." },
     { term: "Compare & chart", body: "investigations side by side, or a result plotted against a condition." },
   ];
   const recordPrinciples: { term: string; body: string }[] = [
@@ -249,9 +253,10 @@ function EvidenceSection({
           </div>
         </div>
 
-        <h3 className="mt-10 text-lg font-medium">Mission readiness</h3>
+        <h3 className="mt-10 text-lg font-medium">Mission evidence coverage</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          &ldquo;Covered&rdquo; means at least one test matches or partially matches that atmosphere — it never means safe.
+          &ldquo;Evidence exists&rdquo; means at least one test matches or partially matches that atmosphere. It does not establish
+          material safety, mission readiness, certification, or partial-gravity behavior.
         </p>
         <div className="mt-4">
           <ReadinessCards readiness={readiness} />
