@@ -30,7 +30,7 @@
   &nbsp;·&nbsp;
   <a href="https://drive.google.com/file/d/1Y4UFMcmlY_sxeYVmw2GR1Ms9nt2vTRQD/view">Project demo Technical (PDF)</a>
     &nbsp;·&nbsp;
-  <a href="https://drive.google.com/file/d/1ct7No0Hwhc6qO0wirH2W6fGdpW6MizIy/view?usp=sharing"> Project Demo (PDF) </a>
+  <a href="https://drive.google.com/file/d/1gPKFjobbKzjYHGvtgqURrIbNxRqa8aFO/view?usp=sharing"> Project Demo (PDF) </a>
 </p>
 
 ---
