@@ -69,8 +69,8 @@ export function RunCard({
       type="button"
       onClick={() => onSelect(run.id)}
       className={cn(
-        "w-full rounded-lg border bg-card p-3 text-left transition-colors hover:border-primary/60",
-        selected && "border-primary ring-2 ring-primary/20",
+        "w-full border border-border border-l-2 border-l-transparent bg-card p-3 text-left transition-colors hover:border-primary/60 hover:bg-muted/20",
+        selected && "border-primary border-l-primary ring-2 ring-primary/20",
       )}
     >
       <div className="flex flex-wrap items-center gap-2">

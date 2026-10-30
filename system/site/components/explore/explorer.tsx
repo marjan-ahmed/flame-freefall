@@ -86,7 +86,7 @@ function Answer({ r, q }: { r: QueryResult; q: Query }): ReactElement {
   );
   const conflicts = [...r.match, ...r.partial].filter((v) => v.run.conflicts?.length).length;
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="border border-border border-l-4 border-l-primary bg-card p-5">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">What the PSI record says about</p>
       <p className="mt-0.5 font-display text-xl">{describeQuery(q)}</p>
       <div className="mt-3 flex flex-wrap gap-2 text-sm">
@@ -307,10 +307,10 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
+    <div className="grid gap-8 lg:grid-cols-[310px_minmax(0,1fr)] lg:gap-10">
       {/* ── query panel ─────────────────────────────── */}
-      <aside className="space-y-4 lg:sticky lg:top-4 lg:self-start">
-        <form onSubmit={onSubmit} className="space-y-3 rounded-xl border bg-card p-4">
+      <aside className="dark space-y-4 text-foreground lg:sticky lg:top-4 lg:self-start">
+        <form onSubmit={onSubmit} className="space-y-3 border border-white/10 border-t-2 border-t-orange-400 bg-card p-4 sm:p-5">
           <h2 className="font-display text-lg">Ask the data</h2>
           <p className="text-xs text-muted-foreground">Leave a field empty to not constrain it.</p>
           {(["o2_pct", "flow_cm_s", "pressure_atm"] as NumericAxis[]).map((k) => (
@@ -408,15 +408,16 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
             </button>
           </div>
         </form>
-        <div className="rounded-xl border bg-card p-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Try</h3>
-          <ul className="mt-2 space-y-1.5">
+        <div className="border border-white/10 bg-card px-4 py-4 sm:px-5">
+          <h3 className="font-display text-base font-semibold">Start with an example</h3>
+          <p className="mt-1 text-xs text-muted-foreground">Each example loads a real PSI query. Adjust it to explore.</p>
+          <ul className="mt-3 divide-y divide-border">
             {PRESETS.map((p) => (
-              <li key={p.label}>
-                <button type="button" onClick={() => apply(p.q)} className="text-left text-sm text-primary hover:underline">
-                  {p.label}
+              <li key={p.label} className="py-2.5 first:pt-0 last:pb-0">
+                <button type="button" onClick={() => apply(p.q)} className="group w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <span className="block text-[11px] text-muted-foreground">{p.hint}</span>
+                  <span className="mt-0.5 block text-sm font-medium text-foreground group-hover:text-primary group-hover:underline">{p.label}</span>
                 </button>
-                <span className="block text-xs text-muted-foreground">{p.hint}</span>
               </li>
             ))}
           </ul>
@@ -438,7 +439,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         </>}
 
         {result && (
-          <section className="rounded-xl border bg-card p-4">
+          <section className="border border-border bg-card p-4 sm:p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="font-display text-lg">Coverage map</h2>
@@ -528,7 +529,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               {selectedRun ? (
                 <RunDetail run={selectedRun} investigation={invIndex[selectedRun.investigation]} basePath={basePath} onClose={() => setSelected(null)} />
               ) : (
-                <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
+                <div className="border border-dashed border-border p-6 text-sm text-muted-foreground">
                   Select a test — in the list or on the map — to see every condition, result and source cell behind it.
                 </div>
               )}
@@ -537,7 +538,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         )}
 
         {result && outcomeQuantities.length > 0 && (
-          <section className="rounded-xl border bg-card p-4">
+          <section className="border border-border bg-card p-4 sm:p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="font-display text-lg">Results against conditions</h2>
@@ -580,7 +581,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         )}
 
         {result && result.coverage.length > 0 && (
-          <section className="rounded-xl border bg-card p-4">
+          <section className="border border-border bg-card p-4 sm:p-5">
             <h2 className="font-display text-lg">Coverage and gaps, by investigation</h2>
             <div className="mt-3 overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">

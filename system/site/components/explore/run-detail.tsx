@@ -59,7 +59,7 @@ export function RunDetail({
   const conditions = Object.entries(run.conditions).filter(([k]) => k !== "gravity");
 
   return (
-    <article className="rounded-xl border bg-card p-4 text-sm" aria-label={`Run ${run.id}`}>
+    <article className="border border-border border-t-2 border-t-orange-400 bg-card p-4 text-sm" aria-label={`Run ${run.id}`}>
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
