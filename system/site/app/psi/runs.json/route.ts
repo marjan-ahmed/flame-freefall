@@ -1,4 +1,4 @@
-import { psiGeneratedAt, slimRuns } from "@/lib/psi-data";
+import { psiDatasetHash, psiGeneratedAt, slimRuns } from "@/lib/psi-data";
 
 export const revalidate = false;
 
@@ -9,5 +9,5 @@ export const revalidate = false;
  * Explorer's query code (lib/psi-query.ts) runs client-side over it.
  */
 export function GET(): Response {
-  return Response.json({ generated_at: psiGeneratedAt(), runs: slimRuns() });
+  return Response.json({ generated_at: psiGeneratedAt(), sha256: psiDatasetHash(), runs: slimRuns() });
 }

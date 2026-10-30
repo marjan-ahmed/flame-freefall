@@ -31,11 +31,11 @@ def test_preset_pressures_are_the_kpa_division():
 
 
 READINESS_TRUTH = {  # (match, partial, near_pool) per class, derived from runs.json by hand-script
-    "iss": {"droplet-combustion": (83, 1, 279), "gaseous-flames": (113, 115, 972),
+    "iss": {"droplet-combustion": (75, 1, 279), "gaseous-flames": (98, 111, 889),
             "smoke-aerosol": (0, 0, 117), "solid-fuel": (1, 60, 207)},
-    "gateway": {"droplet-combustion": (6, 0, 357), "gaseous-flames": (0, 15, 1185),
+    "gateway": {"droplet-combustion": (6, 0, 349), "gaseous-flames": (2, 0, 1096),
                 "smoke-aerosol": (0, 0, 117), "solid-fuel": (1, 0, 267)},
-    "lunar": {"droplet-combustion": (0, 0, 363), "gaseous-flames": (10, 75, 1115),
+    "lunar": {"droplet-combustion": (0, 0, 355), "gaseous-flames": (11, 63, 1024),
               "smoke-aerosol": (0, 0, 117), "solid-fuel": (0, 0, 268)},
 }
 
@@ -48,15 +48,12 @@ def test_readiness_counts_match_independent_count(atm):
 
 
 def test_rank_even_n_median_and_one_contribution_per_run():
-    # o2 21 +/-1.5, flow 20 +/-30 %: PMMA = 6 BASS-II runs, each contributing only its
-    # spread rate nearest 20 cm/s; sorted values' two middle ones average to 0.0465.
+    # Strict setup strata retain only the matching BASS-II scalar observation.
     r = psi_query.rank({"o2_pct": 21, "flow_cm_s": 20}, "spread_rate", "solid-fuel")
     rows = {x["fuel_family"]: x for x in r["rows"]}
-    assert (rows["PMMA"]["n"], rows["PMMA"]["median"]) == (6, 0.0465)
+    assert (rows["PMMA"]["n"], rows["PMMA"]["median"]) == (1, 0.024)
     assert len(set(rows["PMMA"]["runs"])) == len(rows["PMMA"]["runs"])
-    s = rows["SIBAL (cotton-fiberglass)"]
-    # SIBAL spread rates now from 4 runs: SAFFIRE-1 S1 (1.8), S2 (1.3), SAFFIRE-2 2-5 (2.1), 2-6 (2.6)
-    assert (s["n"], s["min"], s["median"], s["max"]) == (4, 1.3, 1.95, 2.6)
+
 
 
 def test_rank_never_mixes_geometry_classes():

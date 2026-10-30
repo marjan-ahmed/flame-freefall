@@ -93,10 +93,6 @@ def test_saffire_table_i_results_are_merged_and_cited():
     assert not missing, f"no Table I (ignition and results) citation on {missing}"
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "instance.md (the MCP door's system prompt) says the record 'does not cover ... SPICE, CFI, SAME', "
-    "but knowledge/ holds stable, published docs for all three (approved 2026-09-24). Harmless while the "
-    "door is un-refreshed; contradictory the moment `npm run refresh` ingests them."))
 def test_instance_scope_does_not_disclaim_investigations_the_record_publishes():
     body = (REPO_ROOT / "instance.md").read_text(encoding="utf-8").split("---", 2)[2]
     m = re.search(r"does not\s+cover other PSI-catalogued investigations[^)]*\(e\.g\.([^)]*)\)", body)

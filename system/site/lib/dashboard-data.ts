@@ -14,8 +14,9 @@ import { GEOMETRY_LABEL } from "@/components/explore/format";
 
 import { psiInvestigations, psiIngestReport, slimRuns } from "./psi-data";
 import { ATMOSPHERES, type Atmosphere } from "./psi-atmospheres";
+import { pairedPoint, individualRuns } from "./evidence-method";
 import { query } from "./psi-query";
-import type { Investigation, Measure, SlimRun } from "./psi-types";
+import type { Investigation } from "./psi-types";
 
 export const O2_BINS: [number, number][] = [
   [0, 14], [14, 16], [16, 18], [18, 20], [20, 22], [22, 25], [25, 30], [30, 35], [35, 45], [45, 101],
@@ -30,16 +31,6 @@ function binOf(x: number, bins: [number, number][]): number | null {
     if (x >= lo && x < hi) return i;
   }
   return null;
-}
-
-function measureOf(run: SlimRun, axis: "o2_pct" | "pressure_atm"): Measure | undefined {
-  const m = run.conditions[axis] as Measure | undefined;
-  return m && typeof m.min === "number" ? m : undefined;
-}
-
-function pointsOf(m: Measure): number[] {
-  if (m.flags?.includes("multi") && m.values?.length) return m.values;
-  return [((m.min as number) + (m.max as number)) / 2];
 }
 
 export type ClassHeatmap = {
@@ -65,13 +56,12 @@ export function geometryHeatmaps(): ClassHeatmap[] {
     for (const r of runs) {
       if (byId.get(r.investigation)?.geometry_class !== gc) continue;
       totalRuns += 1;
-      const o2 = measureOf(r, "o2_pct");
-      const p = measureOf(r, "pressure_atm");
-      if (!o2 || !p) continue;
+      const point = pairedPoint(r, "o2_pct", "pressure_atm");
+      if (!point) continue;
+      const x = binOf(point[0], O2_BINS), y = binOf(point[1], PRESSURE_BINS);
+      if (x === null || y === null) continue;
       reportedRuns += 1;
-      const xs = new Set(pointsOf(o2).map((v) => binOf(v, O2_BINS)).filter((v): v is number => v !== null));
-      const ys = new Set(pointsOf(p).map((v) => binOf(v, PRESSURE_BINS)).filter((v): v is number => v !== null));
-      for (const x of xs) for (const y of ys) grid[y][x] += 1;
+      grid[y][x] += 1;
     }
     return { geometryClass: gc, label: GEOMETRY_LABEL[gc] ?? gc, grid, totalRuns, reportedRuns };
   });
@@ -105,13 +95,13 @@ export function missionReadinessSummary(): ReadinessSummary[] {
   return Object.values(ATMOSPHERES).map((atm) => ({
     atmosphere: atm,
     classes: classes.map((gc) => {
-      const r = query(runs, invs, { o2_pct: atm.o2_pct, pressure_atm: atm.pressure_atm, geometry_class: gc });
+      const r = query(individualRuns(runs), invs, { o2_pct: atm.o2_pct, pressure_atm: atm.pressure_atm, geometry_class: gc });
       return {
         geometryClass: gc,
         label: GEOMETRY_LABEL[gc] ?? gc,
         match: r.counts.match,
         partial: r.counts.partial,
-        covered: r.counts.match > 0 || r.counts.partial > 0,
+        covered: r.counts.match > 0,
       };
     }),
   }));

@@ -31,14 +31,12 @@ def test_saffire_table_i_results_are_ingested(result):
 
 
 @pytest.mark.parametrize("cell,fn", [
-    ("14.7 psia", lambda m: to_atm(m, "atm")),
-    ("760 torr", lambda m: to_atm(m, "atm")),
+    ("760 blarg", lambda m: to_atm(m, "atm")),
     ("5 mil", lambda m: to_mm(m, "mm")),
 ])
 def test_unknown_unit_is_not_left_usable(cell, fn):
     """units.to_atm/to_mm return the measure unchanged (numbers intact, unit
-    'psia'/'torr'/'mil') with only an `unknown_unit` flag. psi_query reads
-    min/max regardless of unit, so '14.7 psia' would be queried as 14.7 atm.
+    'psia'/'torr'/'mil') with only an `unknown_unit` flag. Query code relies on normalized units.
     The module's own rule: unreadable -> null plus a flag, never a guess."""
     m = fn(parse_measure(cell))
     assert m.min is None and m.value is None, m

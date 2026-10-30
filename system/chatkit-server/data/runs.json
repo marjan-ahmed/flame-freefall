@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-26T21:49:23+00:00",
+ "generated_at": "2026-10-30T07:53:59+00:00",
  "generator": "system/psi-ingest",
  "runs": [
   {
@@ -227838,6 +227838,392 @@
      "smoke_point_length (50% C3H6; row 'LSP, mm')": "22 - 50",
      "smoke_points_observed (50% C3H6; row '# smoke')": "7",
      "fuel": "50% C3H6"
+    }
+   ]
+  },
+  {
+   "id": "acme-bre:19056F1",
+   "investigation": "acme-bre",
+   "label": "19056F1",
+   "granularity": "test",
+   "date": null,
+   "sources": [
+    {
+     "kind": "report",
+     "table": "Figure 6, p. 25 (example test)",
+     "line": 72,
+     "doc": "knowledge/investigations/gaseous-flames/acme-bre",
+     "doc_title": "ACME BRE: Burning Rate Emulator",
+     "doc_status": "stable",
+     "source_id": "acme-bre-final-report",
+     "title": "Advanced Combustion via Microgravity Experiments (ACME) Burning Rate Emulator (BRE) — ACME/BRE Final Report (2022)",
+     "url": null,
+     "descriptor": "ACME/BRE final report prepared by Dennis P. Stocker (NASA Glenn), James G. Quintiere and Peter B. Sunderland (University of Maryland), John L. de Ris (FM Global, retired) and Parham Dehghani (University of Maryland), dated 1 Feb. 2022; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'BRE_final_report_20220201.pdf'",
+     "via": "psi-data/derived/report-extractions/BRE_final_report_20220201.md"
+    }
+   ],
+   "conditions": {
+    "evidence_role": {
+     "value": "condensed-fuel-emulator",
+     "basis": "BRE report §2: gas burner emulates real condensed fuels",
+     "source": 0
+    },
+    "flow_direction": {
+     "value": "quiescent",
+     "basis": "BRE report §4.G: absence of air flow",
+     "source": 0
+    },
+    "fuel": {
+     "value": "ethylene/N2",
+     "raw": "ethylene/N2, hc = 24 kJ/g",
+     "source": 0
+    },
+    "fuel_family": {
+     "value": "ethylene",
+     "raw": "ethylene/N2, hc = 24 kJ/g",
+     "source": 0
+    },
+    "fuel_mass_flux_g_m2_s": {
+     "raw": "4.55 g/m2s",
+     "value": 4.55,
+     "min": 4.55,
+     "max": 4.55,
+     "unit": "g/m2s",
+     "flags": [
+      "from_source_0"
+     ]
+    },
+    "gravity": {
+     "value": "microgravity"
+    },
+    "o2_pct": {
+     "raw": "27%",
+     "value": 27.0,
+     "min": 27.0,
+     "max": 27.0,
+     "unit": "%",
+     "flags": [
+      "from_source_0"
+     ]
+    },
+    "pressure_atm": {
+     "raw": "10.2 psia",
+     "value": 0.694069,
+     "min": 0.694069,
+     "max": 0.694069,
+     "unit": "atm",
+     "flags": [
+      "converted_from_psia",
+      "from_source_0"
+     ]
+    },
+    "result_status": {
+     "value": "preliminary",
+     "basis": "BRE report §4.G: While BRE's results are still preliminary",
+     "source": 0
+    }
+   },
+   "outcomes": [
+    {
+     "quantity": "heat_of_gasification",
+     "source": 0,
+     "measure": {
+      "raw": "0.66 kJ/g",
+      "value": 0.66,
+      "min": 0.66,
+      "max": 0.66,
+      "unit": "kJ/g",
+      "flags": [
+       "inferred_from_heat_flux"
+      ]
+     },
+     "note": "Preliminary estimate from measured heat flux; not a directly burned solid sample."
+    },
+    {
+     "quantity": "observation",
+     "source": 0,
+     "text": "extinction at 45 s",
+     "note": "Preliminary gas-fed condensed-fuel emulation in microgravity."
+    },
+    {
+     "quantity": "burn_time",
+     "source": 0,
+     "measure": {
+      "raw": "45",
+      "value": 45.0,
+      "min": 45.0,
+      "max": 45.0,
+      "unit": "s"
+     }
+    },
+    {
+     "quantity": "end_mode",
+     "source": 0,
+     "text": "self-extinguished"
+    }
+   ],
+   "notes": [
+    "Preliminary report example; gas-fed emulation of condensed-fuel burning, not a direct solid-fuel test or a lunar-gravity prediction.",
+    "The report illustrates selected tests; these records are not a complete inventory and overlap the PSI daily summaries.",
+    "Heat of combustion is not normalized: the main text and appended progress reports contain differing values."
+   ],
+   "raw": [
+    {
+     "Test": "19056F1",
+     "Fuel": "ethylene/N2, hc = 24 kJ/g",
+     "Mass flux": "4.55 g/m2s",
+     "O₂": "27%",
+     "Pressure": "10.2 psia",
+     "Heat of gasification L": "0.66 kJ/g",
+     "Outcome": "extinction at 45 s",
+     "original_caption": "Figure 6. Flame growth from ignition to self-extinction in test 19056F1. The conditions are ethylene/N2, hc = 24 kJ/g, 4.55 g/m2s, 27% O2, 10.2 psia, L = 0.66 kJ/g, extinction at 45 s."
+    }
+   ]
+  },
+  {
+   "id": "acme-bre:19070K1",
+   "investigation": "acme-bre",
+   "label": "19070K1",
+   "granularity": "test",
+   "date": null,
+   "sources": [
+    {
+     "kind": "report",
+     "table": "Figure 7, p. 25 (example test)",
+     "line": 73,
+     "doc": "knowledge/investigations/gaseous-flames/acme-bre",
+     "doc_title": "ACME BRE: Burning Rate Emulator",
+     "doc_status": "stable",
+     "source_id": "acme-bre-final-report",
+     "title": "Advanced Combustion via Microgravity Experiments (ACME) Burning Rate Emulator (BRE) — ACME/BRE Final Report (2022)",
+     "url": null,
+     "descriptor": "ACME/BRE final report prepared by Dennis P. Stocker (NASA Glenn), James G. Quintiere and Peter B. Sunderland (University of Maryland), John L. de Ris (FM Global, retired) and Parham Dehghani (University of Maryland), dated 1 Feb. 2022; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'BRE_final_report_20220201.pdf'",
+     "via": "psi-data/derived/report-extractions/BRE_final_report_20220201.md"
+    }
+   ],
+   "conditions": {
+    "evidence_role": {
+     "value": "condensed-fuel-emulator",
+     "basis": "BRE report §2: gas burner emulates real condensed fuels",
+     "source": 0
+    },
+    "flow_direction": {
+     "value": "quiescent",
+     "basis": "BRE report §4.G: absence of air flow",
+     "source": 0
+    },
+    "fuel": {
+     "value": "ethylene/N2",
+     "raw": "ethylene/N2, hc = 24 kJ/g",
+     "source": 0
+    },
+    "fuel_family": {
+     "value": "ethylene",
+     "raw": "ethylene/N2, hc = 24 kJ/g",
+     "source": 0
+    },
+    "fuel_mass_flux_g_m2_s": {
+     "raw": "2.3 g/m2s",
+     "value": 2.3,
+     "min": 2.3,
+     "max": 2.3,
+     "unit": "g/m2s",
+     "flags": [
+      "from_source_0"
+     ]
+    },
+    "gravity": {
+     "value": "microgravity"
+    },
+    "o2_pct": {
+     "raw": "26.5%",
+     "value": 26.5,
+     "min": 26.5,
+     "max": 26.5,
+     "unit": "%",
+     "flags": [
+      "from_source_0"
+     ]
+    },
+    "pressure_atm": {
+     "raw": "10.2 psia",
+     "value": 0.694069,
+     "min": 0.694069,
+     "max": 0.694069,
+     "unit": "atm",
+     "flags": [
+      "converted_from_psia",
+      "from_source_0"
+     ]
+    },
+    "result_status": {
+     "value": "preliminary",
+     "basis": "BRE report §4.G: While BRE's results are still preliminary",
+     "source": 0
+    }
+   },
+   "outcomes": [
+    {
+     "quantity": "heat_of_gasification",
+     "source": 0,
+     "measure": {
+      "raw": "3.0 kJ/g",
+      "value": 3.0,
+      "min": 3.0,
+      "max": 3.0,
+      "unit": "kJ/g",
+      "flags": [
+       "inferred_from_heat_flux"
+      ]
+     },
+     "note": "Preliminary estimate from measured heat flux; not a directly burned solid sample."
+    },
+    {
+     "quantity": "observation",
+     "source": 0,
+     "text": "steady",
+     "note": "Preliminary gas-fed condensed-fuel emulation in microgravity."
+    }
+   ],
+   "notes": [
+    "Preliminary report example; gas-fed emulation of condensed-fuel burning, not a direct solid-fuel test or a lunar-gravity prediction.",
+    "The report illustrates selected tests; these records are not a complete inventory and overlap the PSI daily summaries.",
+    "Heat of combustion is not normalized: the main text and appended progress reports contain differing values."
+   ],
+   "raw": [
+    {
+     "Test": "19070K1",
+     "Fuel": "ethylene/N2, hc = 24 kJ/g",
+     "Mass flux": "2.3 g/m2s",
+     "O₂": "26.5%",
+     "Pressure": "10.2 psia",
+     "Heat of gasification L": "3.0 kJ/g",
+     "Outcome": "steady",
+     "original_caption": "Figure 7. Flame growth from ignition to steady state in test 19070K1. The conditions are ethylene/N2, hc = 24 kJ/g, 2.3 g/m2s, 26.5% O2, 10.2 psia, L = 3.0 kJ/g, steady."
+    }
+   ]
+  },
+  {
+   "id": "acme-bre:19070D1",
+   "investigation": "acme-bre",
+   "label": "19070D1",
+   "granularity": "test",
+   "date": null,
+   "sources": [
+    {
+     "kind": "report",
+     "table": "Figure 9, p. 26 (example test)",
+     "line": 74,
+     "doc": "knowledge/investigations/gaseous-flames/acme-bre",
+     "doc_title": "ACME BRE: Burning Rate Emulator",
+     "doc_status": "stable",
+     "source_id": "acme-bre-final-report",
+     "title": "Advanced Combustion via Microgravity Experiments (ACME) Burning Rate Emulator (BRE) — ACME/BRE Final Report (2022)",
+     "url": null,
+     "descriptor": "ACME/BRE final report prepared by Dennis P. Stocker (NASA Glenn), James G. Quintiere and Peter B. Sunderland (University of Maryland), John L. de Ris (FM Global, retired) and Parham Dehghani (University of Maryland), dated 1 Feb. 2022; distributed in the NASA Physical Sciences Informatics (PSI) archive as 'BRE_final_report_20220201.pdf'",
+     "via": "psi-data/derived/report-extractions/BRE_final_report_20220201.md"
+    }
+   ],
+   "conditions": {
+    "evidence_role": {
+     "value": "condensed-fuel-emulator",
+     "basis": "BRE report §2: gas burner emulates real condensed fuels",
+     "source": 0
+    },
+    "flow_direction": {
+     "value": "quiescent",
+     "basis": "BRE report §4.G: absence of air flow",
+     "source": 0
+    },
+    "fuel": {
+     "value": "ethylene/N2",
+     "raw": "ethylene/N2 (see Open questions)",
+     "source": 0
+    },
+    "fuel_family": {
+     "value": "ethylene",
+     "raw": "ethylene/N2 (see Open questions)",
+     "source": 0
+    },
+    "fuel_mass_flux_g_m2_s": {
+     "raw": "4.95 g/m2s",
+     "value": 4.95,
+     "min": 4.95,
+     "max": 4.95,
+     "unit": "g/m2s",
+     "flags": [
+      "from_source_0"
+     ]
+    },
+    "gravity": {
+     "value": "microgravity"
+    },
+    "o2_pct": {
+     "raw": "34%",
+     "value": 34.0,
+     "min": 34.0,
+     "max": 34.0,
+     "unit": "%",
+     "flags": [
+      "from_source_0"
+     ]
+    },
+    "pressure_atm": {
+     "raw": "8.2 psia",
+     "value": 0.557977,
+     "min": 0.557977,
+     "max": 0.557977,
+     "unit": "atm",
+     "flags": [
+      "converted_from_psia",
+      "from_source_0"
+     ]
+    },
+    "result_status": {
+     "value": "preliminary",
+     "basis": "BRE report §4.G: While BRE's results are still preliminary",
+     "source": 0
+    }
+   },
+   "outcomes": [
+    {
+     "quantity": "heat_of_gasification",
+     "source": 0,
+     "measure": {
+      "raw": "2.42 kJ/g",
+      "value": 2.42,
+      "min": 2.42,
+      "max": 2.42,
+      "unit": "kJ/g",
+      "flags": [
+       "inferred_from_heat_flux"
+      ]
+     },
+     "note": "Preliminary estimate from measured heat flux; not a directly burned solid sample."
+    },
+    {
+     "quantity": "observation",
+     "source": 0,
+     "text": "steady",
+     "note": "Preliminary gas-fed condensed-fuel emulation in microgravity."
+    }
+   ],
+   "notes": [
+    "Preliminary report example; gas-fed emulation of condensed-fuel burning, not a direct solid-fuel test or a lunar-gravity prediction.",
+    "The report illustrates selected tests; these records are not a complete inventory and overlap the PSI daily summaries.",
+    "Heat of combustion is not normalized: the main text and appended progress reports contain differing values.",
+    "Source disagreement: main report Figure 9 gives heat of combustion 24 kJ/g; Figure 10 gives 22 kJ/g. Neither is selected."
+   ],
+   "raw": [
+    {
+     "Test": "19070D1",
+     "Fuel": "ethylene/N2 (see Open questions)",
+     "Mass flux": "4.95 g/m2s",
+     "O₂": "34%",
+     "Pressure": "8.2 psia",
+     "Heat of gasification L": "2.42 kJ/g",
+     "Outcome": "steady",
+     "original_caption": "Figure 9. Flame growth from ignition to steady state in test 19070D1. The conditions are ethylene/N2, hc = 24 kJ/g, 4.95 g/m2s, 34% O2, 8.2 psia, L = 2.42 kJ/g, steady."
     }
    ]
   }

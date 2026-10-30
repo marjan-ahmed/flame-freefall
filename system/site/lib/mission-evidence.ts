@@ -1,46 +1,39 @@
-// A small, reproducible case study for the home page. It is intentionally
-// computed through the same query() implementation as the Explorer, rather
-// than copying a dashboard number into prose. If the derived PSI table
-// changes, the finding changes with it and its test asks us to review the
-// judge-facing claim.
-
 import { ATMOSPHERES } from "./psi-atmospheres";
 import { psiInvestigations, slimRuns } from "./psi-data";
 import { query, type RunView } from "./psi-query";
+import { individualRuns, type Tolerances } from "./evidence-method";
+import type { Measure } from "./psi-types";
 
-export type MissionEvidenceSlice = {
-  match: number;
-  partial: number;
-  representative: RunView | null;
-};
-
-export type LunarEvidenceBrief = {
-  atmosphere: (typeof ATMOSPHERES)["lunar"];
-  gaseous: MissionEvidenceSlice;
-  solid: MissionEvidenceSlice;
-};
-
-function sliceFor(geometry_class: "gaseous-flames" | "solid-fuel"): MissionEvidenceSlice {
+export type MissionEvidenceSlice = { match: number; partial: number; representative: RunView | null };
+export function lunarEvidenceBrief() {
   const atmosphere = ATMOSPHERES.lunar;
-  const result = query(slimRuns(), psiInvestigations(), {
-    o2_pct: atmosphere.o2_pct,
-    pressure_atm: atmosphere.pressure_atm,
-    geometry_class,
-  });
-  // A representative is evidence navigation only, never a stand-in for the
-  // count. Prefer fully specified evidence, then partial, then the nearest
-  // measured condition when the honest result is a gap.
-  return {
-    match: result.counts.match,
-    partial: result.counts.partial,
-    representative: result.match[0] ?? result.partial[0] ?? result.near[0] ?? null,
-  };
+  const invs = psiInvestigations();
+  const runs = individualRuns(slimRuns());
+  const categories = [
+    { key: "solid", label: "Direct solid-fuel tests", geometry: "solid-fuel", emulator: false },
+    { key: "emulator", label: "BRE condensed-fuel emulator", geometry: "gaseous-flames", emulator: true },
+    { key: "gaseous", label: "Other gaseous-flame tests", geometry: "gaseous-flames", emulator: false },
+  ];
+  const windows = [
+    { label: "Default search", o2: 1.5, pressure: 0.1 },
+    { label: "Tighter pressure", o2: 1.5, pressure: 5 / 101.325 },
+    { label: "Wider oxygen", o2: 3, pressure: 0.1 },
+  ];
+  const profiles = windows.map(window => ({
+    ...window,
+    slices: categories.map(category => {
+      const pool = runs.filter(r => (r.investigation === "acme-bre") === category.emulator);
+      const tolerances: Tolerances = { o2_pct: window.o2, pressure_atm: window.pressure };
+      const q = { o2_pct: atmosphere.o2_pct, pressure_atm: atmosphere.pressure_atm, geometry_class: category.geometry };
+      const r = query(pool, invs, q, tolerances);
+      return { ...category, match: r.counts.match, partial: r.counts.partial,
+        representative: r.match[0] ?? r.partial[0] ?? r.near[0] ?? null };
+    }),
+  }));
+  const solids = runs.filter(r => invs.find(i => i.id === r.investigation)?.geometry_class === "solid-fuel");
+  const reported = solids.filter(r => Number.isFinite((r.conditions.o2_pct as Measure)?.max));
+  const maxO2 = reported.length ? Math.max(...reported.map(r => (r.conditions.o2_pct as Measure).max!)) : null;
+  const boundaryIds = reported.filter(r => (r.conditions.o2_pct as Measure).max === maxO2).map(r => r.id);
+  return { atmosphere, profiles, solidBoundary: { reported: reported.length, missing: solids.length - reported.length, maxO2, ids: boundaryIds } };
 }
-
-export function lunarEvidenceBrief(): LunarEvidenceBrief {
-  return {
-    atmosphere: ATMOSPHERES.lunar,
-    gaseous: sliceFor("gaseous-flames"),
-    solid: sliceFor("solid-fuel"),
-  };
-}
+export type LunarEvidenceBrief = ReturnType<typeof lunarEvidenceBrief>;

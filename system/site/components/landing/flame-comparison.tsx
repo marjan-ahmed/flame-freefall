@@ -14,8 +14,7 @@ export function FlameComparison(): ReactElement {
   return (
     <svg viewBox="0 0 420 220" className="mx-auto w-full max-w-md" role="img" aria-labelledby="flame-comparison-title">
       <title id="flame-comparison-title">
-        A candle flame on Earth tapers into a teardrop, pulled upward by buoyant convection. Without gravity, the same
-        flame has nothing to rise into and burns instead as a slow, near-spherical ball.
+        A candle flame on Earth tapers into a teardrop, pulled upward by buoyant convection. In quiescent microgravity a candle flame can approach a spherical shape; imposed ventilation changes its shape.
       </title>
       <defs>
         <radialGradient id="earthFlame" cx="50%" cy="78%" r="65%">

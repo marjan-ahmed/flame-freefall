@@ -187,7 +187,8 @@ def pct(m: Measure | None) -> Measure | None:
 
 
 LENGTH_TO_MM = {"mm": 1.0, "cm": 10.0, "m": 1000.0, "µm": 0.001, "micron": 0.001, "in": 25.4, '"': 25.4}
-PRESSURE_TO_ATM = {"atm": 1.0, "mmhg": 1 / 760.0, "bar": 1 / 1.01325, "kpa": 1 / 101.325}
+PRESSURE_TO_ATM = {"atm": 1.0, "mmhg": 1 / 760.0, "bar": 1 / 1.01325, "kpa": 1 / 101.325,
+                   "psia": 6.894757293168 / 101.325}
 
 
 def to_mm(m: Measure | None, default_unit: str | None = None) -> Measure | None:

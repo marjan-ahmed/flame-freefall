@@ -34,18 +34,21 @@ embedding:
 # version: 0.1.0
 ---
 
-This record is authoritative for NASA's microgravity combustion
-investigations covered here — BASS-II, SAFFIRE (including the later Saffire
-VI flight), FLEX, and ACME — plus the fire-safety certification standard
-(NASA-STD-6001B) and the decadal-survey research priorities (Liao, Miller,
-and the "Thriving in Space" survey) that frame why they matter. It does not
-cover other PSI-catalogued investigations outside this set (e.g. DAFT, SLICE,
-SPICE, CFI, SAME), and it does not cover anything about spacecraft fire
-safety beyond what these specific sources state. Every numeric claim here
-traces to a verbatim quote from its source document — a gap in a source is
-recorded as an open question, never filled by inference or general
-knowledge.
+This record is authoritative only for the sources represented in its governed
+NASA combustion documents: solid-fuel investigations (BASS, BASS-II, SAFFIRE),
+droplet investigations (FLEX, FLEX-2, CFI), gaseous-flame investigations including
+ACME and SPICE, and smoke/aerosol investigations SAME and SAME-R. Data-source
+inventories describe additional PSI tables; an inventory is not a scientific
+review of every investigation it lists. Foundations cover NASA-STD-6001B and
+the cited decadal-survey research priorities.
 
-Write and govern the knowledge once; every surface here derives from it. When a
-slide deck, a wiki page or a model's memory disagrees with this record, this
-record wins.
+The record is not a fire-risk predictor, materials qualification authority or
+validation of combustion at lunar or Martian gravity. Missing data describes
+this collection, not proof of safety or absence of research. BRE uses gaseous
+burners to emulate condensed fuels; relevant indirect evidence must not be
+presented as direct solid-material testing. Search tolerances are numerical
+heuristics, not validated physical equivalence or safety margins.
+
+Every claim must be supported by the retrieved source passage. A gap or conflict
+in a source remains an open question, never filled from model memory. Source
+approval metadata is a recorded attestation, not independent proof of review.

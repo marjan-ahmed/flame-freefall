@@ -7,20 +7,20 @@
   "PSI-26:As-run 91",
   "PSI-101:SAME #57"
  ],
- "generated_at": "2026-09-26T21:49:23+00:00",
+ "generated_at": "2026-10-30T07:53:59+00:00",
  "generator": "system/psi-ingest",
  "totals": {
-  "runs": 1948,
+  "runs": 1951,
   "by_granularity": {
-   "test": 1400,
+   "test": 1403,
    "envelope": 8,
    "day": 100,
    "test-point": 435,
    "summary": 5
   },
   "investigations": 19,
-  "runs_with_outcomes": 929,
-  "runs_with_report_data": 433,
+  "runs_with_outcomes": 932,
+  "runs_with_report_data": 436,
   "conflicts": 8,
   "rows_read": 2860,
   "rows_skipped": 913
@@ -3906,6 +3906,12 @@
    "rows": 290,
    "joined_to_psi_runs": 133,
    "report_only_runs": 5
+  },
+  {
+   "table": "knowledge/investigations/gaseous-flames/acme-bre Figures 6, 7, 9 (example tests)",
+   "rows": 3,
+   "joined_to_psi_runs": 0,
+   "report_only_runs": 3
   }
  ],
  "not_ingested": [

@@ -413,6 +413,70 @@ def flex_table_ix(m: Merger) -> None:
 
 EXTRACTED = "psi-data/extracted/report-outcomes.csv"
 
+BRE_REPORT = "psi-data/derived/report-extractions/BRE_final_report_20220201.md"
+
+
+def bre_examples(m: Merger) -> None:
+    """Three illustrated tests, not a reconstructed full BRE test inventory.
+
+    PSI-20 lists days with no pressure. A report example cannot supply a
+    pressure to an entire day: keep individual examples as separate records.
+    Check each governed table cell against its own original figure caption,
+    so changing a value or accidentally joining a different test fails closed.
+    """
+    inv = "acme-bre"
+    doc = m.ctx.registry[inv]["ksor_doc"]
+    _, rows, _ = knowledge.table_under(m.ctx.repo_root, doc, "Example tests reported in the results section")
+    original = (m.ctx.repo_root / BRE_REPORT).read_text(encoding="utf-8")
+    normalized = re.sub(r"\s+", " ", original)
+    figures = {"19056F1": (6, 25), "19070K1": (7, 25), "19070D1": (9, 26)}
+    for row in rows:
+        label = row["Test"]
+        figure, page = figures[label]
+        # First occurrence is the main report, before the appended progress reports.
+        # Decimal points belong to measurements, so stop at the final outcome.
+        found = re.search(rf"Figure {figure}\. Flame growth [^.]* in test {label}\. The conditions are (.*?(?:steady|extinction at \d+ s))\.", normalized)
+        if not found:
+            raise ValueError(f"BRE source caption missing: {label}, Figure {figure}")
+        caption = found.group(0)
+        for column in ("Mass flux", "O₂", "Pressure", "Heat of gasification L", "Outcome"):
+            if row[column] not in caption:
+                raise ValueError(f"BRE {label}: {column} does not match its original figure caption")
+        run = m.standalone(inv, label)
+        src = m.add_source(run, inv, f"Figure {figure}, p. {page} (example test)", row["__line__"], row)
+        run.sources[src]["via"] = BRE_REPORT
+        run.raw[src]["original_caption"] = caption
+        m.category(run, "evidence_role", "condensed-fuel-emulator", src,
+                   basis="BRE report §2: gas burner emulates real condensed fuels")
+        m.category(run, "result_status", "preliminary", src,
+                   basis="BRE report §4.G: While BRE's results are still preliminary")
+        m.category(run, "fuel", "ethylene/N2", src, raw=row["Fuel"])
+        m.category(run, "fuel_family", "ethylene", src, raw=row["Fuel"])
+        m.category(run, "flow_direction", "quiescent", src,
+                   basis="BRE report §4.G: absence of air flow")
+        m.condition(run, "o2_pct", pct(parse_measure(row["O₂"], "%")), src)
+        m.condition(run, "pressure_atm", to_atm(parse_measure(row["Pressure"], "psia"), "psia"), src)
+        m.condition(run, "fuel_mass_flux_g_m2_s", parse_measure(row["Mass flux"], "g/m2s"), src)
+        gasification = parse_measure(row["Heat of gasification L"], "kJ/g")
+        if gasification is not None:
+            gasification.flag("inferred_from_heat_flux")
+        m.outcome(run, Outcome("heat_of_gasification", gasification, source=src,
+                              note="Preliminary estimate from measured heat flux; not a directly burned solid sample."))
+        m.outcome(run, Outcome("observation", text=row["Outcome"], source=src,
+                              note="Preliminary gas-fed condensed-fuel emulation in microgravity."))
+        extinction = re.fullmatch(r"extinction at (\d+) s", row["Outcome"])
+        if extinction:
+            m.outcome(run, Outcome("burn_time", parse_measure(extinction.group(1), "s"), source=src))
+            m.outcome(run, Outcome("end_mode", text="self-extinguished", source=src))
+        run.notes.extend([
+            "Preliminary report example; gas-fed emulation of condensed-fuel burning, not a direct solid-fuel test or a lunar-gravity prediction.",
+            "The report illustrates selected tests; these records are not a complete inventory and overlap the PSI daily summaries.",
+            "Heat of combustion is not normalized: the main text and appended progress reports contain differing values.",
+        ])
+        if label == "19070D1":
+            run.notes.append("Source disagreement: main report Figure 9 gives heat of combustion 24 kJ/g; Figure 10 gives 22 kJ/g. Neither is selected.")
+    m.stat(f"{doc} Figures 6, 7, 9 (example tests)", len(rows), 0, len(rows))
+
 
 # field → (kind, unit): how an extracted value enters the run
 EXTRACTED_FIELDS = {
@@ -495,6 +559,6 @@ def extracted_report_values(m: Merger) -> None:
 def merge_all(ctx: Ctx, runs: list[Run]) -> list[dict]:
     m = Merger(ctx, runs)
     for step in (bass_ii_table_5_1, bass_ii_table_7_1, saffire_table_i, saffire_iv_vi, flex_table_ix,
-                 extracted_report_values):
+                 extracted_report_values, bre_examples):
         step(m)
     return m.stats

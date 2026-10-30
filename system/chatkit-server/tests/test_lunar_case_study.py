@@ -19,9 +19,9 @@ def test_lunar_case_study_is_a_reproducible_coverage_gap() -> None:
 
     assert result["atmosphere"]["o2_pct"] == 34.0
     assert result["atmosphere"]["pressure_source_value"] == "56.5 kPa"
-    assert classes["gaseous-flames"]["match"] == 10
-    assert classes["gaseous-flames"]["partial"] == 75
-    assert classes["gaseous-flames"]["nearest_tested"]["run_id"] == "PSI-159:21153 F1"
+    assert classes["gaseous-flames"]["match"] == 11
+    assert classes["gaseous-flames"]["partial"] == 63
+    assert classes["gaseous-flames"]["nearest_tested"]["run_id"] == "acme-bre:19070D1"
     assert classes["solid-fuel"]["match"] == 0
     assert classes["solid-fuel"]["partial"] == 0
     assert classes["solid-fuel"]["nearest_tested"]["run_id"] == "saffire-iv-vi:VI-2"

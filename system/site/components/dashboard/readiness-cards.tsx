@@ -14,13 +14,13 @@ export function ReadinessCards({ readiness }: { readiness: ReadinessSummary[] })
     <div className="grid gap-3 sm:grid-cols-3">
       {readiness.map((r) => {
         const covered = r.classes.filter((c) => c.covered).length;
-        const evidenceHref = `/explore/?o2_pct=${r.atmosphere.o2_pct}&pressure_atm=${r.atmosphere.pressure_atm}`;
+        const evidenceHref = `/explore/?o2_pct=${r.atmosphere.o2_pct}&pressure_atm=${r.atmosphere.pressure_atm}&individual=1`;
         return (
           <div key={r.atmosphere.id} className="rounded-lg border bg-card p-3">
             <div className="flex items-baseline justify-between gap-2">
               <span className="text-sm font-medium">{r.atmosphere.label}</span>
               <span className="text-xs text-muted-foreground">
-                {covered}/{r.classes.length} classes with evidence
+                {covered}/{r.classes.length} classes with full matches
               </span>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">

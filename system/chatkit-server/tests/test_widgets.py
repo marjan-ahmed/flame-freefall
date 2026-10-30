@@ -161,7 +161,7 @@ def test_readiness_widget_shows_a_gap_as_a_gap():
     # Solid-fuel data never reaches the Lunar preset's 34% O2 — the widget
     # must say GAP, not silently omit the class or call it covered.
     text = json.dumps(json.loads(w.readiness_widget("lunar").model_dump_json()))
-    assert "GAP" in text
+    assert "no full matches in index" in text
     assert "lunar-retest-needed" not in text  # finding ids are internal; quotes are shown, not ids
     assert "will likely require the retest of many materials" in text
 

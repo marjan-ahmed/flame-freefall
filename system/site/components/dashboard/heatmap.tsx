@@ -40,7 +40,7 @@ export function Heatmap({ heatmap, markers }: { heatmap: ClassHeatmap; markers: 
       <figcaption className="mb-1 flex items-baseline justify-between gap-2">
         <span className="text-sm font-medium">{heatmap.label}</span>
         <span className="text-xs text-muted-foreground">
-          {coveredCells}/{cols * rows} cells tested
+          {coveredCells}/{cols * rows} cells with point records
         </span>
       </figcaption>
       <svg viewBox={`0 0 ${w} ${h}`} width="100%" role="img" aria-label={`${heatmap.label}: test coverage by O2 and pressure`}>
@@ -91,7 +91,7 @@ export function Heatmap({ heatmap, markers }: { heatmap: ClassHeatmap; markers: 
 
 export function HeatmapLegend(): ReactElement {
   const steps: [string, string][] = [
-    ["var(--heat-0)", "0 (gap)"],
+    ["var(--heat-0)", "0 indexed pairs"],
     ["var(--heat-1)", "1–2"],
     ["var(--heat-2)", "3–9"],
     ["var(--heat-3)", "10–29"],
@@ -99,7 +99,7 @@ export function HeatmapLegend(): ReactElement {
   ];
   return (
     <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-      <span>Tests per cell:</span>
+      <span>Point records per cell:</span>
       {steps.map(([color, label]) => (
         <span key={label} className="flex items-center gap-1">
           <span className="inline-block h-3 w-3 rounded-sm border border-border" style={{ background: color }} />

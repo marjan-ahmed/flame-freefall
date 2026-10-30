@@ -222,7 +222,7 @@ def test_gap_map_matches_dashboard_heatmap(ts):
         d = psi_widgets.gap_map_data({"geometry_class": gc}, "pressure_atm")
         grid = [[len(d["grid"].get((x, y), ())) for x in range(len(psi_widgets.O2_BINS))]
                 for y in range(len(psi_widgets.Y_BINS["pressure_atm"]))]
-        reported = sum(1 for r in d["runs"] if psi_widgets._measure(r, "o2_pct") and psi_widgets._measure(r, "pressure_atm"))
+        reported = sum(len(ids) for ids in d["grid"].values())
         py.append([gc, grid, len(d["runs"]), reported])
     assert py == ts["heatmaps"]
     py_markers = [[k, psi_widgets._bin_of(a["o2_pct"], psi_widgets.O2_BINS),

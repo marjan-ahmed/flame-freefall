@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -28,6 +29,10 @@ export function psiInvestigations(): Investigation[] {
   return load().investigations;
 }
 
+export function psiDatasetHash(): string {
+  return createHash("sha256").update(readFileSync(path.join(derived, "runs.json"))).digest("hex");
+}
+
 export function psiGeneratedAt(): string {
   return load().generatedAt;
 }
@@ -41,12 +46,7 @@ export function psiIngestReport(): Record<string, unknown> {
 export function slimRuns(): SlimRun[] {
   return load().runs.map(({ raw: _raw, sources, ...rest }) => ({
     ...rest,
-    sources: sources.map(
-      (s): SlimSource =>
-        s.kind === "report"
-          ? { kind: "report", table: s.table, line: s.line, doc: s.doc, source_id: s.source_id, ...(s.doc ? {} : { title: s.title }), ...(s.via ? { via: s.via } : {}) }
-          : { kind: s.kind, dataset: s.dataset, file: s.file, row: s.row, ...(s.sheet ? { sheet: s.sheet } : {}) },
-    ),
+    sources,
   }));
 }
 

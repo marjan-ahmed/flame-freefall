@@ -128,3 +128,58 @@ def test_flex_pressure_range_excludes_the_zero_reading(result):
     assert f114.get("value") is None and "zero_absolute_pressure" in f114["flags"]
     flex = next(i for i in result["investigations"] if i["id"] == "flex")
     assert flex["coverage"]["pressure_atm"]["min"] > 0.5
+
+
+def test_bre_examples_are_individual_emulator_tests_not_day_pressures(result):
+    bre = [r for r in result["runs"] if r["investigation"] == "acme-bre"]
+    days = [r for r in bre if r["granularity"] == "day"]
+    tests = [r for r in bre if r["granularity"] == "test"]
+    assert len(days) == 18 and len(tests) == 3
+    assert all("pressure_atm" not in r["conditions"] for r in days)
+    assert {r["label"] for r in tests} == {"19056F1", "19070K1", "19070D1"}
+    for r in tests:
+        assert r["conditions"]["evidence_role"]["value"] == "condensed-fuel-emulator"
+        assert r["conditions"]["result_status"]["value"] == "preliminary"
+        assert r["conditions"]["fuel_family"]["value"] == "ethylene"
+        assert r["sources"][0]["kind"] == "report" and "Figure" in r["sources"][0]["table"]
+        assert r["label"] in r["raw"][0]["original_caption"]
+    lunar = _by_id(result, "acme-bre:19070D1")
+    assert lunar["conditions"]["o2_pct"]["value"] == 34
+    assert lunar["conditions"]["pressure_atm"]["raw"] == "8.2 psia"
+    assert abs(lunar["conditions"]["pressure_atm"]["value"] * 101.325 - 56.537) < 0.001
+    assert any("24 kJ/g" in n and "22 kJ/g" in n for n in lunar["notes"])
+    assert not any(o["quantity"] == "burn_time" for o in lunar["outcomes"])
+
+
+def test_lunar_overlap_sensitivity_by_direct_arithmetic(result):
+    """Independent oracle: no query engine or its distance helper is imported.
+
+    Counts are individual tests/points only; interval overlap is a search
+    criterion, not a conclusion about physical equivalence or material safety.
+    """
+    geometry = {i["id"]: i["geometry_class"] for i in result["investigations"]}
+    profiles = [(1.5, 10.1325), (1.5, 5), (3, 10.1325)]
+    counts = []
+    for oxygen_tolerance, pressure_tolerance_kpa in profiles:
+        found = {"solid-fuel": 0, "gaseous-flames": 0, "emulator": 0}
+        for r in result["runs"]:
+            if r["granularity"] not in ("test", "test-point"):
+                continue
+            c = r["conditions"]
+            o2, p = c.get("o2_pct", {}), c.get("pressure_atm", {})
+            if not all("min" in v and "max" in v for v in (o2, p)):
+                continue
+            if not (o2["min"] <= 34 + oxygen_tolerance and o2["max"] >= 34 - oxygen_tolerance):
+                continue
+            if not (p["min"] * 101.325 <= 56.5 + pressure_tolerance_kpa and
+                    p["max"] * 101.325 >= 56.5 - pressure_tolerance_kpa):
+                continue
+            group = "emulator" if r["investigation"] == "acme-bre" else geometry[r["investigation"]]
+            if group in found:
+                found[group] += 1
+        counts.append(found)
+    assert counts == [
+        {"solid-fuel": 0, "gaseous-flames": 10, "emulator": 1},
+        {"solid-fuel": 0, "gaseous-flames": 0, "emulator": 1},
+        {"solid-fuel": 1, "gaseous-flames": 14, "emulator": 1},
+    ]

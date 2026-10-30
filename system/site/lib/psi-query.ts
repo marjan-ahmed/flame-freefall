@@ -308,18 +308,12 @@ export const RANKABLE: Record<string, string[]> = {
   "gaseous-flames": ["burn_time", "peak_burner_temp_c"],
 };
 
-/** A single number to rank by: the stated value, else a range's midpoint,
- * else the median of several stated values — twin of _outcome_value() in
- * psi_query.py. A text-only outcome (no `measure`) returns null. */
+/** Explicit scalars only; never synthesize observations from ranges. */
 function outcomeValue(o: import("./psi-types").Outcome): number | null {
   const m = o.measure;
   if (!m) return null;
-  if (m.value !== undefined && m.value !== null) return m.value;
-  if (m.min !== undefined && m.max !== undefined) return (m.min + m.max) / 2;
-  if (m.values?.length) {
-    const vs = [...m.values].sort((a, b) => a - b);
-    const n = vs.length;
-    return n % 2 ? vs[(n - 1) / 2] : (vs[n / 2 - 1] + vs[n / 2]) / 2;
+  if (m.value !== undefined && m.value !== null && Number.isFinite(m.value) && !m.values?.length) {
+    if ((m.min ?? m.value) === (m.max ?? m.value)) return m.value;
   }
   return null;
 }
@@ -333,6 +327,7 @@ export type RankRow = {
   unit?: string;
   runs: string[];
   investigations: string[];
+  conditions: Record<string, unknown>;
 };
 
 export type RankResult =
@@ -346,6 +341,8 @@ export type RankResult =
       total_ranked: number;
       untested: string[];
       coverage: Coverage[];
+      excluded: Record<string, number>;
+      method: string;
     };
 
 /** Rank materials within ONE geometry class by a measured quantity, at
@@ -368,16 +365,31 @@ export function rank(
   const fullQ: Query = { ...q, geometry_class: geometryClass };
   const result = query(runs, investigations, fullQ);
 
-  const byMaterial = new Map<string, { run_id: string; investigation: string; value: number; unit?: string }[]>();
+  const byMaterial = new Map<string, { run_id: string; investigation: string; fuel_family: string; conditions: Record<string, unknown>; value: number; unit?: string }[]>();
+  const excluded: Record<string, number> = { incomplete_conditions: result.partial.length };
+  const exclude = (reason: string) => { excluded[reason] = (excluded[reason] ?? 0) + 1; };
   const targetFlow = (q as Record<string, unknown>).flow_cm_s !== undefined ? Number((q as Record<string, unknown>).flow_cm_s) : 0.0;
-  for (const tier of ["match", "partial"] as const) {
+  for (const tier of ["match"] as const) {
     for (const v of result[tier]) {
+      if (!["test", "test-point"].includes(v.run.granularity)) { exclude("summary_or_envelope"); continue; }
+      if (v.run.conflicts?.length) { exclude("source_conflict"); continue; }
+      if (quantity === "burn_time" && v.run.outcomes.some((o) => ["hot_ignition", "ignited"].includes(o.quantity)
+        && ["no", "no ignition", "false"].includes((o.text ?? "").trim().toLowerCase()))) {
+        exclude("did_not_ignite"); continue;
+      }
       // A run may report this quantity at several flow settings; one
       // contribution per run, the entry nearest the requested flow (0 if
       // none given) — tie-broken by the flow value itself, order-independent
       // so this never has to rely on matching Python's outcomes ordering.
-      const candidates = (v.run.outcomes ?? []).filter((o) => o.quantity === quantity && outcomeValue(o) !== null);
-      if (!candidates.length) continue;
+      let candidates = (v.run.outcomes ?? []).filter((o) => o.quantity === quantity && outcomeValue(o) !== null);
+      if (!candidates.length) { exclude("no_scalar_outcome"); continue; }
+      if (candidates.length > 1 && q.flow_cm_s === undefined) { exclude("multiple_outcome_conditions"); continue; }
+      if (q.flow_cm_s !== undefined) {
+        const flowTolerance = NUMERIC_AXES.flow_cm_s.tol;
+        candidates = candidates.filter((o) => o.at?.flow_cm_s === undefined
+          || Math.abs(o.at.flow_cm_s - targetFlow) <= (Math.abs(targetFlow) || 1) * flowTolerance + TOLERANCE_EPS);
+        if (!candidates.length) { exclude("outcome_outside_flow_window"); continue; }
+      }
       const flowOf = (o: (typeof candidates)[number]) => (o.at?.flow_cm_s ?? targetFlow) as number;
       const chosen = candidates.reduce((best, o) => {
         const d = Math.abs(flowOf(o) - targetFlow);
@@ -386,29 +398,38 @@ export function rank(
       });
       const val = outcomeValue(chosen)!;
       const fam = (catValue(v.run, "fuel_family", invs) ?? "unassigned") as string;
-      const list = byMaterial.get(fam) ?? [];
-      list.push({ run_id: v.run.id, investigation: invs[v.run.investigation].name, value: val, unit: chosen.measure?.unit });
-      byMaterial.set(fam, list);
+      const conditions: Record<string, unknown> = {};
+      for (const key of Object.keys(v.run.conditions).sort(cmp)) {
+        const c = v.run.conditions[key];
+        conditions[key] = typeof c.value === "string" ? c.value
+          : Object.fromEntries(["value", "min", "max", "unit", "values", "flags"].filter((k) => k in c).map((k) => [k, (c as Record<string, unknown>)[k]]));
+      }
+      if (chosen.at) conditions.outcome_at = chosen.at;
+      const key = JSON.stringify([fam, v.run.investigation, conditions, chosen.measure?.unit]);
+      const list = byMaterial.get(key) ?? [];
+      list.push({ run_id: v.run.id, investigation: invs[v.run.investigation].name, fuel_family: fam, conditions, value: val, unit: chosen.measure?.unit });
+      byMaterial.set(key, list);
     }
   }
 
   const rows: RankRow[] = [];
-  for (const [fam, entries] of byMaterial) {
+  for (const entries of byMaterial.values()) {
     const vals = entries.map((e) => e.value).sort((a, b) => a - b);
     const n = vals.length;
     const median = n % 2 ? vals[(n - 1) / 2] : (vals[n / 2 - 1] + vals[n / 2]) / 2;
     rows.push({
-      fuel_family: fam,
+      fuel_family: entries[0].fuel_family,
       n,
       min: Math.round(vals[0] * 10000) / 10000,
       max: Math.round(vals[n - 1] * 10000) / 10000,
       median: Math.round(median * 10000) / 10000,
       unit: entries[0].unit,
-      runs: entries.map((e) => e.run_id).slice(0, 8),
+      runs: entries.map((e) => e.run_id).sort(cmp),
+      conditions: entries[0].conditions,
       investigations: [...new Set(entries.map((e) => e.investigation))].sort(cmp),
     });
   }
-  rows.sort((a, b) => (direction === "desc" ? b.median - a.median : a.median - b.median) || cmp(a.fuel_family, b.fuel_family));
+  rows.sort((a, b) => (direction === "desc" ? b.median - a.median : a.median - b.median) || cmp(a.fuel_family, b.fuel_family) || cmp(a.runs[0], b.runs[0]));
 
   // "Untested at these conditions" means no match/partial run at all under
   // this query's OWN filters (categorical + numeric) -- not "every family in
@@ -437,6 +458,8 @@ export function rank(
     direction,
     rows: rows.slice(0, limit),
     total_ranked: rows.length,
+    excluded,
+    method: "Full-match individual tests; scalar outcomes only; separate investigation, recorded-condition and unit strata. Descriptive comparison, not a safety ranking.",
     untested,
     coverage: result.coverage,
   };

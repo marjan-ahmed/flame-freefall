@@ -49,3 +49,11 @@ def test_zero_absolute_pressure_is_refused_not_used():
     # FLEX-114: "0" mmHg in both the PSI table and the report, yet it burned
     m = to_atm(parse_measure("0"), "mmHg")
     assert m.value is None and "suspect_value" in m.flags and m.raw == "0"
+
+
+def test_psia_is_absolute_pressure_and_keeps_original_units():
+    m = to_atm(parse_measure("8.2 psia"), "psia")
+    assert abs(m.value * 101.325 - 56.5370098039776) < 0.0001
+    assert m.raw == "8.2 psia" and "converted_from_psia" in m.flags
+    # Gauge pressure has no known ambient reference and must not be converted.
+    assert "unknown_unit" in to_atm(parse_measure("8.2 psig"), "psig").flags

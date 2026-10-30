@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactElement } from "react";
 import { useSearchParams } from "next/navigation";
 
+import { ATMOSPHERES } from "@/lib/psi-atmospheres";
+import { evidenceExport, evidenceParams, individualRuns, tolerancesFromParams } from "@/lib/evidence-method";
 import { cn } from "@/lib/utils";
 import {
   CATEGORICAL_AXES,
@@ -88,7 +90,7 @@ function Answer({ r, q }: { r: QueryResult; q: Query }): ReactElement {
       <p className="text-xs uppercase tracking-wide text-muted-foreground">What the PSI record says about</p>
       <p className="mt-0.5 font-display text-xl">{describeQuery(q)}</p>
       <div className="mt-3 flex flex-wrap gap-2 text-sm">
-        <Stat n={match} label="at these conditions" tone={match ? "good" : "none"} />
+        <Stat n={match} label="within search window" tone="info" />
         {numeric.length > 0 && <Stat n={partial} label={`partial (silent on ${missingAxes.join(", ") || "an axis"})`} tone={partial ? "info" : "none"} />}
         <Stat n={r.coverage.length} label="investigations searched" tone="none" />
         {conflicts > 0 && <Stat n={conflicts} label="with sources that disagree" tone="warn" />}
@@ -96,7 +98,7 @@ function Answer({ r, q }: { r: QueryResult; q: Query }): ReactElement {
       <ul className="mt-3 space-y-1 text-sm">
         {numeric.length > 0 && match === 0 && (
           <li>
-            <strong>No test in these tables states all of these conditions.</strong>{" "}
+            <strong>No indexed record matches all requested conditions within this window.</strong>{" "}
             {partial > 0
               ? `${partial} test${partial > 1 ? "s" : ""} match every condition they do report, but don't report ${missingAxes.join(" or ")}.`
               : "Nothing matches even partially."}
@@ -104,7 +106,7 @@ function Answer({ r, q }: { r: QueryResult; q: Query }): ReactElement {
         )}
         {nearest && match < 3 && (
           <li>
-            Nearest fully-reported test: <span className="font-mono">{nearest.run.id}</span> (
+            Nearest returned record: <span className="font-mono">{nearest.run.id}</span> (
             {numeric
               .map((k) => {
                 const a = nearest.axes[k];
@@ -151,6 +153,10 @@ function Stat({ n, label, tone }: { n: number; label: string; tone: "good" | "in
 export function Explorer({ investigations, basePath }: { investigations: Investigation[]; basePath: string }): ReactElement {
   const params = useSearchParams();
   const [runs, setRuns] = useState<SlimRun[] | null>(null);
+  const [excludedInvestigation, setExcludedInvestigation] = useState(params.get("exclude_investigation") ?? "");
+  const [dataset, setDataset] = useState({ generated_at: "", sha256: "" });
+  const [tolerances, setTolerances] = useState(() => tolerancesFromParams(new URLSearchParams(params.toString())));
+  const [individual, setIndividual] = useState(params.get("individual") === "1");
   const [loadError, setLoadError] = useState(false);
   const [q, setQ] = useState<Query>(() => {
     const fromUrl = queryFromParams(new URLSearchParams(params.toString()));
@@ -166,18 +172,32 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   useEffect(() => {
     fetch(`${basePath}/psi/runs.json`)
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((d: { runs: SlimRun[] }) => setRuns(d.runs))
+      .then((d: { runs: SlimRun[]; generated_at: string; sha256: string }) => { if (!Array.isArray(d.runs) || typeof d.sha256 !== "string") throw new Error("Invalid dataset"); setRuns(d.runs); setDataset({ generated_at: d.generated_at, sha256: d.sha256 }); })
       .catch(() => setLoadError(true));
   }, [basePath]);
 
   const invIndex = useMemo(() => Object.fromEntries(investigations.map((i) => [i.id, i])), [investigations]);
   const colors = useMemo(() => colorMap(investigations), [investigations]);
-  const result = useMemo(() => (runs ? runQuery(runs, investigations, q, {}, 25) : null), [runs, investigations, q]);
+  const pool = useMemo(() => runs && (individual ? individualRuns(runs) : runs).filter(r => r.investigation !== excludedInvestigation), [runs, individual, excludedInvestigation]);
+  const result = useMemo(() => (pool ? runQuery(pool, investigations, q, tolerances, 25) : null), [pool, investigations, q, tolerances]);
+  useEffect(() => {
+    const p = evidenceParams(q, tolerances, individual);
+    if (selected) p.set("run", selected);
+    if (excludedInvestigation) p.set("exclude_investigation", excludedInvestigation);
+    window.history.replaceState(null, "", `${window.location.pathname}?${p}`);
+  }, [q, tolerances, individual, selected, excludedInvestigation]);
+  const download = () => {
+    if (!runs) return;
+    const data = evidenceExport(runs, investigations, q, tolerances, individual, dataset, excludedInvestigation);
+    const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+    const a = document.createElement("a"); a.href = url; a.download = "flame-freefall-evidence.json"; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
   const catOnly = useMemo(() => {
     if (!runs) return new Set<string>();
     const cq = Object.fromEntries(Object.entries(q).filter(([k]) => (CATEGORICAL_AXES as readonly string[]).includes(k))) as Query;
-    return new Set(runQuery(runs, investigations, cq).match.map((v) => v.run.id));
-  }, [runs, investigations, q]);
+    return new Set(runQuery(pool ?? [], investigations, cq).match.map((v) => v.run.id));
+  }, [pool, investigations, q]);
   const fuelFamilies = useMemo(() => {
     const c = new Map<string, number>();
     for (const r of runs ?? []) {
@@ -281,7 +301,8 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   const tol = (k: NumericAxis, v?: number): [number, number] | undefined => {
     if (v === undefined) return undefined;
     const a = NUMERIC_AXES[k];
-    const d = a.kind === "rel" ? a.tol * Math.abs(v) : a.tol;
+    const width = tolerances[k] ?? a.tol;
+    const d = a.kind === "rel" ? width * Math.abs(v) : width;
     return [v - d, v + d];
   };
 
@@ -295,7 +316,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
           {(["o2_pct", "flow_cm_s", "pressure_atm"] as NumericAxis[]).map((k) => (
             <label key={k} className="block text-sm">
               <span className="text-muted-foreground">
-                {NUMERIC_AXES[k].label} ({NUMERIC_AXES[k].unit}) · ±{NUMERIC_AXES[k].kind === "rel" ? `${NUMERIC_AXES[k].tol * 100}%` : `${NUMERIC_AXES[k].tol} ${NUMERIC_AXES[k].unit}`}
+                {NUMERIC_AXES[k].label} ({NUMERIC_AXES[k].unit}) · ±{NUMERIC_AXES[k].kind === "rel" ? `${(tolerances[k] ?? NUMERIC_AXES[k].tol) * 100}%` : `${tolerances[k] ?? NUMERIC_AXES[k].tol} ${NUMERIC_AXES[k].unit}`}
               </span>
               <input
                 type="number"
@@ -307,6 +328,19 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               />
             </label>
           ))}
+          <fieldset className="space-y-2 border-t pt-3">
+            <legend className="text-sm font-medium">Search tolerances</legend>
+            <p className="text-xs text-muted-foreground">Search heuristics, not safety margins. Changes apply immediately.</p>
+            {(["o2_pct", "pressure_atm"] as const).map(axis => (
+              <label key={axis} className="block text-sm">
+                ? {NUMERIC_AXES[axis].label} ({axis === "o2_pct" ? "percentage points" : "atm"})
+                <input type="number" min="0" step="any" value={tolerances[axis] ?? NUMERIC_AXES[axis].tol}
+                  onChange={e => { const n = e.target.valueAsNumber; if (Number.isFinite(n) && n >= 0) setTolerances({ ...tolerances, [axis]: n }); }}
+                  className="mt-1 w-full rounded-md border bg-background px-2 py-1.5" />
+              </label>
+            ))}
+            <label className="flex gap-2 text-sm"><input type="checkbox" checked={individual} onChange={e => setIndividual(e.target.checked)} />Individual tests and test points only</label>
+          </fieldset>
           <label className="block text-sm">
             <span className="text-muted-foreground">Fuel / material</span>
             <select
@@ -391,9 +425,17 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
 
       {/* ── results ─────────────────────────────────── */}
       <div className="min-w-0 space-y-6">
-        {loadError && <p className="rounded-lg border p-4 text-sm">Could not load the run table.</p>}
+        {loadError && <p className="rounded-lg border p-4 text-sm">Could not load the run table. <button className="text-primary underline" onClick={() => window.location.reload()}>Retry</button></p>}
         {!runs && !loadError && <p className="rounded-lg border p-4 text-sm text-muted-foreground">Loading {investigations.reduce((s, i) => s + i.runs, 0).toLocaleString("en-US")} test records…</p>}
-        {result && <Answer r={result} q={q} />}
+        {result && <>
+          <Answer r={result} q={q} />
+          {excludedInvestigation && <p className="text-sm">Excluded investigation: {invIndex[excludedInvestigation]?.name ?? excludedInvestigation}. <button className="text-primary underline" onClick={() => setExcludedInvestigation("")}>Include it</button></p>}
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <button type="button" onClick={download} className="rounded-md border px-3 py-2 hover:bg-accent">Download evidence JSON</button>
+            <span className="text-muted-foreground">Includes all tiers, conditions, sources, query, tolerances and dataset fingerprint.</span>
+          </div>
+          <p className="text-sm text-muted-foreground">{individual ? "Individual tests and test points only." : "All record types: tests, daily summaries and planned envelopes are not independent observations."} Numerical overlap does not establish physical equivalence. Check fuel, geometry, flow, gravity and measurement method before comparison. Missing data cannot establish safety.</p>
+        </>}
 
         {result && (
           <section className="rounded-xl border bg-card p-4">
@@ -401,7 +443,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               <div>
                 <h2 className="font-display text-lg">Coverage map</h2>
                 <p className="text-xs text-muted-foreground">
-                  Every test that reports O₂. Empty regions are conditions nobody has tested. Bars are ranges (O₂ drifting during a burn, flow swept);
+                  Every test that reports O₂. Empty regions contain no plotted records in this index. Bars are ranges (O₂ drifting during a burn, flow swept);
                   stacked dots are one test run at several values. The dashed box is your tolerance window.
                 </p>
               </div>
@@ -445,17 +487,16 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         {result && (
           <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div className="min-w-0">
-              <div className="flex gap-1 rounded-lg border p-1 text-sm" role="tablist">
+              <div className="flex gap-1 rounded-lg border p-1 text-sm" role="group" aria-label="Evidence tiers">
                 {(["match", "partial", "near"] as const).map((t) => (
                   <button
                     key={t}
-                    role="tab"
-                    aria-selected={tier === t}
+                    aria-pressed={tier === t}
                     type="button"
                     onClick={() => setTier(t)}
                     className={cn("flex-1 rounded-md px-2 py-1.5", tier === t ? "bg-primary text-primary-foreground" : "hover:bg-accent")}
                   >
-                    {t === "match" ? "At conditions" : t === "partial" ? "Partial" : "Nearest"}{" "}
+                    {t === "match" ? "Full matches" : t === "partial" ? "Partial" : "Nearest"}{" "}
                     <span className="opacity-80">({t === "near" ? result.near.length : result.counts[t]})</span>
                   </button>
                 ))}
@@ -505,14 +546,14 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 text-sm">
-                <select value={quantity} onChange={(e) => setQuantity(e.target.value)} className="rounded-md border bg-background px-2 py-1">
+                <select aria-label="Outcome quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="rounded-md border bg-background px-2 py-1">
                   {outcomeQuantities.map(([k, n]) => (
                     <option key={k} value={k}>
                       {QUANTITY_LABEL[k] ?? k} ({n})
                     </option>
                   ))}
                 </select>
-                <select value={outcomeX} onChange={(e) => setOutcomeX(e.target.value as NumericAxis)} className="rounded-md border bg-background px-2 py-1">
+                <select aria-label="Outcome horizontal axis" value={outcomeX} onChange={(e) => setOutcomeX(e.target.value as NumericAxis)} className="rounded-md border bg-background px-2 py-1">
                   {(Object.keys(NUMERIC_AXES) as NumericAxis[]).map((k) => (
                     <option key={k} value={k}>
                       vs {NUMERIC_AXES[k].label.toLowerCase()}

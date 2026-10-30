@@ -21,10 +21,10 @@ import { appDescription, appTitle } from "@/lib/shared";
 const SITE_URL = "https://marjan-ahmed.github.io/flame-freefall/";
 
 export const metadata: Metadata = {
-  title: "AI-Powered Fire Safety Insights from Microgravity Combustion",
+  title: "Traceable NASA Combustion Evidence",
   description:
     "A governed, citation-backed record of NASA's microgravity combustion research, an AI assistant that answers only " +
-    "from it, and a live dashboard showing exactly where 1,948 PSI test records do — and don't — cover the atmospheres " +
+    "from it, and a live dashboard showing exactly where indexed PSI records do — and don't — cover the atmospheres " +
     "proposed for the ISS, the Lunar Gateway and a Lunar surface habitat.",
   keywords: [
     "NASA Space Apps 2026",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     "AI research assistant",
   ],
   openGraph: {
-    title: "Flame in Freefall — AI-Powered Fire Safety Insights from Microgravity Combustion",
+    title: "Flame in Freefall — Traceable NASA Combustion Evidence",
     description:
       "Where NASA's microgravity combustion data reaches, and where it doesn't — cited, computed, and answerable in a " +
       "five-second chat message.",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Flame in Freefall — AI-Powered Fire Safety Insights from Microgravity Combustion",
+    title: "Flame in Freefall — Traceable NASA Combustion Evidence",
     description: "A governed, citation-backed record of NASA's microgravity combustion research, and where it does and doesn't reach.",
   },
 };
@@ -94,12 +94,11 @@ function Hero(): ReactElement {
     <section className="mx-auto grid max-w-5xl gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-24">
       <div className="ksor-fade-up">
         <h1 className="font-display text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-          AI-powered fire safety insights from microgravity combustion
+          Find the evidence behind a spacecraft fire-safety question
         </h1>
         <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-          A candle flame on Earth is pulled into a teardrop by buoyancy. Without gravity, there&apos;s nothing for hot
-          gas to rise into — the same flame burns as a sphere. Spacecraft materials are certified against the first
-          shape. This record and assistant exist because NASA needs to know what the second one actually does.
+          Search NASA combustion experiments by atmosphere, material and flow. Inspect the original measurements,
+          see what is missing, and download a reproducible evidence bundle before deciding what to investigate next.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg">
@@ -124,8 +123,8 @@ function NumberStrip({ totals }: { totals: ReturnType<typeof dashboardTotals> })
     { n: totals.investigations, label: "investigations" },
     { n: totals.runs, label: "run-table rows, every granularity" },
     { n: totals.tests, label: "of those, single-test rows" },
-    { n: totals.withOutcomes, label: "with measured results" },
-    { n: totals.reportConfirmed, label: "report-confirmed" },
+    { n: totals.withOutcomes, label: "with recorded outcomes" },
+    { n: totals.reportConfirmed, label: "with report data" },
     { n: totals.conflicts, label: "conflicts flagged, not hidden" },
   ];
   return (
@@ -147,9 +146,9 @@ function NumberStrip({ totals }: { totals: ReturnType<typeof dashboardTotals> })
 function Destinations(): ReactElement {
   const assistantCapabilities: { term: string; body: string }[] = [
     { term: "Evidence, tiered", body: "at-conditions, partial and nearest tests — never one number picked and passed off as the answer." },
-    { term: "Gap map", body: "O₂ × flow bands shaded by test count, so an untested condition is visible, not silent." },
+    { term: "Gap map", body: "O₂ × flow bands shaded by test count, with missing metadata and unplotted ranges made explicit." },
     { term: "Ranking", body: "materials ranked by a measured result within one geometry class — median, range, every run id." },
-    { term: "Mission evidence coverage", body: "which compatible test data exists near a named mission atmosphere, with a citation on why a gap matters." },
+    { term: "Mission evidence coverage", body: "which indexed conditions overlap a named mission atmosphere, with a citation on why a gap matters." },
     { term: "Compare & chart", body: "investigations side by side, or a result plotted against a condition." },
   ];
   const recordPrinciples: { term: string; body: string }[] = [
@@ -222,20 +221,18 @@ function EvidenceSection({
       <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
         <h2 className="font-display text-2xl font-semibold tracking-tight">Where the evidence actually reaches</h2>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          NASA-STD-6001B certifies materials at 20.9% O₂ and 1 atmosphere. The atmospheres proposed for a Lunar habitat
-          run up to 34% oxygen at reduced pressure, and NASA&apos;s own decadal-survey research says those atmospheres
-          &ldquo;will likely require the retest of many materials.&rdquo; Below is what the PSI data actually covers
-          near each proposed atmosphere — computed from the 1,948-record test table, not estimated.
+          Each occupied cell contains an indexed individual test or test point with a single reported value on both axes.
+          Ranges, summaries, missing conditions and disputed axis values are excluded from these grids and remain searchable in the Explorer.
+          Empty cells describe this index, not the absence of all research.
         </p>
 
         {totalGaps.length > 0 ? (
           <div className="ksor-caution mt-6 rounded-lg border border-l-4 px-4 py-3 text-sm">
             <span className="font-medium">
-              {totalGaps.map((g) => g.label).join(" and ")}: zero coverage, full stop.
+              {totalGaps.map((g) => g.label).join(" and ")}: no plottable condition pairs.
             </span>{" "}
-            No run in {totalGaps.length === 1 ? "that class" : "those classes"} reports both O₂% and pressure — not
-            at conditions, not partial, not near, at any of the three mission atmospheres below. That gap sits
-            inside the grid underneath; it deserves to be read before it, not inside it.
+            Missing or non-point atmosphere metadata prevents placement on this grid. Investigations can still provide useful
+            evidence about detection, suppression or combustion mechanisms; inspect their records and reports.
           </div>
         ) : null}
 
@@ -255,7 +252,7 @@ function EvidenceSection({
 
         <h3 className="mt-10 text-lg font-medium">Mission evidence coverage</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          &ldquo;Evidence exists&rdquo; means at least one test matches or partially matches that atmosphere. It does not establish
+          Full matches report both requested axes within ?1.5 O? percentage points and ?0.1 atm. Incomplete matches are listed separately. Counts include individual tests and test points only. It does not establish
           material safety, mission readiness, certification, or partial-gravity behavior.
         </p>
         <div className="mt-4">
@@ -271,18 +268,18 @@ function EvidenceSection({
 function TrustSection(): ReactElement {
   const items = [
     "Numbers come only from tools — the model never states a value that wasn't returned by data.",
-    "A ranking is a computed median over every contributing run, never a guess, and every run id is kept.",
-    "A mission-readiness finding is a citation checked verbatim against its source document by an automated test.",
+    "Exploratory rankings keep complete contributing run IDs and separate experimental setups. They are not material safety rankings.",
+    "An atmosphere-evidence finding is a citation checked verbatim against its source document by an automated test.",
     "An empty result (“no test at these conditions”) is shown as an answer, not papered over.",
     "Source disagreements are flagged and both values kept — never silently resolved.",
     "A failed lookup forces an honest “I can't check that right now” in code, regardless of what the model wrote.",
   ];
   return (
     <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
-      <h2 className="font-display text-2xl font-semibold tracking-tight">Architecture over prompting</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight">Evidence you can inspect</h2>
       <p className="mt-2 max-w-2xl text-muted-foreground">
-        This isn&apos;t a wrapped LLM with a system prompt telling it to &ldquo;be accurate.&rdquo; Every line below is
-        enforced in code against every reply.
+        Use the deterministic Explorer to inspect conditions and source records even when the AI service is unavailable.
+        Automated safeguards help check responses; they do not replace scientific review.
       </p>
       <ul className="mt-6 max-w-2xl divide-y divide-border border-t border-border">
         {items.map((text) => (

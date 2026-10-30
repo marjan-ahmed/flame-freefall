@@ -378,28 +378,34 @@ RANKABLE: dict[str, list[str]] = {
 
 
 def _outcome_value(o: dict) -> float | None:
-    """A single number to rank by: the stated value, else a range's midpoint
-    (never a number the source states outright), else the median of several
-    stated values. Text-only outcomes (e.g. end_mode="blow-off") return None."""
-    if o.get("value") is not None:
-        return o["value"]
-    if o.get("min") is not None and o.get("max") is not None:
-        return (o["min"] + o["max"]) / 2
-    if o.get("values"):
-        vs = sorted(o["values"])
-        n = len(vs)
-        return vs[n // 2] if n % 2 else (vs[n // 2 - 1] + vs[n // 2]) / 2
+    """Only an explicitly reported scalar. Ranges remain source evidence,
+    never invented midpoint observations in a distribution."""
+    value = o.get("value")
+    if value is not None and math.isfinite(value) and not o.get("values"):
+        if o.get("min", value) == o.get("max", value):
+            return value
     return None
+
+
+def _cohort_conditions(run: dict, outcome: dict) -> dict:
+    """Conservative strata: all normalized recorded conditions, not just
+    the search axes. Missing conditions never imply physical equivalence."""
+    out = {}
+    for key, c in sorted(run["conditions"].items()):
+        if isinstance(c.get("value"), str):
+            out[key] = c["value"]
+        else:
+            out[key] = {k: c[k] for k in ("value", "min", "max", "unit", "values", "flags") if k in c}
+    if outcome.get("at"):
+        out["outcome_at"] = outcome["at"]
+    return out
 
 
 def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", limit: int = 10,
          runs=None, invs=None) -> dict:
-    """Rank materials within ONE geometry class by a measured quantity, at
-    conditions given by q (any NUMERIC_AXES/CATEGORICAL_AXES key). Aggregates
-    per fuel_family as (n, min, median, max) over every match/partial run
-    reporting that quantity — never merges runs into one number silently;
-    every row keeps its run ids. `untested` lists materials in the class with
-    no run at these conditions, so an empty top spot is visible, not silent."""
+    """Descriptive distributions, stratified by investigation, all recorded
+    conditions and unit. Only individual full-match tests with scalar,
+    unconflicted outcomes contribute. This is not a material safety ranking."""
     if geometry_class not in RANKABLE or quantity not in RANKABLE[geometry_class]:
         return {"error": f"{quantity!r} is not a rankable result for {geometry_class!r}",
                 "rankable": RANKABLE.get(geometry_class, [])}
@@ -409,9 +415,24 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
     result = query(full_q, runs=runs, invs=invs)
 
     by_material: dict[str, list[dict]] = defaultdict(list)
+    by_id = {run["id"]: run for run in runs}
+    excluded: Counter = Counter({"incomplete_conditions": len(result["partial"])})
     target_flow = q.get("flow_cm_s", 0.0)
-    for tier in ("match", "partial"):
+    for tier in ("match",):
         for v in result[tier]:
+            run = by_id[v["id"]]
+            if run["granularity"] not in ("test", "test-point"):
+                excluded["summary_or_envelope"] += 1
+                continue
+            if run.get("conflicts"):
+                excluded["source_conflict"] += 1
+                continue
+            if quantity == "burn_time" and any(
+                o["quantity"] in ("hot_ignition", "ignited") and str(o.get("text", "")).strip().lower() in ("no", "no ignition", "false")
+                for o in run["outcomes"]
+            ):
+                excluded["did_not_ignite"] += 1
+                continue
             # A run may report this quantity at several flow settings (e.g.
             # BASS-II spread rate); one contribution per run, the entry
             # nearest the requested flow (0 if none given) — tie-broken by
@@ -420,25 +441,41 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
             # matching v["outcomes"]'s Python-side _outcome_summary sort.
             candidates = [o for o in v["outcomes"] if o["quantity"] == quantity and _outcome_value(o) is not None]
             if not candidates:
+                excluded["no_scalar_outcome"] += 1
                 continue
+            # Do not choose an arbitrary flow if the query did not request
+            # one, or use an outcome outside the requested flow tolerance.
+            if len(candidates) > 1 and "flow_cm_s" not in q:
+                excluded["multiple_outcome_conditions"] += 1
+                continue
+            if "flow_cm_s" in q:
+                candidates = [o for o in candidates if "flow_cm_s" not in o.get("at", {}) or
+                              abs(o["at"]["flow_cm_s"] - target_flow) <= (abs(target_flow) or 1) * NUMERIC_AXES["flow_cm_s"][1] + TOLERANCE_EPS]
+                if not candidates:
+                    excluded["outcome_outside_flow_window"] += 1
+                    continue
             o = min(candidates, key=lambda o: (abs(o.get("at", {}).get("flow_cm_s", target_flow) - target_flow),
                                                o.get("at", {}).get("flow_cm_s", target_flow)))
             fam = v["fuel_family"] or "unassigned"
-            by_material[fam].append({"run_id": v["id"], "investigation": v["investigation"],
+            conditions = _cohort_conditions(run, o)
+            key = json.dumps([fam, run["investigation"], conditions, o.get("unit")], sort_keys=True)
+            by_material[key].append({"run_id": v["id"], "investigation": v["investigation"], "fuel_family": fam,
+                                     "conditions": conditions,
                                      "tier": v["tier"], "value": _outcome_value(o), "unit": o.get("unit")})
 
     rows = []
-    for fam, entries in by_material.items():
+    for entries in by_material.values():
         vals = sorted(e["value"] for e in entries)
         n = len(vals)
         median = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
         rows.append({
-            "fuel_family": fam, "n": n, "min": round(vals[0], 4), "max": round(vals[-1], 4),
+            "fuel_family": entries[0]["fuel_family"], "n": n, "min": round(vals[0], 4), "max": round(vals[-1], 4),
             "median": round(median, 4), "unit": entries[0].get("unit"),
-            "runs": [e["run_id"] for e in entries][:8],
+            "runs": sorted(e["run_id"] for e in entries),
+            "conditions": entries[0]["conditions"],
             "investigations": sorted({e["investigation"] for e in entries}),
         })
-    rows.sort(key=lambda r: (-r["median"] if direction == "desc" else r["median"], r["fuel_family"]))
+    rows.sort(key=lambda r: (-r["median"] if direction == "desc" else r["median"], r["fuel_family"], r["runs"][0]))
 
     # "Untested at these conditions" means no match/partial run at all under
     # this query's OWN filters (categorical + numeric) -- not "every family
@@ -455,6 +492,8 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
     return {
         "query": full_q, "quantity": quantity, "geometry_class": geometry_class, "direction": direction,
         "rows": rows[:limit], "total_ranked": len(rows),
+        "excluded": dict(excluded),
+        "method": "Full-match individual tests; scalar outcomes only; separate investigation, recorded-condition and unit strata. Descriptive comparison, not a safety ranking.",
         "untested": sorted(candidate_families - tested_families),
         "coverage": result["coverage"],
     }
@@ -473,6 +512,7 @@ def compact_rank(result: dict, max_rows: int = 10) -> dict:
                  "range": f"{r['min']:g}–{r['max']:g}" + (f" {r['unit']}" if r["unit"] else ""),
                  "runs": r["runs"][:4]} for r in result["rows"][:max_rows]],
         "untested_at_these_conditions": result["untested"][:10],
+        "excluded": result["excluded"], "method": result["method"],
     }
 
 
@@ -662,6 +702,7 @@ def readiness(atm_id: str, runs=None, invs=None) -> dict:
         return {"error": f"Unknown atmosphere {atm_id!r}", "known": sorted(psi_atmospheres.ATMOSPHERES)}
     if runs is None or invs is None:
         runs, invs = load()
+    runs = [r for r in runs if r["granularity"] in ("test", "test-point")]
     base_q = {"o2_pct": atm["o2_pct"], "pressure_atm": atm["pressure_atm"]}
     by_id = {r["id"]: r for r in runs}
 
@@ -682,7 +723,7 @@ def readiness(atm_id: str, runs=None, invs=None) -> dict:
         classes.append({
             "geometry_class": gc, "match": result["counts"]["match"], "partial": result["counts"]["partial"],
             "near_pool": result["counts"]["near_pool"],
-            "covered": result["counts"]["match"] > 0 or result["counts"]["partial"] > 0,
+            "covered": result["counts"]["match"] > 0,
             "nearest_tested": nearest, "quantities_available": quantities,
         })
 

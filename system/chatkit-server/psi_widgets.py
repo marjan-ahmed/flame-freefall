@@ -18,6 +18,7 @@ supported, and needs no external designer tool.
 from __future__ import annotations
 
 import os
+import math
 from collections import Counter, defaultdict
 from urllib.parse import urlencode
 
@@ -328,26 +329,38 @@ def gap_map_data(q: dict, y_axis: str = "flow_cm_s") -> dict:
     unreported: dict[int, set[str]] = defaultdict(set)
     by_inv: dict[tuple[int, int], Counter] = defaultdict(Counter)
     no_o2 = 0
+    excluded_nonpoint = 0
     for r in runs:
+        if r["granularity"] not in ("test", "test-point") or any(
+            c["field"] in ("o2_pct", y_axis, "condition:o2_pct", f"condition:{y_axis}") for c in r.get("conflicts", [])
+        ):
+            excluded_nonpoint += 1
+            continue
         o2 = _measure(r, "o2_pct")
         if not o2:
             no_o2 += 1
             continue
-        xs = {b for p in _points(o2) if (b := _bin_of(p, O2_BINS)) is not None}
+        if o2.get("min") != o2.get("max") or "multi" in o2.get("flags", []) or not math.isfinite(o2["min"]):
+            excluded_nonpoint += 1
+            continue
+        x = _bin_of(o2["min"], O2_BINS)
+        if x is None:
+            continue
         ym = _measure(r, y_axis)
         if not ym:
-            for x in xs:
-                unreported[x].add(r["id"])
+            unreported[x].add(r["id"])
             continue
-        ys = {b for p in _points(ym) if (b := _bin_of(p, ybins)) is not None}
-        for x in xs:
-            for y in ys:
-                grid[(x, y)].add(r["id"])
-                by_inv[(x, y)][invs[r["investigation"]]["name"]] += 1
+        if ym.get("min") != ym.get("max") or "multi" in ym.get("flags", []) or not math.isfinite(ym["min"]):
+            excluded_nonpoint += 1
+            continue
+        y = _bin_of(ym["min"], ybins)
+        if y is not None:
+            grid[(x, y)].add(r["id"])
+            by_inv[(x, y)][invs[r["investigation"]]["name"]] += 1
     tx = _bin_of(q["o2_pct"], O2_BINS) if "o2_pct" in q else None
     ty = _bin_of(q[y_axis], ybins) if y_axis in q else None
     return {"runs": runs, "grid": grid, "unreported": unreported, "by_inv": by_inv, "no_o2": no_o2,
-            "tx": tx, "ty": ty, "ybins": ybins}
+            "tx": tx, "ty": ty, "ybins": ybins, "excluded_nonpoint": excluded_nonpoint}
 
 
 def gap_map_widget(q: dict, y_axis: str = "flow_cm_s") -> Card:
@@ -391,7 +404,7 @@ def gap_map_widget(q: dict, y_axis: str = "flow_cm_s") -> Card:
             who = ", ".join(f"{k} {v}" for k, v in d["by_inv"][(tx, ty)].most_common())
             notes.append(f"Target cell ({tlabel}): {n} tests ({who}).")
         else:
-            notes.append(f"Target cell ({tlabel}): no tests. This is an untested gap.")
+            notes.append(f"Target cell ({tlabel}): no indexed paired point. Missing or unindexed evidence may still exist.")
             near = sorted(((abs(x - tx) + abs(y - ty), (x, y)) for (x, y), ids in grid.items() if ids))[:3]
             for _, (x, y) in near:
                 who = ", ".join(f"{k} {v}" for k, v in d["by_inv"][(x, y)].most_common(3))
@@ -417,8 +430,9 @@ def gap_map_widget(q: dict, y_axis: str = "flow_cm_s") -> Card:
             Caption(value="blue outline = your target", size="sm", color="tertiary"),
         ]),
         *[Caption(value=n, size="sm") for n in notes],
-        Caption(value=f"A test is counted in every cell its stated values fall in; O₂ that drifted during a burn is placed at "
-                      f"its midpoint. {d['no_o2']} records don't report ambient O₂ and are not on this map.",
+        Caption(value=f"One individual test per cell, only when both conditions are single reported values. "
+                      f"{d['excluded_nonpoint']} summary, interval, multi-value or conflicted records are excluded; "
+                      f"{d['no_o2']} individual records lack ambient O₂. Empty cells do not prove absence of research.",
                 size="sm", color="tertiary"),
         Divider(spacing=2),
         nav_buttons(q, skip="gap", extra=[Button(label=f"Map O₂ × {AXIS_LABEL[other_y]}",
@@ -430,7 +444,8 @@ def gap_map_widget(q: dict, y_axis: str = "flow_cm_s") -> Card:
 def gap_map_summary(q: dict, y_axis: str = "flow_cm_s") -> dict:
     d = gap_map_data(q, y_axis)
     out = {"records": len(d["runs"]), "cells_with_tests": sum(1 for v in d["grid"].values() if v),
-           "cells_total": len(O2_BINS) * len(d["ybins"])}
+           "cells_total": len(O2_BINS) * len(d["ybins"]), "excluded_nonpoint": d["excluded_nonpoint"],
+           "method": "Only individual tests with two single reported conditions. Empty cells mean no indexed paired point, not proof of no research."}
     if d["tx"] is not None and d["ty"] is not None:
         out["target_cell_tests"] = len(d["grid"].get((d["tx"], d["ty"]), ()))
         out["target_cell_by_investigation"] = dict(d["by_inv"][(d["tx"], d["ty"])])
@@ -849,7 +864,7 @@ def rank_widget(q: dict, quantity: str, geometry_class: str, direction: str = "d
     r = psi_query.rank(q, quantity, geometry_class, direction, limit)
     qlabel = QUANTITY_LABEL.get(quantity, quantity.replace("_", " "))
     gc_label = GEOMETRY_LABEL.get(geometry_class, geometry_class)
-    children = [Title(value=f"{qlabel}, ranked by material", size="md"),
+    children = [Title(value=f"{qlabel}, grouped test results", size="md"),
                 Caption(value=f"{gc_label} · {query_title(q) if q else 'no conditions given'}")]
     full_q = {**q, "geometry_class": geometry_class}
 
@@ -864,7 +879,7 @@ def rank_widget(q: dict, quantity: str, geometry_class: str, direction: str = "d
 
     rows = r["rows"]
     if not rows:
-        children.append(Text(value="No test at these conditions reports this result for any material.", size="sm"))
+        children.append(Text(value="No eligible scalar outcomes in full-match individual tests. Review incomplete, interval and conflicted evidence in the Explorer.", size="sm"))
     else:
         top_val = max(row["median"] for row in rows) or 1.0
         for i, row in enumerate(rows, start=1):
@@ -881,17 +896,18 @@ def rank_widget(q: dict, quantity: str, geometry_class: str, direction: str = "d
                     Box(width=bar_w, height=10, radius="sm", background=PALETTE[(i - 1) % len(PALETTE)]),
                     Caption(value=f"median {_fmt(row['median'])}{unit} · range {_fmt(row['min'])}–{_fmt(row['max'])}{unit}",
                             size="sm", color="tertiary"),
+                    Caption(value="Contributing runs: " + ", ".join(row["runs"]), size="sm", color="tertiary"),
                 ]),
                 Button(label="Evidence", size="xs", variant="ghost",
                        onClickAction=action("evidence", q={**full_q, "fuel_family": row["fuel_family"]})),
             ]))
-        children.append(Caption(value=f"Ranked by median {qlabel.lower()} across tests at these conditions; "
-                                      f"each row lists every contributing run, never an average across materials.",
+        children.append(Caption(value=r["method"] + " Missing setup metadata may still limit comparability.",
                                 size="sm", color="tertiary"))
+    children.append(Caption(value="Excluded records: " + ", ".join(f"{k.replace('_', ' ')} {v}" for k, v in r["excluded"].items()), size="sm", color="tertiary"))
     if r.get("untested"):
         shown = r["untested"][:8]
         more = len(r["untested"]) - len(shown)
-        children.append(Caption(value=f"Not tested at these conditions: {', '.join(shown)}"
+        children.append(Caption(value=f"No indexed match or partial record: {', '.join(shown)}"
                                       + (f" (+{more} more)" if more > 0 else ""), size="sm", color="warning"))
     children += [Divider(spacing=2), nav_buttons(full_q)]
     return Card(size="full", children=children)
@@ -923,7 +939,8 @@ def readiness_widget(atm_id: str) -> Card:
     atm = r["atmosphere"]
     general_findings = [f for f in r["findings"] if f.get("geometry_class") is None]
     children = [
-        Title(value=f"Mission readiness: {atm['label']}", size="md"),
+        Title(value=f"Atmosphere evidence: {atm['label']}", size="md"),
+        Caption(value="Individual tests and test points only. Search window: ?1.5 oxygen percentage points, ?0.1 atm pressure. Incomplete conditions are not coverage. Overlap is not safety or a lunar-gravity prediction."),
         Caption(value=f"O₂ {_fmt(atm['o2_pct'])}% · pressure {_fmt(atm['pressure_atm'])} atm "
                       f"(cell {atm['pressure_source_value']})"),
         Markdown(value=f"Source: [{atm['doc_title']}]({_doc_url(atm['doc'])}) — “{atm['quote']}”"),
@@ -936,7 +953,7 @@ def readiness_widget(atm_id: str) -> Card:
         gc_label = GEOMETRY_LABEL.get(c["geometry_class"], c["geometry_class"])
         lines = [Row(gap=2, align="center", children=[
             Text(value=gc_label, size="sm", weight="semibold"),
-            Badge(label="covered" if c["covered"] else "GAP: not tested here",
+            Badge(label="full condition matches" if c["covered"] else "no full matches in index",
                   color="success" if c["covered"] else "danger"),
         ]), Caption(value=f"{c['match']} at conditions · {c['partial']} partial", size="sm")]
         n = c["nearest_tested"]
