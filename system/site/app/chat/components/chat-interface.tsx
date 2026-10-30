@@ -69,12 +69,12 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
       },
       typography: {
         baseSize: 16,
-        fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+        fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         fontFamilyMono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
         fontSources: [
           {
-            family: "Plus Jakarta Sans",
-            src: typeof window === "undefined" ? "/fonts/plus-jakarta-sans.ttf" : `${window.location.origin}${window.location.pathname.replace(/chat\/?$/, "")}fonts/plus-jakarta-sans.ttf`,
+            family: "OpenAI Sans",
+            src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Regular.woff2",
             weight: 400,
             style: "normal",
             display: "swap",
