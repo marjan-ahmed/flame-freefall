@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactElement } from "react";
 
 import Link from "next/link";
+import { WorkspaceNav } from "@/components/workspace-nav";
 import { BookOpen, Database, Home, X } from "lucide-react";
 
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
@@ -62,18 +63,18 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
     // purpose (user's call, 2026-09-22).
     theme: {
       colorScheme: "light",
-      radius: "pill",
+      radius: "round",
       color: {
-        accent: { primary: "#1d4ed8", level: 1 }, // --primary, light value
+        accent: { primary: "#087cb5", level: 1 }, // Shared flame-blue secondary accent; ChatKit owns its iframe theme.
       },
       typography: {
         baseSize: 16,
-        fontFamily: '"OpenAI Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+        fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
         fontFamilyMono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "DejaVu Sans Mono", "Courier New", monospace',
         fontSources: [
           {
-            family: "OpenAI Sans",
-            src: "https://cdn.openai.com/common/fonts/openai-sans/v2/OpenAISans-Regular.woff2",
+            family: "Plus Jakarta Sans",
+            src: typeof window === "undefined" ? "/fonts/plus-jakarta-sans.ttf" : `${window.location.origin}${window.location.pathname.replace(/chat\/?$/, "")}fonts/plus-jakarta-sans.ttf`,
             weight: 400,
             style: "normal",
             display: "swap",
@@ -96,7 +97,7 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
       }),
     },
     startScreen: {
-      greeting: "What can I help with today?",
+      greeting: "Which experiment would you like to understand?",
       // StartScreenPrompt is { label, prompt, icon? } — a bare string list
       // fails the same silent-blank-widget way `colorScheme: 'system'` did.
       prompts: [
@@ -214,26 +215,22 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
   });
 
   return (
-    <div className="relative flex h-screen w-full flex-col">
-      {/* The assistant answers from — and cites — the governed record, but
-          nothing else on this screen says that record is browsable on its
-          own, or how to get back to the landing page. Top-right, left of
-          ChatKit's own native history/new-chat icons — offset far enough
-          (right-20) to clear that icon cluster rather than sit under it
-          (user's call, 2026-09-22). Text only, no border/pill/background —
-          a plain underlined link, ChatGPT-style. */}
-      <div className="absolute right-20 top-4 z-10 hidden gap-4 text-sm md:flex">
-        <Link href="/" className="text-gray-900 underline underline-offset-4 hover:text-black">
-          ← Home
-        </Link>
-        <Link href="/explore/" className="text-gray-900 underline underline-offset-4 hover:text-black">
-          Test-data explorer
-        </Link>
-        <Link href="/docs" className="text-gray-900 underline underline-offset-4 hover:text-black">
-          System of Record
-        </Link>
+    <div className="relative flex h-dvh w-full flex-col">
+      <WorkspaceNav title={title} />
+      <div className="atlas-chat-workspace">
+        <aside className="atlas-chat-rail">
+          <p className="atlas-kicker">Research assistant</p>
+          <h1>Follow a question to its evidence.</h1>
+          <p>Ask about an investigation, compare test conditions, or inspect an individual result.</p>
+          <div className="atlas-rail-section"><h2>Continue your research</h2>
+            <Link href="/explore/">Explore the test table<span>Filter conditions and inspect source rows</span></Link>
+            <Link href="/explore/investigations/">Browse investigations<span>Compare experimental geometry and coverage</span></Link>
+            <Link href="/docs/">Read the source record<span>Open governed findings and source notes</span></Link>
+          </div>
+          <p className="atlas-rail-note">Use conversation history to return to a question. Source records remain available in the Explorer.</p>
+        </aside>
+        <div className="atlas-chat-canvas"><ChatKit control={control} className="h-full w-full" /></div>
       </div>
-      <ChatKit control={control} className="h-full w-full" />
       {mobileNavOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
           <button
@@ -257,7 +254,7 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
                 type="button"
                 aria-label="Close navigation"
                 autoFocus
-                className="flex size-10 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
+                className="flex size-10 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onClick={() => setMobileNavOpen(false)}
               >
                 <X aria-hidden="true" size={20} />
@@ -267,7 +264,7 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
               <Link
                 href="/"
                 onClick={() => setMobileNavOpen(false)}
-                className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-800 transition-colors hover:bg-blue-50 hover:text-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
+                className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-800 transition-colors hover:bg-accent hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <Home aria-hidden="true" className="text-slate-500" size={18} />
                 Home
@@ -275,7 +272,7 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
               <Link
                 href="/docs"
                 onClick={() => setMobileNavOpen(false)}
-                className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-800 transition-colors hover:bg-blue-50 hover:text-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
+                className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-800 transition-colors hover:bg-accent hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <BookOpen aria-hidden="true" className="text-slate-500" size={18} />
                 System of Record
@@ -283,7 +280,7 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
               <Link
                 href="/explore/"
                 onClick={() => setMobileNavOpen(false)}
-                className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-800 transition-colors hover:bg-blue-50 hover:text-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
+                className="flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-medium text-slate-800 transition-colors hover:bg-accent hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <Database aria-hidden="true" className="text-slate-500" size={18} />
                 Test Data Explorer

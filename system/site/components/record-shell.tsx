@@ -1,3 +1,5 @@
+import { WorkspaceNav } from "@/components/workspace-nav";
+import { ReadingTools } from "@/components/reading-tools";
 import type { ReactElement, ReactNode } from "react";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import { ThemeSwitch } from "fumadocs-ui/layouts/shared/slots/theme-switch";
@@ -23,7 +25,7 @@ export function RecordShell({ children }: { children: ReactNode }): ReactElement
   const documents = getSortedPages().length;
 
   return (
-    <DocsLayout
+    <><WorkspaceNav /><DocsLayout
       tree={getSortedPageTree()}
       {...baseOptions()}
       // The switch ships inside a bordered bar of its own in the sidebar
@@ -45,6 +47,7 @@ export function RecordShell({ children }: { children: ReactNode }): ReactElement
         // dev server, where the adopter meets it first.
         footer: (
           <div key="record-footer" className="mt-3 flex flex-col gap-2">
+            <ReadingTools />
             {/* The record's own identity, on every page rather than only the
                 home page: the slug is what citations carry and llms.txt is the
                 door an agent is told to read. The sidebar had three links and
@@ -70,6 +73,6 @@ export function RecordShell({ children }: { children: ReactNode }): ReactElement
       }}
     >
       {children}
-    </DocsLayout>
+    </DocsLayout></>
   );
 }

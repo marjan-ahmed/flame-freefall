@@ -25,7 +25,7 @@ export function FlameComparison(): ReactElement {
         <radialGradient id="microFlame" cx="46%" cy="46%" r="58%">
           <stop offset="0%" stopColor="#dbeafe" />
           <stop offset="55%" stopColor="#7fb0f9" />
-          <stop offset="100%" stopColor="var(--primary)" />
+          <stop offset="100%" stopColor="#2563eb" />
         </radialGradient>
       </defs>
 

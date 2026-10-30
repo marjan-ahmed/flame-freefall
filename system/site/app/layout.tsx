@@ -1,3 +1,4 @@
+import localFont from "next/font/local";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import "./global.css";
 import type { Metadata } from "next";
@@ -6,11 +7,8 @@ import { basePath, badgeByUrl } from "@/lib/source";
 import { readStageManifest } from "@/lib/stage-manifest";
 import KsorSearchDialog from "@/components/search-dialog";
 
-// No next/font/google: it fetches the face from Google at BUILD time, so a
-// scaffolded project could not build offline and two builds of one commit
-// could differ byte-wise (review finding, 2026-08-18). The system UI stack
-// costs zero bytes and zero network; replace it with a self-hosted @font-face
-// if the project wants a specific face.
+// The variable font is bundled locally, including its OFL license.
+const atlasFont = localFont({ src: "../public/fonts/plus-jakarta-sans.ttf", variable: "--font-atlas", display: "swap" });
 
 export const metadata: Metadata = {
   // Resolves relative openGraph/twitter image URLs (e.g. the home page's
@@ -31,7 +29,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="flex flex-col min-h-screen">
+      <body className={`${atlasFont.variable} flex flex-col min-h-screen`}>
         {/* Which documents carry a badge, for the search dialog — it
             runs in the browser over a static index that has no field for it.
             Delivered in the document rather than as a dialog prop because

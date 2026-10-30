@@ -152,6 +152,8 @@ function Stat({ n, label, tone }: { n: number; label: string; tone: "good" | "in
 
 export function Explorer({ investigations, basePath }: { investigations: Investigation[]; basePath: string }): ReactElement {
   const params = useSearchParams();
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [shareStatus, setShareStatus] = useState("Copy search link");
   const [runs, setRuns] = useState<SlimRun[] | null>(null);
   const [excludedInvestigation, setExcludedInvestigation] = useState(params.get("exclude_investigation") ?? "");
   const [dataset, setDataset] = useState({ generated_at: "", sha256: "" });
@@ -307,10 +309,16 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   };
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[310px_minmax(0,1fr)] lg:gap-10">
+    <div className={cn("grid gap-6", filtersOpen && "lg:grid-cols-[310px_minmax(0,1fr)] lg:gap-8")}>
+      <nav aria-label="Analysis controls" className="flame-blue-panel flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3 lg:col-span-full text-sm">
+        <button type="button" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(!filtersOpen)} className="flame-blue-action rounded-lg px-4 py-2">{filtersOpen ? "Hide filters" : "Show filters"}</button>
+        <a className="px-2 py-2 hover:text-primary" href="#coverage-chart">Coverage chart</a>
+        <a className="px-2 py-2 hover:text-primary" href="#test-results">Test records</a>
+        <button type="button" className="ml-auto rounded-lg border px-3 py-2" onClick={async () => { try { await navigator.clipboard.writeText(window.location.href); setShareStatus("Search link copied"); } catch { setShareStatus("Copy the address from your browser"); } }}>{shareStatus}</button>
+      </nav>
       {/* ── query panel ─────────────────────────────── */}
-      <aside className="dark space-y-4 text-foreground lg:sticky lg:top-4 lg:self-start">
-        <form onSubmit={onSubmit} className="space-y-3 border border-white/10 border-t-2 border-t-orange-400 bg-card p-4 sm:p-5">
+      <aside className={cn("space-y-4 text-foreground lg:sticky lg:top-4 lg:self-start", !filtersOpen && "hidden")}>
+        <form onSubmit={onSubmit} className="space-y-3 border border-border border-t-2 border-t-primary bg-card p-4 sm:p-5">
           <h2 className="font-display text-lg">Ask the data</h2>
           <p className="text-xs text-muted-foreground">Leave a field empty to not constrain it.</p>
           {(["o2_pct", "flow_cm_s", "pressure_atm"] as NumericAxis[]).map((k) => (
@@ -408,7 +416,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
             </button>
           </div>
         </form>
-        <div className="border border-white/10 bg-card px-4 py-4 sm:px-5">
+        <div className="border border-border bg-card px-4 py-4 sm:px-5">
           <h3 className="font-display text-base font-semibold">Start with an example</h3>
           <p className="mt-1 text-xs text-muted-foreground">Each example loads a real PSI query. Adjust it to explore.</p>
           <ul className="mt-3 divide-y divide-border">
@@ -439,7 +447,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         </>}
 
         {result && (
-          <section className="border border-border bg-card p-4 sm:p-5">
+          <section id="coverage-chart" className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="font-display text-lg">Coverage map</h2>
@@ -486,7 +494,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         )}
 
         {result && (
-          <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <section id="test-results" className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div className="min-w-0">
               <div className="flex gap-1 rounded-lg border p-1 text-sm" role="group" aria-label="Evidence tiers">
                 {(["match", "partial", "near"] as const).map((t) => (
