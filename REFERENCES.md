@@ -1,9 +1,11 @@
 # References and rights inventory
 
-This is an inventory, not a completed licensing clearance.
+The repository carries an MIT license for author-created code and documentation.
+This inventory is not a completed clearance for bundled third-party material.
 
 | Material | Source / record | Rights status |
 | --- | --- | --- |
+| Project code and documentation | [MIT License](LICENSE), copyright Marjan Ahmed | Applies to project-authored material; verify contributors and excluded bundled files |
 | NASA challenge | [2026 Flame in Freefall](https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/) | Cite; competition timing restrictions apply |
 | Participant rules | [2026 terms](https://www.spaceappschallenge.org/legal/) | Read before submission; not a grant of rights over third-party files |
 | PSI tables and reports | `psi-data/derived/source-inventory.md`, `psi-data/README.md` | Per-file provenance retained; verify redistribution terms |

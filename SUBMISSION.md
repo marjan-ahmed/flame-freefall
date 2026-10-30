@@ -25,10 +25,11 @@ appropriate rights, an unrestricted or OSI-compatible original submission, docum
 third-party licenses and citations. Their Apache default is a distribution term,
 not confirmation that this repository's authors own every included file.
 
-A repository-wide license needs a rights-holder decision. Bundled NASA-associated
-reports, contractor/university papers, imagery and dependencies need separate
-rights review. Publicly downloadable is not equivalent to public domain. See
-[REFERENCES.md](REFERENCES.md). Do not relicense third-party scientific material.
+The repository now includes an MIT license for project-authored code and
+documentation. Bundled NASA-associated reports, contractor/university papers,
+imagery and dependencies need separate rights review. Publicly downloadable is
+not equivalent to public domain. See [REFERENCES.md](REFERENCES.md). Do not
+relicense third-party scientific material.
 
 ## AI and review disclosure
 

@@ -229,8 +229,8 @@ troubleshooting table — is in [`AGENTS.md`](./AGENTS.md).
 
 ## References, rights and AI assistance
 
-[References and licensing inventory](REFERENCES.md) identifies primary sources,
-dependencies and unresolved redistribution rights. No project-wide license is
-asserted pending the rights holders' decision. AI-assisted code and record
+[MIT license](LICENSE) covers project-authored code and documentation. It does not
+settle redistribution rights for bundled scientific reports and datasets. See the
+[references and licensing inventory](REFERENCES.md) for remaining third-party review. AI-assisted code and record
 creation are disclosed in [SUBMISSION.md](SUBMISSION.md); approval metadata must
 never be manufactured to make a build pass.
