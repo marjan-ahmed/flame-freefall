@@ -16,14 +16,6 @@ export function SiteFooter({ title }: { title: string }): ReactElement {
           <Link href="/docs/" className="transition-colors hover:text-foreground">
             System of Record
           </Link>
-          <a
-            href="https://github.com/marjan-ahmed/flame-freefall"
-            className="transition-colors hover:text-foreground"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-          </a>
         </div>
       </div>
     </footer>
