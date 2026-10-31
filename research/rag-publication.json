@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-10-31T12:44:36.105891+00:00",
+  "verified_at": "2026-10-31T12:59:14.281838+00:00",
   "scope": "Configured Neon corpus verified through local MCP and cached Sentence Transformers. Not a public-web deployment test or independent expert retrieval validation.",
   "endpoint": "http://127.0.0.1:8080/mcp",
   "health": {
@@ -27,7 +27,7 @@
     "receipt_source": "Observed ksor ingest run 11; applies only to generation 9"
   },
   "build_id": "sha256:a1209d56ca5b1b04de70317b6abc77c99656f0664ed1384b1d61f8e1d42f0e1b",
-  "dataset_sha256": "09e0e471a0a2cf629a49c5aaf45d5755d7a99d0dd8bf4f706c23103416e27244",
+  "dataset_sha256": "3286c2da58bd7c85704551d1021f8bd9c9f1564ed368fa236725b4c01fd3fcb2",
   "retrieval_cases": [
     {
       "query": "LUCI rotating sounding rocket PMMA flame spread",
@@ -44,7 +44,7 @@
         "knowledge/investigations/gaseous-flames/acme-s-flame",
         "knowledge/investigations/solid-fuel/bass-ii"
       ],
-      "latency_ms": 6421.27,
+      "latency_ms": 7713.58,
       "expected_document": "knowledge/literature/luci-rotating-rocket",
       "target_rank": 1,
       "target_found_at_5": true
@@ -64,7 +64,7 @@
         "knowledge/data-sources/psi-experimental-tables",
         "knowledge/investigations/gaseous-flames/acme"
       ],
-      "latency_ms": 2947.66,
+      "latency_ms": 4544.26,
       "expected_document": "knowledge/literature/luci-rotating-rocket",
       "target_rank": 1,
       "target_found_at_5": true
@@ -84,7 +84,7 @@
         "knowledge/literature/luci-rotating-rocket",
         "knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety"
       ],
-      "latency_ms": 3137.56,
+      "latency_ms": 3349.71,
       "expected_document": "knowledge/literature/luci-rotating-rocket",
       "target_rank": 1,
       "target_found_at_5": true
@@ -104,7 +104,7 @@
         "knowledge/investigations/smoke-aerosol/same-r",
         "knowledge/investigations/smoke-aerosol/same-r"
       ],
-      "latency_ms": 2995.02,
+      "latency_ms": 3405.85,
       "expected_document": "knowledge/literature/daft-cabin-aerosol",
       "target_rank": 1,
       "target_found_at_5": true
@@ -124,7 +124,7 @@
         "knowledge/investigations/smoke-aerosol/same-r",
         "knowledge/investigations/smoke-aerosol/same-r"
       ],
-      "latency_ms": 3227.94,
+      "latency_ms": 3502.56,
       "expected_document": "knowledge/literature/daft-cabin-aerosol",
       "target_rank": 1,
       "target_found_at_5": true
@@ -144,7 +144,7 @@
         "knowledge/investigations/solid-fuel/bass-ii",
         "knowledge/investigations/smoke-aerosol/same-r"
       ],
-      "latency_ms": 3161.0,
+      "latency_ms": 3385.77,
       "expected_document": "knowledge/literature/daft-cabin-aerosol",
       "target_rank": 1,
       "target_found_at_5": true
@@ -164,7 +164,7 @@
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results"
       ],
-      "latency_ms": 3040.32,
+      "latency_ms": 3217.44,
       "expected_document": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
       "target_rank": 2,
       "target_found_at_5": true
@@ -184,7 +184,7 @@
         "knowledge/investigations/droplet-combustion/cfi",
         "knowledge/investigations/droplet-combustion/cfi"
       ],
-      "latency_ms": 3044.44,
+      "latency_ms": 3080.2,
       "expected_document": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
       "target_rank": 1,
       "target_found_at_5": true
@@ -204,7 +204,7 @@
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
         "knowledge/investigations/smoke-aerosol/same-r"
       ],
-      "latency_ms": 3694.77,
+      "latency_ms": 3513.46,
       "expected_document": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
       "target_rank": 1,
       "target_found_at_5": true
@@ -220,7 +220,7 @@
       "abstained": true,
       "top_cosine": 0.10960925043793812,
       "retrieved_documents": [],
-      "latency_ms": 3068.1,
+      "latency_ms": 2987.69,
       "correct_abstention": true
     },
     {
@@ -232,7 +232,7 @@
       "abstained": true,
       "top_cosine": 0.1892720944123215,
       "retrieved_documents": [],
-      "latency_ms": 3144.98,
+      "latency_ms": 2888.74,
       "correct_abstention": true
     },
     {
@@ -244,7 +244,7 @@
       "abstained": true,
       "top_cosine": 0.3523252010345459,
       "retrieved_documents": [],
-      "latency_ms": 2912.28,
+      "latency_ms": 2899.5,
       "correct_abstention": true
     },
     {
@@ -256,7 +256,7 @@
       "abstained": true,
       "top_cosine": 0.3259253301002185,
       "retrieved_documents": [],
-      "latency_ms": 3512.4,
+      "latency_ms": 3339.21,
       "correct_abstention": true
     },
     {
@@ -268,7 +268,7 @@
       "abstained": true,
       "top_cosine": 0.11844819784164429,
       "retrieved_documents": [],
-      "latency_ms": 2974.47,
+      "latency_ms": 3134.56,
       "correct_abstention": true
     },
     {
@@ -280,7 +280,7 @@
       "abstained": true,
       "top_cosine": 0.3954314540788044,
       "retrieved_documents": [],
-      "latency_ms": 2950.22,
+      "latency_ms": 3016.32,
       "correct_abstention": true
     },
     {
@@ -292,7 +292,7 @@
       "abstained": true,
       "top_cosine": 0.2569863498210907,
       "retrieved_documents": [],
-      "latency_ms": 3021.36,
+      "latency_ms": 3192.07,
       "correct_abstention": true
     },
     {
@@ -304,7 +304,7 @@
       "abstained": true,
       "top_cosine": 0.2577190245557417,
       "retrieved_documents": [],
-      "latency_ms": 2936.64,
+      "latency_ms": 3763.89,
       "correct_abstention": true
     }
   ],

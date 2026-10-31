@@ -4,7 +4,7 @@
   "viewports": [
     {
       "width": 1280,
-      "navigation_to_comparison_ready_ms": 1884.17,
+      "navigation_to_comparison_ready_ms": 2743.08,
       "comparison_export": true,
       "evidence_export": true,
       "source_cells": true,
@@ -16,7 +16,7 @@
     },
     {
       "width": 390,
-      "navigation_to_comparison_ready_ms": 1375.74,
+      "navigation_to_comparison_ready_ms": 1162.24,
       "comparison_export": true,
       "evidence_export": true,
       "source_cells": true,
