@@ -2,17 +2,12 @@ import { ExperimentAtlas } from "@/components/landing/experiment-atlas";
 import { psiInvestigations } from "@/lib/psi-data";
 import type { Metadata } from "next";
 import type { ReactElement } from "react";
-import Link from "next/link";
 
 import { Heatmap, HeatmapLegend } from "@/components/dashboard/heatmap";
 import { LunarEvidenceBrief } from "@/components/dashboard/lunar-evidence-brief";
 import { ReadinessCards } from "@/components/dashboard/readiness-cards";
-import { AudiencePathways } from "@/components/landing/audience-pathways";
-import { FlameComparison } from "@/components/landing/flame-comparison";
-import { Button } from "@/components/ui/button";
 import {
   atmosphereMarkers,
-  dashboardTotals,
   geometryHeatmaps,
   missionReadinessSummary,
   totalCoverageGaps,
@@ -50,7 +45,6 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage(): ReactElement {
-  const totals = dashboardTotals();
   const heatmaps = geometryHeatmaps();
   const markers = atmosphereMarkers();
   const readiness = missionReadinessSummary();
@@ -64,7 +58,7 @@ export default function HomePage(): ReactElement {
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
           <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
             <div>
-              <p className="text-sm font-medium text-primary">Live PSI index</p>
+              <p className="text-sm text-muted-foreground">Evidence coverage</p>
               <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight">Where the data reaches</h2>
             </div>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -96,7 +90,10 @@ export default function HomePage(): ReactElement {
         </div>
       </section>
 
-      <LunarEvidenceBrief brief={lunarEvidenceBrief()} />
+      <details className="research-detail">
+        <summary>Case study: evidence near a proposed Lunar atmosphere<span>Inspect search windows, source records, and limitations</span></summary>
+        <LunarEvidenceBrief brief={lunarEvidenceBrief()} />
+      </details>
 
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[0.7fr_1.3fr]">
         <div>
@@ -116,24 +113,5 @@ export default function HomePage(): ReactElement {
         </ul>
       </section>
     </>
-  );
-}
-
-function Metric({ n, label }: { n: number; label: string }): ReactElement {
-  return (
-    <div className="px-3 py-4 sm:px-4">
-      <dt className="text-xs leading-4 text-muted-foreground">{label}</dt>
-      <dd className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">{n.toLocaleString("en-US")}</dd>
-    </div>
-  );
-}
-
-function RouteLink({ href, index, title, text }: { href: string; index: string; title: string; text: string }): ReactElement {
-  return (
-    <Link href={href} className="group px-4 py-4 outline-none transition-colors hover:bg-muted/40 focus-visible:bg-muted/40 sm:px-5">
-      <span className="font-mono text-xs text-primary">{index}</span>
-      <span className="mt-3 block font-display text-lg font-semibold group-hover:text-primary">{title}</span>
-      <span className="mt-1 block text-sm leading-5 text-muted-foreground">{text}</span>
-    </Link>
   );
 }

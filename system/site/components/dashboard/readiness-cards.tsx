@@ -16,7 +16,7 @@ export function ReadinessCards({ readiness }: { readiness: ReadinessSummary[] })
         const covered = r.classes.filter((c) => c.covered).length;
         const evidenceHref = `/explore/?o2_pct=${r.atmosphere.o2_pct}&pressure_atm=${r.atmosphere.pressure_atm}&individual=1`;
         return (
-          <div key={r.atmosphere.id} className="border border-border border-t-2 border-t-primary bg-card p-4">
+          <div key={r.atmosphere.id} className="rounded border border-border bg-card p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <span className="block text-xs text-muted-foreground">Named atmosphere</span>

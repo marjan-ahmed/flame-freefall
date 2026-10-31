@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <WorkspaceNav title={appTitle} />
-      <main className="mx-auto max-w-[1400px] px-4 py-6">{children}</main>
+      <main id="workspace-content" className="mx-auto max-w-[1400px] px-4 py-6">{children}</main>
     </div>
   );
 }

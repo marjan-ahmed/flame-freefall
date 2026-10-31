@@ -58,7 +58,7 @@ export function RecordIndex({
             <li key={entry.url}>
               <Link
                 href={entry.url}
-                className="group flex items-start gap-4 rounded-lg border border-fd-border bg-fd-muted/40 px-5 py-4 transition-all hover:-translate-y-px hover:border-fd-primary/40 hover:bg-fd-muted hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fd-ring motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                className="group flex items-start gap-4 rounded border border-fd-border bg-fd-card px-5 py-4 transition-colors hover:bg-fd-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fd-ring"
               >
                 <Icon
                   aria-hidden
@@ -67,12 +67,12 @@ export function RecordIndex({
 
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span className="font-display text-lg leading-snug font-semibold tracking-[-0.008em] transition-colors group-hover:text-fd-primary">
+                    <span className="font-display text-lg leading-snug font-medium transition-colors group-hover:text-fd-primary">
                       {entry.title}
                     </span>
                     {entry.badge === null ? null : (
                       <span
-                        className={`rounded-sm border border-fd-border px-1.5 py-0.5 font-mono text-[10px] tracking-widest text-fd-foreground uppercase ${badgeTone(entry.badge)}`}
+                        className={`rounded-sm border border-fd-border px-2 py-1 text-xs text-fd-foreground ${badgeTone(entry.badge)}`}
                       >
                         {badgeLabel(entry.badge)}
                       </span>
@@ -89,7 +89,7 @@ export function RecordIndex({
                 {/* What the record says about it, in the same column every
                     time, so two entries can be compared without reading. */}
                 <span className="flex shrink-0 items-center gap-3 self-center">
-                  <span className="hidden items-baseline gap-2 font-mono text-xs tracking-wider text-fd-muted-foreground uppercase tabular-nums sm:flex">
+                  <span className="hidden items-baseline gap-2 text-xs text-fd-muted-foreground tabular-nums sm:flex">
                     {entry.documents === 0 ? null : (
                       <span>{`${entry.documents} ${entry.documents === 1 ? "doc" : "docs"}`}</span>
                     )}
@@ -105,7 +105,7 @@ export function RecordIndex({
                       "this opens something", visible without a pointer. */}
                   <ArrowRight
                     aria-hidden
-                    className="size-4 text-fd-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-fd-primary motion-reduce:transition-none"
+                    className="size-4 text-fd-muted-foreground transition-colors group-hover:text-fd-primary"
                   />
                 </span>
               </Link>

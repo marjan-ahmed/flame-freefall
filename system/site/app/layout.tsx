@@ -1,14 +1,17 @@
-import localFont from "next/font/local";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import "./global.css";
 import type { Metadata } from "next";
+import { Inter_Tight } from "next/font/google";
 import { appTitle } from "@/lib/shared";
 import { basePath, badgeByUrl } from "@/lib/source";
 import { readStageManifest } from "@/lib/stage-manifest";
 import KsorSearchDialog from "@/components/search-dialog";
 
-// The variable font is bundled locally, including its OFL license.
-const atlasFont = localFont({ src: "../public/fonts/plus-jakarta-sans.ttf", variable: "--font-atlas", display: "swap" });
+const interTight = Inter_Tight({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter-tight",
+});
 
 export const metadata: Metadata = {
   // Resolves relative openGraph/twitter image URLs (e.g. the home page's
@@ -19,7 +22,7 @@ export const metadata: Metadata = {
     default: appTitle,
     template: `%s | ${appTitle}`,
   },
-  description: "The Knowledge System of Record for humans and AI agents.",
+  description: "Explore NASA microgravity combustion experiments, compare test conditions, and trace results to their sources.",
   // A build that shows drafts (`KSOR_DRAFTS=show`) is a preview, and a static
   // site's pages are open-web artefacts: it says so to every crawler rather
   // than letting a draft be indexed under the record's name (build spec §3).
@@ -28,8 +31,8 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${atlasFont.variable} flex flex-col min-h-screen`}>
+    <html lang="en" className={interTight.variable} suppressHydrationWarning>
+      <body className="flex flex-col min-h-screen">
         {/* Which documents carry a badge, for the search dialog — it
             runs in the browser over a static index that has no field for it.
             Delivered in the document rather than as a dialog prop because
@@ -45,6 +48,13 @@ export default function Layout({ children }: LayoutProps<"/">) {
           }}
         />
         <RootProvider
+          theme={{
+            defaultTheme: "system",
+            enableSystem: true,
+            enableColorScheme: true,
+            disableTransitionOnChange: true,
+            hotKey: false,
+          }}
           search={{
             // Static search: the browser downloads the index that
             // app/api/search exports at build time (staticGET) and runs

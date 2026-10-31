@@ -87,7 +87,7 @@ function Answer({ r, q }: { r: QueryResult; q: Query }): ReactElement {
   const conflicts = [...r.match, ...r.partial].filter((v) => v.run.conflicts?.length).length;
   return (
     <div className="border border-border border-l-4 border-l-primary bg-card p-5">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">What the PSI record says about</p>
+      <p className="text-sm text-muted-foreground">What the PSI record says about</p>
       <p className="mt-0.5 font-display text-xl">{describeQuery(q)}</p>
       <div className="mt-3 flex flex-wrap gap-2 text-sm">
         <Stat n={match} label="within search window" tone="info" />
@@ -310,7 +310,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
 
   return (
     <div className={cn("grid gap-6", filtersOpen && "lg:grid-cols-[310px_minmax(0,1fr)] lg:gap-8")}>
-      <nav aria-label="Analysis controls" className="flame-blue-panel flex flex-wrap items-center gap-3 rounded-xl border bg-card p-3 lg:col-span-full text-sm">
+      <nav aria-label="Analysis controls" className="flex flex-wrap items-center gap-3 rounded border border-border bg-card p-3 lg:col-span-full text-sm">
         <button type="button" aria-expanded={filtersOpen} onClick={() => setFiltersOpen(!filtersOpen)} className="flame-blue-action rounded-lg px-4 py-2">{filtersOpen ? "Hide filters" : "Show filters"}</button>
         <a className="px-2 py-2 hover:text-primary" href="#coverage-chart">Coverage chart</a>
         <a className="px-2 py-2 hover:text-primary" href="#test-results">Test records</a>
@@ -336,8 +336,8 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               />
             </label>
           ))}
-          <fieldset className="space-y-2 border-t pt-3">
-            <legend className="text-sm font-medium">Search tolerances</legend>
+          <details className="space-y-2 border-t pt-3">
+            <summary className="cursor-pointer text-sm font-medium">Advanced: search tolerances and record types</summary>
             <p className="text-xs text-muted-foreground">Search heuristics, not safety margins. Changes apply immediately.</p>
             {(["o2_pct", "pressure_atm"] as const).map(axis => (
               <label key={axis} className="block text-sm">
@@ -348,7 +348,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               </label>
             ))}
             <label className="flex gap-2 text-sm"><input type="checkbox" checked={individual} onChange={e => setIndividual(e.target.checked)} />Individual tests and test points only</label>
-          </fieldset>
+          </details>
           <label className="block text-sm">
             <span className="text-muted-foreground">Fuel / material</span>
             <select
@@ -447,7 +447,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         </>}
 
         {result && (
-          <section id="coverage-chart" className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+          <section id="coverage-chart" className="rounded border border-border bg-card p-4 sm:p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="font-display text-lg">Coverage map</h2>
@@ -594,7 +594,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
             <div className="mt-3 overflow-x-auto">
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
-                  <tr className="border-b text-left text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr className="border-b text-left text-sm text-muted-foreground">
                     <th className="py-2 pr-3">Investigation</th>
                     <th className="py-2 pr-3">Tests</th>
                     {(Object.keys(result.query) as string[])
