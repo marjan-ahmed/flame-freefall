@@ -65,7 +65,7 @@ def main() -> None:
             lines.append("")
     lines += ["## Reports (psi-data/raw/reports)", ""]
     lines += [f"- {p.name}" for p in sorted((RAW / "reports").glob("*.pdf"))]
-    OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    OUT.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     print(f"psi-inventory: wrote {OUT.relative_to(REPO_ROOT)}")
 
 

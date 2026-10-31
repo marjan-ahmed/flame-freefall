@@ -23,6 +23,9 @@ from . import knowledge
 from .adapters import Ctx, droplet, gaseous, smoke, solid
 from .model import Run
 from .reports import merge_all
+from .smoke_results import merge_same_r_diagnostics
+from .flex2_results import merge_flex2_literature
+from .saffire_detection import merge_saffire_detection
 from .units import Measure
 
 HERE = Path(__file__).resolve().parent
@@ -85,13 +88,40 @@ def investigations(runs: list[Run], ctx: Ctx) -> list[dict]:
     return out
 
 
-def run(repo_root: Path = REPO_ROOT, write: bool = True) -> dict:
+def completeness(runs: list[Run], registry: dict) -> dict:
+    """Availability counts with explicit denominators; never accuracy or safety scores."""
+    groups = {}
+    for geometry in sorted({v["geometry_class"] for v in registry.values()}):
+        group = [r for r in runs if registry[r.investigation]["geometry_class"] == geometry]
+        groups[geometry] = {
+            "records": len(group),
+            "individual_records": sum(r.granularity in ("test", "test-point") for r in group),
+            "records_with_outcomes": sum(bool(r.outcomes) for r in group),
+            "records_with_numeric_outcomes": sum(any(o.measure is not None and o.measure.usable for o in r.outcomes) for r in group),
+            "records_with_source_processed_outcomes": sum(any(o.measure is not None and "source_processed" in o.measure.flags
+                                                              for o in r.outcomes) for r in group),
+            "conditions_reported_by": {axis: sum(isinstance(r.conditions.get(axis), Measure) and r.conditions[axis].usable
+                                                 for r in group)
+                                       for axis in ("o2_pct", "pressure_atm", "flow_cm_s")},
+        }
+    return {"note": "Counts measure recorded data availability, not accuracy, independent observations, safety or certification.",
+            "by_geometry": groups}
+
+
+def run(repo_root: Path = REPO_ROOT, write: bool = True, *, include_review: bool = False) -> dict:
+    if include_review and write:
+        raise ValueError("Review-only outcomes cannot be written to serving data; use write=False")
     ctx = Ctx(repo_root=repo_root, raw_dir=repo_root / "psi-data" / "raw", registry=load_registry())
     runs: list[Run] = []
     for module in (solid, droplet, gaseous, smoke):
         for adapter in module.ADAPTERS:
             runs.extend(adapter(ctx))
     merge_stats = merge_all(ctx, runs)
+    merge_same_r_diagnostics(ctx, runs)
+    merge_flex2_literature(ctx, runs, include_review=include_review)
+    merge_saffire_detection(ctx, runs)
+    from .apparatus import enrich_apparatus
+    enrich_apparatus(ctx, runs)
     report: dict = {}
     assign_ids(runs, ctx.registry, report)
 
@@ -112,6 +142,7 @@ def run(repo_root: Path = REPO_ROOT, write: bool = True) -> dict:
             "rows_skipped": sum(len(f.skipped) for f in ctx.reports),
         },
         "files": [f.to_json() for f in ctx.reports],
+        "completeness": completeness(runs, ctx.registry),
         "report_tables": merge_stats,
         "not_ingested": NOT_INGESTED,
     })
@@ -136,7 +167,9 @@ NOT_INGESTED = [
     {"file": "matrices/SAME VPRED Matrix PLN-005 Baseline.xls", "why": "pre-flight planning matrix (not as-run)"},
     {"file": "matrices/thermal precipitator map corrected 10-12-2011 (1).xlsx", "why": "SAME-R hardware usage map, not test conditions"},
     {"file": "summaries/SAFFIRE-*_MergeResult*.xlsx", "why": "camera image downlink logs (file names, byte counts) — no combustion data"},
-    {"file": "summaries/Combined SAMER Results 06 02 14.xlsx", "why": "SAME/SAME-R smoke diagnostics workbook; not yet mapped (PSI-101/102 carry the runs)"},
+    {"file": "summaries/Combined SAMER Results 06 02 14.xlsx (other sheets and columns)",
+     "why": "Reduced data sheet flight 2 mass-concentration/diameter columns enrich existing SAME-R records. "
+            "Other sheets, unknown-unit quantities, nonpositive diagnostics, SAME flight 1 rows and unmatched test identities are not imported."},
     {"file": "reports/*.pdf (other than BASS-II, SPICE, SAME-R)",
      "why": "converted to psi-data/derived/report-extractions/ but no per-test table with intact headers found yet; "
             "report values enter via governed knowledge/ tables or verified extractions (see report_tables)"},
@@ -144,7 +177,7 @@ NOT_INGESTED = [
 
 
 def _dump(path: Path, data) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8", newline="\n")
 
 
 def main() -> None:

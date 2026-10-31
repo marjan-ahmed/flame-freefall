@@ -1,0 +1,9 @@
+{
+  "measured_at": "2026-10-31T12:55:21.448395+00:00",
+  "scope": "Transfer agreement of source-processed cached numeric outcomes and raw cells; no formula recalculation, calibration or scientific validation.",
+  "dataset_sha256": "3286c2da58bd7c85704551d1021f8bd9c9f1564ed368fa236725b4c01fd3fcb2",
+  "source": "psi-data\\raw\\summaries\\Combined SAMER Results 06 02 14.xlsx",
+  "source_sha256": "6d3a539ccf425b1fa8edc19cc75d828f57d650c7ce734d4e7aa686fea9593218",
+  "cells_checked": 532,
+  "mismatches": []
+}

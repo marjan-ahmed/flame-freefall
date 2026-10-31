@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "build_id": "sha256:90990f985a872424eda913db1204858c1f3e43992b7020b3bad68531cfa3db04",
+  "build_id": "sha256:a1209d56ca5b1b04de70317b6abc77c99656f0664ed1384b1d61f8e1d42f0e1b",
   "ksor_version": "0.0.60",
   "okf": {
     "version": "0.2",
@@ -8,10 +8,10 @@
     "spec_sha256": "26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101"
   },
   "source_commit": "6373b54926384a62507cdfd7966d5f23b69e8388",
-  "dirty": false,
-  "as_of": "2026-10-30T11:10:31.402Z",
+  "dirty": true,
+  "as_of": "2026-10-31T12:37:23.987Z",
   "drafts": "hidden",
-  "instance_sha256": "1981ff0ba84bba18fd775fd198c6e3c0bbdf19e854d6ce1426cab1a9a6a1d4a2",
+  "instance_sha256": "6a5d6e8646d8a842f619891dcb5815d2354b6e4289755e778c380d4e70e44144",
   "policy_sha256": "b1bfb30888527d4e42b54c533274885cbafa343617bc1c2d6f4365fa4f7a0106",
   "people_sha256": "43d7344466e45ef37b03e8be9e9614af50615abd512eca0b54240ab835d137f4",
   "ledger_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -136,6 +136,17 @@
       ]
     },
     {
+      "path": "investigations/droplet-combustion/flex-2-cool-flame-results.md",
+      "sha256": "5e5e72ddcc9f7682b32950fc068ac023d7f9541d657925a1fa56bcc8d2370506",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
       "path": "investigations/gaseous-flames/acme.md",
       "sha256": "e1c30f8d3de13367cb4bc079afb6fcbf105b2c3a1255832e870e7068638ffbed",
       "status": "stable",
@@ -244,6 +255,28 @@
       "admitted": [
         "public"
       ]
+    },
+    {
+      "path": "literature/daft-cabin-aerosol.md",
+      "sha256": "9e7494455c328f9a68e7b4f8c61c7391899a13e344ceb91b027babe3a82cf9be",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
+    },
+    {
+      "path": "literature/luci-rotating-rocket.md",
+      "sha256": "0e7f45c7fb6328b9667b999e786084ae41fdbd1ed4af730664361031cdd5b079",
+      "status": "stable",
+      "audience": [
+        "public"
+      ],
+      "admitted": [
+        "public"
+      ]
     }
   ],
   "companions": [
@@ -278,6 +311,10 @@
     {
       "path": "investigations/droplet-combustion/cfi.summary.md",
       "sha256": "ca459c5500a5e88d95e19abade2bad2d4ebfc74d76733801a0f90690dd53c867"
+    },
+    {
+      "path": "investigations/droplet-combustion/flex-2-cool-flame-results.summary.md",
+      "sha256": "62b64a12e7d1dae03d7eefed8de21c83cb0355f745819672c71b169ee16f5a91"
     },
     {
       "path": "investigations/droplet-combustion/flex-2.summary.md",
@@ -326,6 +363,14 @@
     {
       "path": "investigations/solid-fuel/saffire.summary.md",
       "sha256": "12946e284bcf94ee7e96253ba91571555127604c3714eabf6a019c43c0bf168e"
+    },
+    {
+      "path": "literature/daft-cabin-aerosol.summary.md",
+      "sha256": "1d4a7013c5f245fefb3fdc65a554742b1a1eba8580b49c0ae165000c1bfe0526"
+    },
+    {
+      "path": "literature/luci-rotating-rocket.summary.md",
+      "sha256": "ee48b6de163bd56d09f04255e55325b5b41799f30df9992954d7df4d78c1ca61"
     }
   ],
   "assets": [],
@@ -344,11 +389,11 @@
     },
     {
       "path": "index.md",
-      "sha256": "9ed997b760f9ec82505684c86da9447b44ec3bdad7e99c5fdfd7b782e76f713c"
+      "sha256": "b71cb2c1b853b9ddebbe9f3a0792dbf21fa8a42398ba532684e4bef18bb61f78"
     },
     {
       "path": "investigations/droplet-combustion/index.md",
-      "sha256": "b6952ecf058e4d656bed44ea07c1db8e40603277083f2ddf56e8ac0005c5791b"
+      "sha256": "63f021de7f2fac177b46aa15c05b220bd57936b6bacdd4fdffdbffc84793f4da"
     },
     {
       "path": "investigations/gaseous-flames/index.md",
@@ -365,13 +410,17 @@
     {
       "path": "investigations/solid-fuel/index.md",
       "sha256": "4d88076226982a4cf07abdf7b769f7279d0bafcc18188e7a81e4ce632e1a08af"
+    },
+    {
+      "path": "literature/index.md",
+      "sha256": "2c84298688e11c2aa354757ab5a0898d8d017b18472b1ff1db8543f5405b1df9"
     }
   ],
   "bundles": [
     {
       "viewer": "public",
-      "sha256": "075e6e6a732907e4fe192dc2575477e7e81c528c46160b6087943cc9936b8df6",
-      "files": 49
+      "sha256": "9e77bf8820ae99ce0f560799aafb8415dddb0ff7a59e5072edc732bb38d5a474",
+      "files": 56
     }
   ]
 }

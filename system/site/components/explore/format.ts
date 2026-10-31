@@ -25,6 +25,9 @@ export const QUANTITY_LABEL: Record<string, string> = {
   avg_heat_release_o2: "Avg heat release (O₂ consumption)",
   total_heat_release_o2: "Total heat release (O₂ consumption)",
   max_temp_sfu_outlet: "Max temp at flow-unit outlet",
+  max_temp_ffd_nearest: "Max temperature at far-field device / nearest location",
+  co2_partial_pressure_increase: "CO₂ partial-pressure increase",
+  smoke_threshold_crossing_time: "Reported smoke-threshold crossing time",
   co2_increase_ppm: "CO₂ increase",
   co_increase_ppm: "CO increase",
   final_co2_pct: "Final CO₂",
@@ -33,6 +36,12 @@ export const QUANTITY_LABEL: Record<string, string> = {
   flame_color: "Flame color",
   reignitions: "Re-ignitions",
   comment: "Comment",
+  dusttrak_a_mass_concentration: "DustTrak A mass concentration (source processed)",
+  dusttrak_b_mass_concentration: "DustTrak B mass concentration (source processed)",
+  aerosol_arithmetic_mean_diameter: "Arithmetic mean aerosol diameter (source processed)",
+  aerosol_diameter_of_average_mass: "Diameter of average mass (source processed)",
+  iss_detector_scatter_volts: "ISS smoke-detector scattering signal (source processed)",
+  sts_detector_volts: "STS smoke-detector signal (source processed)",
 };
 
 export const CONDITION_LABEL: Record<string, string> = {
@@ -69,6 +78,13 @@ export const CONDITION_LABEL: Record<string, string> = {
   pi: "Principal investigator",
   adiabatic_flame_temp_k: "Adiabatic flame temperature (computed)",
   stoich_mixture_fraction: "Stoichiometric mixture fraction",
+  apparatus: "Apparatus",
+  confinement: "Confinement",
+  instrument: "Instrument",
+  measurement_method: "Measurement method",
+  duct_width_cm: "Duct width (documented apparatus)",
+  duct_height_cm: "Duct height (documented apparatus)",
+  duct_length_cm: "Duct length (documented apparatus)",
 };
 
 export const FLAG_LABEL: Record<string, string> = {
@@ -90,6 +106,9 @@ export const FLAG_LABEL: Record<string, string> = {
   nominal: "nominal",
   negative_reading: "negative reading",
   initial: "initial value",
+  source_processed: "source-processed value",
+  workbook_cached: "saved workbook result, not recalculated",
+  documented_apparatus: "documented campaign apparatus; not a test-specific measurement",
 };
 
 export function fmt(x: number | undefined | null, digits = 3): string {
@@ -106,6 +125,9 @@ export function isCat(c: Condition | undefined): c is Category {
 
 export function measureText(m: Measure): string {
   const unit = m.unit ? ` ${m.unit}` : "";
+  if (m.detection_limit) return `${m.detection_limit.operator}${fmt(m.detection_limit.value)}${unit} (reported bound)`;
+  if (m.uncertainty && m.value !== undefined && m.uncertainty.plus !== undefined)
+    return `${fmt(m.value)} ± ${fmt(m.uncertainty.plus)}${unit} (reported uncertainty)`;
   if (m.values?.length && m.value === undefined) return m.values.map((v) => fmt(v)).join(", ") + unit;
   if (m.value !== undefined && m.min !== undefined && m.max !== undefined && m.min !== m.max)
     return `${fmt(m.min)}–${fmt(m.max)}${unit}`;
@@ -123,8 +145,13 @@ export function outcomeText(o: Outcome): string {
   // extinction", not 0 mm) shows the text; run-detail adds the raw cell.
   const numeric = o.measure && (o.measure.min !== undefined || o.measure.values?.length);
   const v = o.measure && (numeric || !o.text) ? measureText(o.measure) : (o.text ?? "—");
-  const at = o.at?.flow_cm_s !== undefined ? ` at ${fmt(o.at.flow_cm_s)} cm/s` : "";
-  return `${v}${at}`;
+  const conditions = Object.entries(o.at ?? {}).map(([key, value]) => key === "flow_cm_s"
+    ? `${fmt(value)} cm/s` : key === "selected_mass_concentration_mg_m3"
+      ? `${fmt(value)} mg/m³ selected smoke threshold` : `${key}=${fmt(value)}`);
+  const at = conditions.length ? ` at ${conditions.join(", ")}` : "";
+  const withheld = o.measure?.flags?.includes("source_definition_unresolved")
+    ? " (reported value; excluded from analysis pending source clarification)" : "";
+  return `${v}${at}${withheld}`;
 }
 
 export const GEOMETRY_LABEL: Record<string, string> = {

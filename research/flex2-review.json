@@ -1,0 +1,575 @@
+{
+  "scope": "Owner-approved publication snapshot. Fuel-envelope joins are not individual PSI tests. Serving data now includes these cited outcomes.",
+  "document": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+  "records": [
+    {
+      "id": "PSI-68:n-Octane (pure)",
+      "investigation": "flex-2",
+      "label": "n-Octane (pure)",
+      "granularity": "envelope",
+      "date": null,
+      "sources": [
+        {
+          "kind": "psi",
+          "dataset": "PSI-68",
+          "file": "PSI-68_Experimental table_Flex2.csv",
+          "row": 3
+        },
+        {
+          "kind": "report",
+          "table": "Per-burn results (R298)",
+          "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+          "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+          "doc_status": "stable",
+          "source_id": "flex-2-cool-flame-2014",
+          "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+          "url": "https://ntrs.nasa.gov/citations/20140006750",
+          "line": 100,
+          "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+          "quote": "Test R298 | D0= 3.6 mm | 0.21:0.79 | burning rates of 0.48 and 0.38 mm2/s | cool flame extinction occurring at 30.5 seconds | at one atmospheric pressure",
+          "descriptor": "NASA NTRS citation 20140006750 (free download)"
+        },
+        {
+          "kind": "report",
+          "table": "Per-burn results (R694)",
+          "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+          "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+          "doc_status": "stable",
+          "source_id": "flex-2-cool-flame-2014",
+          "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+          "url": "https://ntrs.nasa.gov/citations/20140006750",
+          "line": 101,
+          "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+          "quote": "In test R694 | D0 was 3.37 mm | 0.54 and 0.43 mm2/s | at one atmospheric pressure",
+          "descriptor": "NASA NTRS citation 20140006750 (free download)"
+        },
+        {
+          "kind": "report",
+          "table": "Per-burn results (R698)",
+          "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+          "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+          "doc_status": "stable",
+          "source_id": "flex-2-cool-flame-2014",
+          "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+          "url": "https://ntrs.nasa.gov/citations/20140006750",
+          "line": 102,
+          "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+          "quote": "test R698 which had D0= 3.6 mm | 0.63 and 0.53 mm2/s | at one atmospheric pressure",
+          "descriptor": "NASA NTRS citation 20140006750 (free download)"
+        }
+      ],
+      "conditions": {
+        "ambient_temp_c": {
+          "raw": "25",
+          "value": 25.0,
+          "min": 25.0,
+          "max": 25.0,
+          "unit": "°C"
+        },
+        "diluent": {
+          "value": "O2/N2 or O2/He"
+        },
+        "droplet_d0_mm": {
+          "raw": "1.5 - 5",
+          "value": 3.25,
+          "min": 1.5,
+          "max": 5.0,
+          "unit": "mm",
+          "values": [
+            1.5,
+            5.0
+          ],
+          "flags": [
+            "range"
+          ],
+          "interval_kind": "reported_range"
+        },
+        "flow_cm_s": {
+          "raw": "0.1 - 5",
+          "value": 2.55,
+          "min": 0.1,
+          "max": 5.0,
+          "unit": "cm/s",
+          "values": [
+            0.1,
+            5.0
+          ],
+          "flags": [
+            "range"
+          ],
+          "interval_kind": "reported_range"
+        },
+        "fuel": {
+          "value": "n-Octane (pure)"
+        },
+        "fuel_family": {
+          "value": "n-octane"
+        },
+        "fuel_form": {
+          "value": "droplet"
+        },
+        "gravity": {
+          "value": "microgravity"
+        },
+        "o2_pct": {
+          "raw": "0.17; 0.21;0.25; 0.3",
+          "min": 17.0,
+          "max": 30.0,
+          "unit": "%",
+          "values": [
+            17.0,
+            21.0,
+            25.0,
+            30.0
+          ],
+          "flags": [
+            "multi",
+            "mole_fraction_to_pct"
+          ],
+          "interval_kind": "reported_values"
+        },
+        "pressure_atm": {
+          "raw": "0.5; 1.0; 1.5; 2.0; or 3.0",
+          "min": 0.5,
+          "max": 3.0,
+          "unit": "atm",
+          "values": [
+            0.5,
+            1.0,
+            1.5,
+            2.0,
+            3.0
+          ],
+          "flags": [
+            "multi"
+          ],
+          "interval_kind": "reported_values"
+        }
+      },
+      "outcomes": [
+        {
+          "quantity": "burning_rate_k_hot",
+          "source": 1,
+          "measure": {
+            "raw": "0.48",
+            "value": 0.48,
+            "min": 0.48,
+            "max": 0.48,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R298 (3.6 mm, air (O2:N2 = 0.21:0.79), no helium dilution, 1.0 atm). oscillatory visible-flame instability; cool-flame extinction at 30.5 seconds, captured radiometrically (droplet drifted out of view) Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_cool",
+          "source": 1,
+          "measure": {
+            "raw": "0.38",
+            "value": 0.38,
+            "min": 0.38,
+            "max": 0.38,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R298 (3.6 mm, air (O2:N2 = 0.21:0.79), no helium dilution, 1.0 atm). oscillatory visible-flame instability; cool-flame extinction at 30.5 seconds, captured radiometrically (droplet drifted out of view) Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_hot",
+          "source": 2,
+          "measure": {
+            "raw": "0.54",
+            "value": 0.54,
+            "min": 0.54,
+            "max": 0.54,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R694 (3.37 mm, 0.21 O2 / 0.15 He / 0.64 N2, 1.0 atm). burning times of both stages considerably shortened by helium; reduced peak radiative heat loss Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_cool",
+          "source": 2,
+          "measure": {
+            "raw": "0.43",
+            "value": 0.43,
+            "min": 0.43,
+            "max": 0.43,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R694 (3.37 mm, 0.21 O2 / 0.15 He / 0.64 N2, 1.0 atm). burning times of both stages considerably shortened by helium; reduced peak radiative heat loss Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_hot",
+          "source": 3,
+          "measure": {
+            "raw": "0.63",
+            "value": 0.63,
+            "min": 0.63,
+            "max": 0.63,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R698 (3.6 mm, 0.21 O2 / 0.50 He / 0.29 N2, 1.0 atm). not timed in the text Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_cool",
+          "source": 3,
+          "measure": {
+            "raw": "0.53",
+            "value": 0.53,
+            "min": 0.53,
+            "max": 0.53,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R698 (3.6 mm, 0.21 O2 / 0.50 He / 0.29 N2, 1.0 atm). not timed in the text Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        }
+      ],
+      "notes": [
+        "test-matrix envelope for this fuel (planned condition ranges), not an individual test"
+      ],
+      "raw": [
+        {
+          "Sample (Fuel Type)": "n-Octane (pure)",
+          "Initial Droplet Diameter (mm)": "1.5 - 5",
+          "Ambient Gas Mixture": "O2/N2 or O2/He",
+          "Oxygen Mole Fraction": "0.17; 0.21;0.25; 0.3",
+          "Ambient Pressure (atm)": "0.5; 1.0; 1.5; 2.0; or 3.0 ",
+          "Ambient Temperature (C)": "25",
+          "Flow Velocity (cm/s)": "0.1 - 5"
+        },
+        {
+          "Test": "R298",
+          "Fuel": "n-octane",
+          "D₀ (mm)": "3.6",
+          "Atmosphere (as printed)": "air (O2:N2 = 0.21:0.79), no helium dilution",
+          "Pressure (atm)": "1.0",
+          "Hot-flame K (mm2/s)": "0.48",
+          "Cool-flame K (mm2/s)": "0.38",
+          "Stage events": "oscillatory visible-flame instability; cool-flame extinction at 30.5 seconds, captured radiometrically (droplet drifted out of view)",
+          "watched_sentence": "Test R298 | D0= 3.6 mm | 0.21:0.79 | burning rates of 0.48 and 0.38 mm2/s | cool flame extinction occurring at 30.5 seconds | at one atmospheric pressure"
+        },
+        {
+          "Test": "R694",
+          "Fuel": "n-octane",
+          "D₀ (mm)": "3.37",
+          "Atmosphere (as printed)": "0.21 O2 / 0.15 He / 0.64 N2",
+          "Pressure (atm)": "1.0",
+          "Hot-flame K (mm2/s)": "0.54",
+          "Cool-flame K (mm2/s)": "0.43",
+          "Stage events": "burning times of both stages considerably shortened by helium; reduced peak radiative heat loss",
+          "watched_sentence": "In test R694 | D0 was 3.37 mm | 0.54 and 0.43 mm2/s | at one atmospheric pressure"
+        },
+        {
+          "Test": "R698",
+          "Fuel": "n-octane",
+          "D₀ (mm)": "3.6",
+          "Atmosphere (as printed)": "0.21 O2 / 0.50 He / 0.29 N2",
+          "Pressure (atm)": "1.0",
+          "Hot-flame K (mm2/s)": "0.63",
+          "Cool-flame K (mm2/s)": "0.53",
+          "Stage events": "not timed in the text",
+          "watched_sentence": "test R698 which had D0= 3.6 mm | 0.63 and 0.53 mm2/s | at one atmospheric pressure"
+        }
+      ]
+    },
+    {
+      "id": "PSI-68:Decane (pure)",
+      "investigation": "flex-2",
+      "label": "Decane (pure)",
+      "granularity": "envelope",
+      "date": null,
+      "sources": [
+        {
+          "kind": "psi",
+          "dataset": "PSI-68",
+          "file": "PSI-68_Experimental table_Flex2.csv",
+          "row": 5
+        },
+        {
+          "kind": "report",
+          "table": "Per-burn results (R377)",
+          "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+          "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+          "doc_status": "stable",
+          "source_id": "flex-2-cool-flame-2014",
+          "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+          "url": "https://ntrs.nasa.gov/citations/20140006750",
+          "line": 96,
+          "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+          "quote": "Figure 1a (R377) | initial diameter of 4.03 mm | at 0.5 atm pressure | were found to be 0.41 and 0.33 mm2/s",
+          "descriptor": "NASA NTRS citation 20140006750 (free download)"
+        },
+        {
+          "kind": "report",
+          "table": "Per-burn results (R374)",
+          "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+          "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+          "doc_status": "stable",
+          "source_id": "flex-2-cool-flame-2014",
+          "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+          "url": "https://ntrs.nasa.gov/citations/20140006750",
+          "line": 97,
+          "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+          "quote": "Figure 1b (R374) | for a 3.79 mm n-decane droplet | oxygen concentration of 25% | nitrogen at 0.5 atm | rate constant was 0.52 mm2/s | micro-explodes 26 seconds after ignition",
+          "descriptor": "NASA NTRS citation 20140006750 (free download)"
+        },
+        {
+          "kind": "report",
+          "table": "Per-burn results (R379)",
+          "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+          "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+          "doc_status": "stable",
+          "source_id": "flex-2-cool-flame-2014",
+          "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+          "url": "https://ntrs.nasa.gov/citations/20140006750",
+          "line": 98,
+          "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+          "quote": "Fig. 1c (R379) | 3.86 mm | 17%O2 and 83%N2 mixture at 0.5 atm | extinction occurs at 7 seconds | 0.31 and 0.27 mm2/s",
+          "descriptor": "NASA NTRS citation 20140006750 (free download)"
+        },
+        {
+          "kind": "report",
+          "table": "Per-burn results (R383)",
+          "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+          "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+          "doc_status": "stable",
+          "source_id": "flex-2-cool-flame-2014",
+          "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+          "url": "https://ntrs.nasa.gov/citations/20140006750",
+          "line": 99,
+          "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+          "quote": "(d) R383 D0=3.14 mm, 14%O2 and 96%N2 | burning at 0.5 atm pressure | 0.29 and 0.25 mm2/s",
+          "descriptor": "NASA NTRS citation 20140006750 (free download)"
+        }
+      ],
+      "conditions": {
+        "ambient_temp_c": {
+          "raw": "25",
+          "value": 25.0,
+          "min": 25.0,
+          "max": 25.0,
+          "unit": "°C"
+        },
+        "diluent": {
+          "value": "O2/N2 or O2/He"
+        },
+        "droplet_d0_mm": {
+          "raw": "1.5 - 5",
+          "value": 3.25,
+          "min": 1.5,
+          "max": 5.0,
+          "unit": "mm",
+          "values": [
+            1.5,
+            5.0
+          ],
+          "flags": [
+            "range"
+          ],
+          "interval_kind": "reported_range"
+        },
+        "flow_cm_s": {
+          "raw": "0.1 - 5",
+          "value": 2.55,
+          "min": 0.1,
+          "max": 5.0,
+          "unit": "cm/s",
+          "values": [
+            0.1,
+            5.0
+          ],
+          "flags": [
+            "range"
+          ],
+          "interval_kind": "reported_range"
+        },
+        "fuel": {
+          "value": "Decane (pure)"
+        },
+        "fuel_family": {
+          "value": "n-decane"
+        },
+        "fuel_form": {
+          "value": "droplet"
+        },
+        "gravity": {
+          "value": "microgravity"
+        },
+        "o2_pct": {
+          "raw": "0.17; 0.21;0.25; 0.3",
+          "min": 17.0,
+          "max": 30.0,
+          "unit": "%",
+          "values": [
+            17.0,
+            21.0,
+            25.0,
+            30.0
+          ],
+          "flags": [
+            "multi",
+            "mole_fraction_to_pct"
+          ],
+          "interval_kind": "reported_values"
+        },
+        "pressure_atm": {
+          "raw": "0.5; 1.0; 1.5; 2.0; or 3.0",
+          "min": 0.5,
+          "max": 3.0,
+          "unit": "atm",
+          "values": [
+            0.5,
+            1.0,
+            1.5,
+            2.0,
+            3.0
+          ],
+          "flags": [
+            "multi"
+          ],
+          "interval_kind": "reported_values"
+        }
+      },
+      "outcomes": [
+        {
+          "quantity": "burning_rate_k_hot",
+          "source": 1,
+          "measure": {
+            "raw": "0.41",
+            "value": 0.41,
+            "min": 0.41,
+            "max": 0.41,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R377 (4.03 mm, 21%O2 and 79%N2, 0.5 atm). hot-flame extinction abruptly at around 14.6 seconds; cool-flame stage end not timed Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_cool",
+          "source": 1,
+          "measure": {
+            "raw": "0.33",
+            "value": 0.33,
+            "min": 0.33,
+            "max": 0.33,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R377 (4.03 mm, 21%O2 and 79%N2, 0.5 atm). hot-flame extinction abruptly at around 14.6 seconds; cool-flame stage end not timed Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_hot",
+          "source": 2,
+          "measure": {
+            "raw": "0.52",
+            "value": 0.52,
+            "min": 0.52,
+            "max": 0.52,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R374 (3.79 mm, 25%O2 and 75%N2, 0.5 atm). droplet micro-explodes 26 seconds after ignition; K valid only for the in-field-of-view duration Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_hot",
+          "source": 3,
+          "measure": {
+            "raw": "0.31",
+            "value": 0.31,
+            "min": 0.31,
+            "max": 0.31,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R379 (3.86 mm, 17%O2 and 83%N2, 0.5 atm). radiative extinction at 7 seconds (hot stage) Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_cool",
+          "source": 3,
+          "measure": {
+            "raw": "0.27",
+            "value": 0.27,
+            "min": 0.27,
+            "max": 0.27,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R379 (3.86 mm, 17%O2 and 83%N2, 0.5 atm). radiative extinction at 7 seconds (hot stage) Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row."
+        },
+        {
+          "quantity": "burning_rate_k_hot",
+          "source": 4,
+          "measure": {
+            "raw": "0.29",
+            "value": 0.29,
+            "min": 0.29,
+            "max": 0.29,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R383 (3.14 mm, 14%O2 and 96%N2 (as printed), 0.5 atm). further reduction in O2 leads to earlier extinctions in both regimes Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row. Printed atmosphere sums beyond 100%; retained as printed, not corrected."
+        },
+        {
+          "quantity": "burning_rate_k_cool",
+          "source": 4,
+          "measure": {
+            "raw": "0.25",
+            "value": 0.25,
+            "min": 0.25,
+            "max": 0.25,
+            "unit": "mm²/s"
+          },
+          "note": "FLEX-2 burn R383 (3.14 mm, 14%O2 and 96%N2 (as printed), 0.5 atm). further reduction in O2 leads to earlier extinctions in both regimes Attached to this planned PSI-68 envelope by exact fuel identity; the burn itself is a literature-identified test (Nayagam et al. 2014), not a PSI-68 row. Printed atmosphere sums beyond 100%; retained as printed, not corrected."
+        }
+      ],
+      "notes": [
+        "test-matrix envelope for this fuel (planned condition ranges), not an individual test"
+      ],
+      "raw": [
+        {
+          "Sample (Fuel Type)": "Decane (pure)",
+          "Initial Droplet Diameter (mm)": "1.5 - 5",
+          "Ambient Gas Mixture": "O2/N2 or O2/He",
+          "Oxygen Mole Fraction": "0.17; 0.21;0.25; 0.3",
+          "Ambient Pressure (atm)": "0.5; 1.0; 1.5; 2.0; or 3.0 ",
+          "Ambient Temperature (C)": "25",
+          "Flow Velocity (cm/s)": "0.1 - 5"
+        },
+        {
+          "Test": "R377",
+          "Fuel": "n-decane",
+          "D₀ (mm)": "4.03",
+          "Atmosphere (as printed)": "21%O2 and 79%N2",
+          "Pressure (atm)": "0.5",
+          "Hot-flame K (mm2/s)": "0.41",
+          "Cool-flame K (mm2/s)": "0.33",
+          "Stage events": "hot-flame extinction abruptly at around 14.6 seconds; cool-flame stage end not timed",
+          "watched_sentence": "Figure 1a (R377) | initial diameter of 4.03 mm | at 0.5 atm pressure | were found to be 0.41 and 0.33 mm2/s"
+        },
+        {
+          "Test": "R374",
+          "Fuel": "n-decane",
+          "D₀ (mm)": "3.79",
+          "Atmosphere (as printed)": "25%O2 and 75%N2",
+          "Pressure (atm)": "0.5",
+          "Hot-flame K (mm2/s)": "0.52",
+          "Cool-flame K (mm2/s)": "not stated",
+          "Stage events": "droplet micro-explodes 26 seconds after ignition; K valid only for the in-field-of-view duration",
+          "watched_sentence": "Figure 1b (R374) | for a 3.79 mm n-decane droplet | oxygen concentration of 25% | nitrogen at 0.5 atm | rate constant was 0.52 mm2/s | micro-explodes 26 seconds after ignition"
+        },
+        {
+          "Test": "R379",
+          "Fuel": "n-decane",
+          "D₀ (mm)": "3.86",
+          "Atmosphere (as printed)": "17%O2 and 83%N2",
+          "Pressure (atm)": "0.5",
+          "Hot-flame K (mm2/s)": "0.31",
+          "Cool-flame K (mm2/s)": "0.27",
+          "Stage events": "radiative extinction at 7 seconds (hot stage)",
+          "watched_sentence": "Fig. 1c (R379) | 3.86 mm | 17%O2 and 83%N2 mixture at 0.5 atm | extinction occurs at 7 seconds | 0.31 and 0.27 mm2/s"
+        },
+        {
+          "Test": "R383",
+          "Fuel": "n-decane",
+          "D₀ (mm)": "3.14",
+          "Atmosphere (as printed)": "14%O2 and 96%N2 (as printed)",
+          "Pressure (atm)": "0.5",
+          "Hot-flame K (mm2/s)": "0.29",
+          "Cool-flame K (mm2/s)": "0.25",
+          "Stage events": "further reduction in O2 leads to earlier extinctions in both regimes",
+          "watched_sentence": "(d) R383 D0=3.14 mm, 14%O2 and 96%N2 | burning at 0.5 atm pressure | 0.29 and 0.25 mm2/s"
+        }
+      ]
+    }
+  ]
+}

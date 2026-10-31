@@ -135,7 +135,15 @@ function catMatch(run: SlimRun, key: CategoricalAxis, want: string, invs: InvInd
     return investigationIds(want, invs).has(run.investigation);
   }
   const have = (catValue(run, key, invs) ?? "").toLowerCase();
-  return key === "fuel_family" ? have.startsWith(want) : have === want;
+  if (key === "fuel_family") {
+    // Prefix/family searches include blends only when explicitly requested.
+    if (want.endsWith("*")) {
+      const prefix = want.slice(0, -1).trim();
+      return prefix.length > 0 && (have.startsWith(prefix) || have.split("/").some(part => part.trim().startsWith(prefix)));
+    }
+    if (want === "sibal") want = "sibal (cotton-fiberglass)";
+  }
+  return have === want;
 }
 
 function measureOf(run: SlimRun, axis: NumericAxis): Measure | undefined {
@@ -311,7 +319,7 @@ export const RANKABLE: Record<string, string[]> = {
 /** Explicit scalars only; never synthesize observations from ranges. */
 function outcomeValue(o: import("./psi-types").Outcome): number | null {
   const m = o.measure;
-  if (!m) return null;
+  if (!m || m.flags?.includes("source_definition_unresolved")) return null;
   if (m.value !== undefined && m.value !== null && Number.isFinite(m.value) && !m.values?.length) {
     if ((m.min ?? m.value) === (m.max ?? m.value)) return m.value;
   }

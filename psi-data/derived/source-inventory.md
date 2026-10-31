@@ -246,10 +246,16 @@ ZGY doc. 2/19/2008
 
 ## Reports (psi-data/raw/reports)
 
+- ACME non-imaging data file description 20170217.pdf
+- ACME-DOC-010_D.pdf
 - BASS-II Summary Report.pdf
 - BRE_final_report_20220201.pdf
 - CFI Science Final Report.pdf
 - DLD_BASS.pdf
+- E-FIELD Flames 30-day report Inc 55-56 20181115.pdf
+- E-FIELD Flames data interpretation document.pdf
+- FLEX-2 Ambient Inert Gas Cool-Flame Nayagam.pdf
+- FLEX-2 Cool-flame Extinction N-Alkane Droplets.pdf
 - FLEX-2 SRD Final.pdf
 - ISS Denver 2013-BASS.pdf
 - PSI-39_Analyzed Data_FLEX-1393_Summary.pdf

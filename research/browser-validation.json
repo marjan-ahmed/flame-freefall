@@ -1,0 +1,30 @@
+{
+  "url": "http://localhost:3100",
+  "scope": "Local static export in Chromium; navigation includes parsing/hydration and dataset loading. No deployed-host or live chatbot latency.",
+  "viewports": [
+    {
+      "width": 1280,
+      "navigation_to_comparison_ready_ms": 1884.17,
+      "comparison_export": true,
+      "evidence_export": true,
+      "source_cells": true,
+      "saffire_measurements_export": true,
+      "saffire_quarantine": true,
+      "published_literature": true,
+      "no_viewport_overflow": true,
+      "page_errors": []
+    },
+    {
+      "width": 390,
+      "navigation_to_comparison_ready_ms": 1375.74,
+      "comparison_export": true,
+      "evidence_export": true,
+      "source_cells": true,
+      "saffire_measurements_export": true,
+      "saffire_quarantine": true,
+      "published_literature": true,
+      "no_viewport_overflow": true,
+      "page_errors": []
+    }
+  ]
+}

@@ -11,6 +11,7 @@ value None and an `unparsed` / `suspect_value` flag — never a guess.
 from __future__ import annotations
 
 import re
+import math
 from dataclasses import dataclass, field
 
 NUM = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?"
@@ -21,6 +22,8 @@ _MISSING = {
 }
 _RAMP = re.compile(r"\bramp(ed)?\b", re.I)
 _SINGLE = re.compile(rf"^\s*({NUM})\s*({UNIT})?\s*$")
+_PLUS_MINUS = re.compile(rf"^\s*({NUM})\s*(?:±|\+/-)\s*({NUM})\s*({UNIT})?\s*$")
+_LIMIT = re.compile(rf"^\s*(<=|>=|<|>|≤|≥)\s*({NUM})\s*({UNIT})?\s*$")
 _RANGE = re.compile(rf"^\s*({NUM})\s*({UNIT})?\s*(?:-|–|to)\s*({NUM})\s*({UNIT})?\s*$", re.I)
 # "037 mm": an integer with a leading zero is almost certainly a lost decimal
 # point (0.37?) — but that is a guess, so it is refused rather than read.
@@ -36,6 +39,8 @@ class Measure:
     unit: str | None = None
     flags: list[str] = field(default_factory=list)
     values: list[float] | None = None
+    uncertainty: dict | None = None
+    detection_limit: dict | None = None
 
     def __post_init__(self) -> None:
         if self.value is not None:
@@ -65,6 +70,14 @@ class Measure:
             unit=unit,
             flags=list(self.flags),
             values=None if self.values is None else [f(v) for v in self.values],
+            uncertainty=None if self.uncertainty is None else {
+                **self.uncertainty,
+                **{k: abs(f(self.uncertainty[k])) for k in ("plus", "minus") if k in self.uncertainty},
+                "unit": unit,
+            },
+            detection_limit=None if self.detection_limit is None else {
+                **self.detection_limit, "value": f(self.detection_limit["value"]), "unit": unit,
+            },
         )
         if flag:
             m.flag(flag)
@@ -80,6 +93,14 @@ class Measure:
             out["values"] = self.values
         if self.flags:
             out["flags"] = self.flags
+        if self.min is not None and self.max is not None and self.min != self.max:
+            out["interval_kind"] = ("source_conflict" if "sources_disagree" in self.flags else
+                                    "test_variation" if any(f in self.flags for f in ("drifted_during_test", "varied_during_test"))
+                                    else "reported_values" if "multi" in self.flags else "reported_range")
+        if self.uncertainty is not None:
+            out["uncertainty"] = self.uncertainty
+        if self.detection_limit is not None:
+            out["detection_limit"] = self.detection_limit
         return out
 
 
@@ -92,7 +113,8 @@ def _num(s: str) -> float | None:
     if _LEADING_ZERO_INT.match(s.lstrip("+-")):
         return None
     try:
-        return float(s)
+        value = float(s)
+        return value if math.isfinite(value) else None
     except ValueError:
         return None
 
@@ -114,6 +136,24 @@ def parse_measure(raw: object, unit: str | None = None) -> Measure | None:
     if "~" in s:
         flags.append("approx")
         s = s.replace("~", " ").strip()
+    m = _PLUS_MINUS.fullmatch(s)
+    if m:
+        center, delta = _num(m.group(1)), _num(m.group(2))
+        if center is None or delta is None or delta < 0:
+            return Measure(raw=text, unit=unit, flags=["suspect_value"])
+        actual_unit = m.group(3) or unit
+        return Measure(raw=text, value=center, min=center, max=center, unit=actual_unit, flags=flags,
+                       uncertainty={"kind": "reported_plus_minus", "plus": delta, "minus": delta,
+                                    "unit": actual_unit, "raw": text})
+    m = _LIMIT.fullmatch(s)
+    if m:
+        bound = _num(m.group(2))
+        if bound is None:
+            return Measure(raw=text, unit=unit, flags=["suspect_value"])
+        actual_unit = m.group(3) or unit
+        return Measure(raw=text, unit=actual_unit, flags=flags + ["censored"],
+                       detection_limit={"operator": m.group(1).replace("≤", "<=").replace("≥", ">="),
+                                        "value": bound, "unit": actual_unit, "raw": text})
     # "3,150" is a thousands separator, not a two-value list.
     if re.fullmatch(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:\s*" + UNIT + r")?", s):
         s = s.replace(",", "")
@@ -128,6 +168,8 @@ def parse_measure(raw: object, unit: str | None = None) -> Measure | None:
     m = _RANGE.match(s)
     if m:
         a, b = _num(m.group(1)), _num(m.group(3))
+        if m.group(2) and m.group(4) and m.group(2).lower() != m.group(4).lower():
+            return Measure(raw=text, unit=unit, flags=["mixed_units", "unparsed"])
         if a is None or b is None:
             return Measure(raw=text, unit=unit, flags=["suspect_value"])
         lo, hi = min(a, b), max(a, b)
@@ -169,7 +211,7 @@ def parse_measure(raw: object, unit: str | None = None) -> Measure | None:
 
 def fraction_to_pct(m: Measure | None) -> Measure | None:
     """Mole fraction (0–1) → percent. A value already > 1 is refused, not rescaled."""
-    if m is None or not m.usable:
+    if m is None or (not m.usable and m.detection_limit is None):
         return m
     if (m.max or 0) > 1.0:
         return Measure(raw=m.raw, flags=m.flags + ["suspect_value"], unit="%")
@@ -192,7 +234,7 @@ PRESSURE_TO_ATM = {"atm": 1.0, "mmhg": 1 / 760.0, "bar": 1 / 1.01325, "kpa": 1 /
 
 
 def to_mm(m: Measure | None, default_unit: str | None = None) -> Measure | None:
-    if m is None or not m.usable:
+    if m is None or (not m.usable and m.detection_limit is None):
         return m
     u = (m.unit or default_unit or "").lower()
     if u not in LENGTH_TO_MM:
@@ -206,12 +248,12 @@ def to_mm(m: Measure | None, default_unit: str | None = None) -> Measure | None:
 
 
 def to_atm(m: Measure | None, from_unit: str) -> Measure | None:
-    if m is None or not m.usable:
+    if m is None or (not m.usable and m.detection_limit is None):
         return m
     # An absolute pressure of zero is vacuum, where nothing burns: FLEX-114
     # prints "0" mmHg in both the PSI table and the report, yet burned 18.9 s.
     # Refused as a value (raw kept), never "corrected".
-    if (m.max or 0) <= 0:
+    if (m.detection_limit["value"] if m.detection_limit else m.max or 0) <= 0:
         return Measure(raw=m.raw, unit="atm", flags=m.flags + ["suspect_value", "zero_absolute_pressure"])
     u = (m.unit or from_unit).lower()
     factor = PRESSURE_TO_ATM.get(u)

@@ -27,6 +27,60 @@ def _size(card) -> int:
     return len(card.model_dump_json())
 
 
+def test_pairwise_audit_is_rendered_by_code_with_sources_and_export_link():
+    runs, invs = psi_query.load()
+    index = {r["id"]: r for r in runs}
+    left, right = index["PSI-101:SAME #57"], index["PSI-101:SAME #56"]
+    card = w.pairwise_widget(left, right, invs, "dusttrak_a_mass_concentration", "flow_cm_s", site="https://example.org")
+    text = card.model_dump_json()
+    assert "Insufficient metadata" in text
+    assert "source-processed cached workbook value" in text
+    assert "compare_quantity=dusttrak_a_mass_concentration" in text
+    assert "compare_varied=flow_cm_s" in text
+    assert "unknown" in text and "No statistical-significance" in text
+
+
+def test_unavailable_requested_quantity_does_not_draw_a_different_measurement():
+    q = {"geometry_class": "droplet-combustion"}
+    data = w.results_data(q, "spread_rate")
+    assert data["quantity"] is None and data["points"] == [] and data["mode"] is None
+    assert data["requested_quantity"] == "spread_rate" and data["requested_unavailable"] is True
+    assert "burn_time" in data["available"]
+    summary = w.results_summary(q, "spread_rate")
+    assert summary["quantity"] is None and summary["range"] is None and summary["tests"] == 0
+    assert summary["requested_unavailable"] is True
+    card = w.results_widget(q, "spread_rate").model_dump_json()
+    assert '"type":"Chart"' not in card
+    assert "No measured flame spread rate" in card and "Available measurements" in card
+    assert "burn_time" in card  # an explicit alternative action, not a substituted chart
+
+
+def test_unspecified_chart_quantity_still_selects_an_available_result():
+    data = w.results_data({"geometry_class": "droplet-combustion"}, x_axis="o2_pct")
+    assert data["quantity"] in data["available"]
+    assert data["points"] and not data.get("requested_unavailable")
+
+
+def test_unavailable_quantity_without_any_results_keeps_the_requested_identity():
+    data = w.results_data({"investigation": "not-an-investigation"}, "spread_rate")
+    assert data["quantity"] is None and data["available"] == {}
+    assert data["requested_quantity"] == "spread_rate" and data["requested_unavailable"]
+    assert data["investigation_unresolved"] == "not-an-investigation"
+
+
+def test_processed_smoke_results_keep_their_basis_in_chart_and_model_payloads():
+    q = {"investigation": "same-r"}
+    quantity = "dusttrak_b_mass_concentration"
+    summary = w.results_summary(q, quantity)
+    assert summary["tests"] > 0 and summary["source_processed"] is True
+    card = w.results_widget(q, quantity).model_dump_json()
+    assert "source processed" in card and "not recalculated" in card
+    result = psi_query.query(q)
+    outcomes = [o for row in result["match"] for o in row["outcomes"] if o["quantity"] == quantity]
+    assert outcomes and all(o["source_processed"] for o in outcomes)
+    assert all("source-processed cached workbook value" in psi_query.fmt_sourced_outcome(o) for o in outcomes)
+
+
 @pytest.mark.parametrize("q", QUERIES)
 def test_every_widget_builds(q):
     for card in (w.evidence_widget(q), w.gap_map_widget(q, "flow_cm_s"), w.gap_map_widget(q, "pressure_atm"),
@@ -328,3 +382,23 @@ def test_cancelled_stream_stops_the_active_agent_run():
     run, context = asyncio.run(go())
     assert run.cancelled
     assert "_active_agent_run" not in context
+
+
+def test_smoke_threshold_condition_renders_in_widget_and_tool_text():
+    import psi_query
+    assert psi_query.outcome_conditions({"selected_mass_concentration_mg_m3": 1}) == "1 mg/m\u00b3 selected smoke threshold"
+    assert "selected smoke threshold" in w.test_widget("saffire-iv-vi:VI-3").model_dump_json()
+    assert "1 mg/m\u00b3 selected smoke threshold" in psi_query._fmt_outcome({
+        "quantity": "smoke_threshold_crossing_time", "value": 981, "unit": "s",
+        "at": {"selected_mass_concentration_mg_m3": 1}})
+
+
+def test_source_ambiguous_bundle_never_enters_chart_or_numeric_summary():
+    records, _ = psi_query.load()
+    record = next(r for r in records if r["id"] == "saffire-iv-vi:VI-2")
+    summary = psi_query._outcome_summary(record, {})
+    excluded = [o for o in summary if o.get("analysis_status") == "source_definition_unresolved"]
+    assert len(excluded) == 5
+    assert all("value" not in o and "raw" not in o for o in excluded)
+    chart = w.results_data({"investigation": "saffire-iv-vi"}, "burn_time")
+    assert all(p["run"]["id"] != record["id"] for p in chart["points"])

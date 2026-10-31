@@ -59,8 +59,9 @@ QUERY_CASES: list[tuple[dict, dict | None]] = [
     ({"thickness_mm": 2.0, "pressure_atm": 0.5, "geometry_class": "solid-fuel"}, {"thickness_mm": 2, "flow_cm_s": 0.05}),
     ({"o2_pct": 16.0, "droplet_d0_mm": 2.04, "geometry_class": "droplet-combustion", "flow_cm_s": 1.54},
      {"pressure_atm": 0.05, "droplet_d0_mm": 2}),
-    ({"fuel_family": "wax"}, None),                             # prefix → every wax
-    ({"fuel_family": "n-dodecane", "o2_pct": 21}, None),        # prefix also hits n-dodecane/iso-dodecane
+    ({"fuel_family": "wax*"}, None),                            # explicit family search
+    ({"fuel_family": "n-dodecane", "o2_pct": 21}, None),        # exact identity excludes blends
+    ({"fuel_family": "n-dodecane*", "o2_pct": 21}, None),       # explicit family includes blends
     ({"fuel_family": "sibal", "o2_pct": 21, "flow_cm_s": 20}, None),
     ({"investigation": "SAFFIRE IV–VI", "o2_pct": 21}, None),   # by name, with the en dash
     ({"investigation": "saffire-iv-vi"}, None),

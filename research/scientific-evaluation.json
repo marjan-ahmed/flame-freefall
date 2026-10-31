@@ -1,0 +1,398 @@
+{
+  "evaluated_at": "2026-10-31T12:55:20.491286+00:00",
+  "reviewer": "Codex internal source-based scientific evaluation; not NASA review or endorsement",
+  "dataset_sha256": "3286c2da58bd7c85704551d1021f8bd9c9f1564ed368fa236725b4c01fd3fcb2",
+  "records": 1951,
+  "individual_records": 1838,
+  "outcome_records": 1035,
+  "granularities": {
+    "test": 1403,
+    "envelope": 8,
+    "day": 100,
+    "test-point": 435,
+    "summary": 5
+  },
+  "completeness": {
+    "droplet-combustion": {
+      "individual_records": 355,
+      "numeric_outcome_records": 338,
+      "missing_conditions": {
+        "o2_pct": 0,
+        "pressure_atm": 1,
+        "flow_cm_s": 355
+      },
+      "reported_uncertainty_outcomes": 0
+    },
+    "gaseous-flames": {
+      "individual_records": 1098,
+      "numeric_outcome_records": 332,
+      "missing_conditions": {
+        "o2_pct": 709,
+        "pressure_atm": 435,
+        "flow_cm_s": 683
+      },
+      "reported_uncertainty_outcomes": 0
+    },
+    "smoke-aerosol": {
+      "individual_records": 117,
+      "numeric_outcome_records": 112,
+      "missing_conditions": {
+        "o2_pct": 117,
+        "pressure_atm": 117,
+        "flow_cm_s": 4
+      },
+      "reported_uncertainty_outcomes": 0
+    },
+    "solid-fuel": {
+      "individual_records": 268,
+      "numeric_outcome_records": 140,
+      "missing_conditions": {
+        "o2_pct": 119,
+        "pressure_atm": 263,
+        "flow_cm_s": 199
+      },
+      "reported_uncertainty_outcomes": 0
+    }
+  },
+  "paired_flex_literature": [
+    {
+      "test": "R298",
+      "envelope_id": "PSI-68:n-Octane (pure)",
+      "hot_mm2_s": 0.48,
+      "cool_mm2_s": 0.38,
+      "cool_to_hot_ratio": 0.791667,
+      "printed_atmosphere_inconsistent": false,
+      "source": {
+        "kind": "report",
+        "table": "Per-burn results (R298)",
+        "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+        "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+        "doc_status": "stable",
+        "source_id": "flex-2-cool-flame-2014",
+        "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+        "url": "https://ntrs.nasa.gov/citations/20140006750",
+        "line": 100,
+        "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+        "quote": "Test R298 | D0= 3.6 mm | 0.21:0.79 | burning rates of 0.48 and 0.38 mm2/s | cool flame extinction occurring at 30.5 seconds | at one atmospheric pressure",
+        "descriptor": "NASA NTRS citation 20140006750 (free download)"
+      },
+      "interpretation": "Derived within-burn descriptive ratio, not a fuel ranking or independent replicate estimate."
+    },
+    {
+      "test": "R694",
+      "envelope_id": "PSI-68:n-Octane (pure)",
+      "hot_mm2_s": 0.54,
+      "cool_mm2_s": 0.43,
+      "cool_to_hot_ratio": 0.796296,
+      "printed_atmosphere_inconsistent": false,
+      "source": {
+        "kind": "report",
+        "table": "Per-burn results (R694)",
+        "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+        "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+        "doc_status": "stable",
+        "source_id": "flex-2-cool-flame-2014",
+        "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+        "url": "https://ntrs.nasa.gov/citations/20140006750",
+        "line": 101,
+        "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+        "quote": "In test R694 | D0 was 3.37 mm | 0.54 and 0.43 mm2/s | at one atmospheric pressure",
+        "descriptor": "NASA NTRS citation 20140006750 (free download)"
+      },
+      "interpretation": "Derived within-burn descriptive ratio, not a fuel ranking or independent replicate estimate."
+    },
+    {
+      "test": "R698",
+      "envelope_id": "PSI-68:n-Octane (pure)",
+      "hot_mm2_s": 0.63,
+      "cool_mm2_s": 0.53,
+      "cool_to_hot_ratio": 0.84127,
+      "printed_atmosphere_inconsistent": false,
+      "source": {
+        "kind": "report",
+        "table": "Per-burn results (R698)",
+        "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+        "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+        "doc_status": "stable",
+        "source_id": "flex-2-cool-flame-2014",
+        "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+        "url": "https://ntrs.nasa.gov/citations/20140006750",
+        "line": 102,
+        "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+        "quote": "test R698 which had D0= 3.6 mm | 0.63 and 0.53 mm2/s | at one atmospheric pressure",
+        "descriptor": "NASA NTRS citation 20140006750 (free download)"
+      },
+      "interpretation": "Derived within-burn descriptive ratio, not a fuel ranking or independent replicate estimate."
+    },
+    {
+      "test": "R377",
+      "envelope_id": "PSI-68:Decane (pure)",
+      "hot_mm2_s": 0.41,
+      "cool_mm2_s": 0.33,
+      "cool_to_hot_ratio": 0.804878,
+      "printed_atmosphere_inconsistent": false,
+      "source": {
+        "kind": "report",
+        "table": "Per-burn results (R377)",
+        "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+        "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+        "doc_status": "stable",
+        "source_id": "flex-2-cool-flame-2014",
+        "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+        "url": "https://ntrs.nasa.gov/citations/20140006750",
+        "line": 96,
+        "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+        "quote": "Figure 1a (R377) | initial diameter of 4.03 mm | at 0.5 atm pressure | were found to be 0.41 and 0.33 mm2/s",
+        "descriptor": "NASA NTRS citation 20140006750 (free download)"
+      },
+      "interpretation": "Derived within-burn descriptive ratio, not a fuel ranking or independent replicate estimate."
+    },
+    {
+      "test": "R379",
+      "envelope_id": "PSI-68:Decane (pure)",
+      "hot_mm2_s": 0.31,
+      "cool_mm2_s": 0.27,
+      "cool_to_hot_ratio": 0.870968,
+      "printed_atmosphere_inconsistent": false,
+      "source": {
+        "kind": "report",
+        "table": "Per-burn results (R379)",
+        "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+        "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+        "doc_status": "stable",
+        "source_id": "flex-2-cool-flame-2014",
+        "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+        "url": "https://ntrs.nasa.gov/citations/20140006750",
+        "line": 98,
+        "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+        "quote": "Fig. 1c (R379) | 3.86 mm | 17%O2 and 83%N2 mixture at 0.5 atm | extinction occurs at 7 seconds | 0.31 and 0.27 mm2/s",
+        "descriptor": "NASA NTRS citation 20140006750 (free download)"
+      },
+      "interpretation": "Derived within-burn descriptive ratio, not a fuel ranking or independent replicate estimate."
+    },
+    {
+      "test": "R383",
+      "envelope_id": "PSI-68:Decane (pure)",
+      "hot_mm2_s": 0.29,
+      "cool_mm2_s": 0.25,
+      "cool_to_hot_ratio": 0.862069,
+      "printed_atmosphere_inconsistent": true,
+      "source": {
+        "kind": "report",
+        "table": "Per-burn results (R383)",
+        "doc": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
+        "doc_title": "FLEX-2 as-run cool-flame results (FLEX-team literature)",
+        "doc_status": "stable",
+        "source_id": "flex-2-cool-flame-2014",
+        "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity (Nayagam, Dietrich, Hicks, Williams; Central States Section of the Combustion Institute, Spring Technical Meeting, March 2014)",
+        "url": "https://ntrs.nasa.gov/citations/20140006750",
+        "line": 99,
+        "via": "psi-data/derived/report-extractions/FLEX-2 Cool-flame Extinction N-Alkane Droplets.md",
+        "quote": "(d) R383 D0=3.14 mm, 14%O2 and 96%N2 | burning at 0.5 atm pressure | 0.29 and 0.25 mm2/s",
+        "descriptor": "NASA NTRS citation 20140006750 (free download)"
+      },
+      "interpretation": "Derived within-burn descriptive ratio, not a fuel ranking or independent replicate estimate."
+    }
+  ],
+  "saffire_conditional_energy_checks": [
+    {
+      "run_id": "saffire-iv-vi:VI-2",
+      "peak_W": 3217.0,
+      "duration_s": 112.0,
+      "total_imaging_kJ": 580.0,
+      "conditional_maximum_kJ": 360.304,
+      "exceeds_conditional_maximum": true,
+      "quarantined_from_quantitative_analysis": true,
+      "source": {
+        "kind": "report",
+        "table": "Table 2",
+        "line": 101,
+        "doc": "knowledge/investigations/solid-fuel/saffire",
+        "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+        "doc_status": "stable",
+        "source_id": "saffire-vi-ices-2024",
+        "title": "Preliminary Results from the Saffire VI Experiment",
+        "url": "https://ntrs.nasa.gov/citations/20240002981"
+      },
+      "qualification": "E <= peak power * duration only if methods, integration interval and peak definition coincide. A mismatch requires source clarification, not replacing values."
+    },
+    {
+      "run_id": "saffire-iv-vi:VI-3",
+      "peak_W": 3080.0,
+      "duration_s": 780.0,
+      "total_imaging_kJ": 1280.0,
+      "conditional_maximum_kJ": 2402.4,
+      "exceeds_conditional_maximum": false,
+      "quarantined_from_quantitative_analysis": false,
+      "source": {
+        "kind": "report",
+        "table": "Table 2",
+        "line": 102,
+        "doc": "knowledge/investigations/solid-fuel/saffire",
+        "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+        "doc_status": "stable",
+        "source_id": "saffire-vi-ices-2024",
+        "title": "Preliminary Results from the Saffire VI Experiment",
+        "url": "https://ntrs.nasa.gov/citations/20240002981"
+      },
+      "qualification": "E <= peak power * duration only if methods, integration interval and peak definition coincide. A mismatch requires source clarification, not replacing values."
+    },
+    {
+      "run_id": "saffire-iv-vi:VI-4",
+      "peak_W": 1507.0,
+      "duration_s": 1200.0,
+      "total_imaging_kJ": 830.0,
+      "conditional_maximum_kJ": 1808.4,
+      "exceeds_conditional_maximum": false,
+      "quarantined_from_quantitative_analysis": false,
+      "source": {
+        "kind": "report",
+        "table": "Table 2",
+        "line": 103,
+        "doc": "knowledge/investigations/solid-fuel/saffire",
+        "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+        "doc_status": "stable",
+        "source_id": "saffire-vi-ices-2024",
+        "title": "Preliminary Results from the Saffire VI Experiment",
+        "url": "https://ntrs.nasa.gov/citations/20240002981"
+      },
+      "qualification": "E <= peak power * duration only if methods, integration interval and peak definition coincide. A mismatch requires source clarification, not replacing values."
+    }
+  ],
+  "saffire_comparisons": [
+    {
+      "left": "saffire-iv-vi:IV-1",
+      "right": "saffire-iv-vi:V-2",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:IV-1",
+      "right": "saffire-iv-vi:VI-2",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:IV-1",
+      "right": "saffire-iv-vi:VI-3",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "fuel_form",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:IV-1",
+      "right": "saffire-iv-vi:VI-4",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "fuel_form",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:V-2",
+      "right": "saffire-iv-vi:VI-2",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:V-2",
+      "right": "saffire-iv-vi:VI-3",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "fuel_form",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:V-2",
+      "right": "saffire-iv-vi:VI-4",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "fuel_form",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:VI-2",
+      "right": "saffire-iv-vi:VI-3",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "fuel_form",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:VI-2",
+      "right": "saffire-iv-vi:VI-4",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "fuel_form",
+        "thickness_mm",
+        "width_cm"
+      ]
+    },
+    {
+      "left": "saffire-iv-vi:VI-3",
+      "right": "saffire-iv-vi:VI-4",
+      "can_compare": false,
+      "status": "insufficient_metadata",
+      "unknown_or_conflicted": [
+        "instrument",
+        "measurement_method",
+        "fuel_form",
+        "thickness_mm",
+        "width_cm"
+      ]
+    }
+  ],
+  "verdict": {
+    "source_traceability": "Auditable, with retained raw cells and per-outcome citations; separate transfer audit required.",
+    "descriptive_research": "Useful within source, geometry, endpoint and apparatus limits.",
+    "pooled_material_safety_ranking": "Not established by this heterogeneous index.",
+    "predictive_validation": "Not performed: no held-out predictive model, replicate uncertainty analysis or calibrated risk score.",
+    "partial_gravity": "LUCI is separate rotating-platform literature; microgravity condition overlap is not lunar-gravity validation."
+  }
+}

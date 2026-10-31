@@ -315,7 +315,10 @@ def saffire_iv_vi(m: Merger) -> None:
     inv = "saffire-iv-vi"
     doc = m.ctx.registry[inv]["ksor_doc"]
     _, cond_rows, _ = knowledge.table_under(m.ctx.repo_root, doc, "Full test matrix (Table 1: Saffire IV, V and VI")
-    _, res_rows, _ = knowledge.table_under(m.ctx.repo_root, doc, "Measured outcomes (Table 2")
+    result_columns, res_rows, _ = knowledge.table_under(m.ctx.repo_root, doc, "Measured outcomes (Table 2")
+    verify.verify_html_rows(m.ctx.repo_root,
+        "investigation_reports/_converted/Saffire-ICES-2024-ICES-365-accepted final.md",
+        result_columns, res_rows)
     for row in cond_rows:
         label = row["Flight/Sample"].strip()
         run = m.standalone(inv, label)
@@ -342,12 +345,32 @@ def saffire_iv_vi(m: Merger) -> None:
             ("Average heat release, O₂-consumption method (W)", "avg_heat_release_o2", "W"),
             ("Total heat release, O₂-consumption method (kJ)", "total_heat_release_o2", "kJ"),
             ("Max temp at SFU outlet (°C)", "max_temp_sfu_outlet", "°C"),
+            ("Max temp at FFD/nearest location (°C)", "max_temp_ffd_nearest", "°C"),
             ("FFD inlet CO₂ increase (ppm)", "co2_increase_ppm", "ppm"),
+            ("CO₂ partial pressure increase (mmHg)", "co2_partial_pressure_increase", "mmHg"),
             ("FFD inlet CO increase (ppm)", "co_increase_ppm", "ppm"),
         ):
             mm = parse_measure(row.get(col), unit)
             if mm is not None and mm.usable:
                 m.outcome(run, Outcome(q, mm, source=src))
+        values = {o.quantity: o.measure for o in run.outcomes if o.source == src and o.measure is not None}
+        peak = values.get("peak_heat_release")
+        duration = values.get("burn_time")
+        total = values.get("total_heat_release_imaging")
+        if all(v is not None and v.value is not None for v in (peak, duration, total)):
+            if total.value > peak.value * duration.value / 1000:
+                total.flag("conditional_energy_check")
+                # The source does not establish which of the method/interval
+                # definitions explains the mismatch. Quarantine the entire
+                # heat-release/time bundle rather than choosing one as correct.
+                for key in ("burn_time", "peak_heat_release", "total_heat_release_imaging",
+                            "avg_heat_release_o2", "total_heat_release_o2"):
+                    if key in values:
+                        values[key].flag("source_definition_unresolved")
+                run.notes.append("Source Table 2 needs method/interval clarification: imaging total energy "
+                    "exceeds listed peak power multiplied by burn duration. This is inconsistent only if "
+                    "the methods, peak definition and integration interval coincide. Published values "
+                    "are retained; do not silently correct them or assume those definitions coincide.")
     m.stat(f"{doc} Tables 1–2 (Saffire IV–VI)", len(cond_rows), 0, len(cond_rows))
 
 

@@ -71,3 +71,33 @@ individual tests; inspect non-ignition, censoring and duplicate observations.
 Retain source disagreements and missingness, and establish independent validation
 and uncertainty treatment before fitting. The export deliberately makes no claim
 that heterogeneous records are directly suitable for pooled predictive modeling.
+
+## Literature and scientific audit
+
+The owner-approved LUCI and DAFT documents are publication observations, not
+new PSI tests. FLEX-team rates attach to planned fuel envelopes by exact fuel
+identity, retaining the literature burn ID and its source. They are excluded
+from individual-test populations and rankings.
+
+The SAFFIRE VI-3 smoke observation retains the report-selected concentration
+threshold in `outcomes[].at.selected_mass_concentration_mg_m3`. Its timeline
+value is not a measured ignition-to-alarm delay. A conditional energy-consistency
+flag requests clarification of method and integration interval while preserving
+the published numbers. The affected heat-release/time bundle carries
+`source_definition_unresolved`: charts, rankings, quantitative comparisons and
+numeric tool summaries exclude it; source details and exports retain it.
+
+Reproduce the internal audit with the backend Python environment:
+
+```powershell
+.\system\chatkit-server\.venv\Scripts\python.exe scripts/evaluate-scientific-evidence.py
+.\system\chatkit-server\.venv\Scripts\python.exe scripts/evaluate-rag-publication.py
+```
+
+The second command requires the embedding service and local MCP door. Results
+are recorded under `research/`. Retrieval hit rate on internal source-anchored
+questions is an engineering check, not an expert relevance benchmark. The
+retrieval floor is 0.415, measured on a separate 16/12 calibration set. The
+held-out checks retrieved all nine target documents and abstained on all eight
+out-of-scope controls. These measurements do not establish universal abstention
+or model-answer correctness.

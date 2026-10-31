@@ -1,0 +1,32 @@
+# Approved publication observations; never merged into runs.json.
+schema_version: 1
+entries:
+  - id: luci-2025-partial-g-pmma
+    document: knowledge/literature/luci-rotating-rocket
+    status: stable
+    granularity: publication-observation
+    source: https://ntrs.nasa.gov/citations/20250010653
+    extraction: psi-data/extracted/literature/luci-20250010653.md
+    section: "LUCI: PMMA"
+    quote: "Flame spread rate increases linearly from 0 to ~.6 mm/s (before gravity starts dropping at t = 125s)"
+    interpretation: Derivative of a fitted flame-base position; approximate time-varying spread, not independent test points or a confidence interval.
+  - id: daft-2007-cabin-averages
+    document: knowledge/literature/daft-cabin-aerosol
+    status: stable
+    granularity: campaign-summary
+    source: https://ntrs.nasa.gov/citations/20070031686
+    extraction: psi-data/extracted/literature/daft-20070031686.md
+    section: "DAFT 1-2: Results"
+    quote: "Average values of cabin air less than - 0.005 mg/m3 (Dust Trak) - 15 particles /cm3 (P-Trak)"
+    bounds:
+      - quantity: cabin_average_mass_concentration
+        operator: '<'
+        value: 0.005
+        unit: mg/m3
+        instrument: Dust Trak
+      - quantity: cabin_average_number_concentration
+        operator: '<'
+        value: 15
+        unit: particles/cm3
+        instrument: P-Trak
+    interpretation: Bounds on reported campaign averages; instrument detection limits and individual sampling results are not established by this summary.

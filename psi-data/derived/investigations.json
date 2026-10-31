@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-30T07:53:59+00:00",
+ "generated_at": "2026-10-31T12:54:38+00:00",
  "generator": "system/psi-ingest",
  "investigations": [
   {
@@ -20,7 +20,7 @@
    "granularity": {
     "test": 121
    },
-   "runs_with_report_data": 4,
+   "runs_with_report_data": 121,
    "runs_with_outcomes": 4,
    "conflicts": 0,
    "outcome_quantities": {
@@ -73,7 +73,7 @@
    "granularity": {
     "test": 129
    },
-   "runs_with_report_data": 126,
+   "runs_with_report_data": 129,
    "runs_with_outcomes": 129,
    "conflicts": 0,
    "outcome_quantities": {
@@ -302,12 +302,15 @@
    "outcome_quantities": {
     "burn_time": 5,
     "max_temp_sfu_outlet": 5,
+    "max_temp_ffd_nearest": 5,
     "co2_increase_ppm": 5,
+    "co2_partial_pressure_increase": 5,
     "co_increase_ppm": 5,
     "avg_heat_release_o2": 3,
     "total_heat_release_o2": 3,
     "peak_heat_release": 3,
-    "total_heat_release_imaging": 3
+    "total_heat_release_imaging": 3,
+    "smoke_threshold_crossing_time": 1
    },
    "coverage": {
     "o2_pct": {
@@ -412,10 +415,13 @@
    "granularity": {
     "envelope": 8
    },
-   "runs_with_report_data": 0,
-   "runs_with_outcomes": 0,
+   "runs_with_report_data": 2,
+   "runs_with_outcomes": 2,
    "conflicts": 0,
-   "outcome_quantities": {},
+   "outcome_quantities": {
+    "burning_rate_k_hot": 7,
+    "burning_rate_k_cool": 6
+   },
    "coverage": {
     "o2_pct": {
      "runs": 8,
@@ -451,7 +457,9 @@
      "n-heptane/iso-octane": 1
     }
    },
-   "table_notes": [],
+   "table_notes": [
+    "Literature-identified burns attached by exact fuel identity to planned PSI-68 envelopes; not additional PSI tests. Envelope conditions are unchanged."
+   ],
    "psi_files": [
     "PSI-68_Experimental table_Flex2.csv"
    ]
@@ -986,9 +994,15 @@
     "test": 109
    },
    "runs_with_report_data": 7,
-   "runs_with_outcomes": 7,
+   "runs_with_outcomes": 108,
    "conflicts": 0,
    "outcome_quantities": {
+    "dusttrak_b_mass_concentration": 108,
+    "iss_detector_scatter_volts": 108,
+    "aerosol_arithmetic_mean_diameter": 105,
+    "aerosol_diameter_of_average_mass": 105,
+    "dusttrak_a_mass_concentration": 90,
+    "sts_detector_volts": 16,
     "tem_particles_counted_unaged": 5,
     "tem_particles_counted_aged": 5
    },
@@ -1007,8 +1021,11 @@
      "Teflon": 18
     }
    },
-   "table_notes": [],
+   "table_notes": [
+    "Additional mass concentrations, particle diameters and smoke-detector signals come from source-processed sheets of the Combined SAMER workbook: cached published calculations and one-per-test instrument readings, not new measurements or independent tests; not recalculated; no uncertainty supplied."
+   ],
    "psi_files": [
+    "Combined SAMER Results 06 02 14.xlsx",
     "PSI-101_Experimental table_SAME-R.csv"
    ]
   }

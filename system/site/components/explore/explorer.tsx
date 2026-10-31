@@ -20,10 +20,11 @@ import {
 } from "@/lib/psi-query";
 import type { Investigation, Measure, SlimRun } from "@/lib/psi-types";
 
-import { fmt, GEOMETRY_LABEL, isCat, QUANTITY_LABEL } from "./format";
+import { fmt, GEOMETRY_LABEL, isCat, QUANTITY_LABEL, outcomeText } from "./format";
 import { colorMap } from "./palette";
 import { RunCard } from "./run-card";
 import { RunDetail } from "./run-detail";
+import { RunComparison } from "./run-comparison";
 import { Scatter, type Emphasis, type Point, type Span } from "./scatter";
 
 const PRESETS: { label: string; hint: string; q: Query }[] = [
@@ -40,7 +41,8 @@ const EMPTY: Form = {
   o2_pct: "", flow_cm_s: "", pressure_atm: "", thickness_mm: "", droplet_d0_mm: "",
   fuel_family: "", geometry_class: "", flow_direction: "", fuel_form: "", investigation: "",
 };
-const toForm = (q: Query): Form => ({ ...EMPTY, ...Object.fromEntries(Object.entries(q).map(([k, v]) => [k, String(v)])) });
+const toForm = (q: Query): Form => ({ ...EMPTY, ...Object.fromEntries(Object.entries(q).map(([k, v]) =>
+  [k, k === "fuel_family" && String(v).toLowerCase() === "sibal" ? "SIBAL (cotton-fiberglass)" : String(v)])) });
 const fromForm = (f: Form): Query => queryFromParams(new URLSearchParams(Object.entries(f).filter(([, v]) => v !== "")));
 
 function span(m: Measure | undefined): Span | null {
@@ -64,7 +66,8 @@ function describeQuery(q: Query): string {
   const bits: string[] = [];
   for (const k of Object.keys(NUMERIC_AXES) as NumericAxis[])
     if (q[k] !== undefined) bits.push(`${NUMERIC_AXES[k].label} ≈ ${fmt(q[k])} ${NUMERIC_AXES[k].unit}`);
-  if (q.fuel_family) bits.push(q.fuel_family);
+  if (q.fuel_family) bits.push(q.fuel_family.endsWith("*")
+    ? `${q.fuel_family.slice(0, -1)} family (including blends and variants)` : q.fuel_family);
   if (q.flow_direction) bits.push(`${q.flow_direction} flow`);
   if (q.geometry_class) bits.push(GEOMETRY_LABEL[q.geometry_class] ?? q.geometry_class);
   if (q.investigation) bits.push(q.investigation);
@@ -166,6 +169,9 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   });
   const [form, setForm] = useState<Form>(() => toForm(q));
   const [selected, setSelected] = useState<string | null>(params.get("run"));
+  const [comparisonIds, setComparisonIds] = useState<string[]>(() => params.getAll("compare").slice(0, 2));
+  const [comparisonQuantity, setComparisonQuantity] = useState(params.get("compare_quantity") ?? "");
+  const [comparisonVaried, setComparisonVaried] = useState(params.get("compare_varied") ?? "");
   const [tier, setTier] = useState<RunView["tier"]>("match");
   const [yAxis, setYAxis] = useState<"flow_cm_s" | "pressure_atm">("flow_cm_s");
   const [quantity, setQuantity] = useState("spread_rate");
@@ -185,9 +191,12 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   useEffect(() => {
     const p = evidenceParams(q, tolerances, individual);
     if (selected) p.set("run", selected);
+    comparisonIds.forEach(id => p.append("compare", id));
+    if (comparisonQuantity) p.set("compare_quantity", comparisonQuantity);
+    if (comparisonVaried) p.set("compare_varied", comparisonVaried);
     if (excludedInvestigation) p.set("exclude_investigation", excludedInvestigation);
     window.history.replaceState(null, "", `${window.location.pathname}?${p}`);
-  }, [q, tolerances, individual, selected, excludedInvestigation]);
+  }, [q, tolerances, individual, selected, excludedInvestigation, comparisonIds, comparisonQuantity, comparisonVaried]);
   const download = () => {
     if (!runs) return;
     const data = evidenceExport(runs, investigations, q, tolerances, individual, dataset, excludedInvestigation);
@@ -208,6 +217,14 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
     }
     return [...c.entries()].sort((a, b) => b[1] - a[1]);
   }, [runs]);
+  const fuelGroups = useMemo(() => {
+    const prefixes = new Set(fuelFamilies.map(([fuel]) => fuel.split(/[/(]/)[0].trim()));
+    return [...prefixes].flatMap(prefix => {
+      const members = fuelFamilies.filter(([fuel]) => fuel.toLowerCase().split("/")
+        .some(part => part.trim().startsWith(prefix.toLowerCase())));
+      return members.length > 1 ? [[prefix, members.reduce((n, [, count]) => n + count, 0)] as const] : [];
+    }).sort(([a], [b]) => a.localeCompare(b));
+  }, [fuelFamilies]);
 
   // pick a sensible default tab whenever the result changes
   useEffect(() => {
@@ -287,7 +304,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
           y: { lo: m.min!, hi: m.max!, vals: m.value === undefined ? m.values : undefined },
           color: colors[r.investigation],
           emphasis: emphasis(r.id) === "dim" ? "other" : emphasis(r.id),
-          title: `${r.id} (${invIndex[r.investigation]?.name})\n${QUANTITY_LABEL[quantity] ?? quantity}: ${o.measure?.raw ?? ""}${o.measure?.unit ? ` ${o.measure.unit}` : ""}`,
+          title: `${r.id} (${invIndex[r.investigation]?.name})\n${QUANTITY_LABEL[quantity] ?? quantity}: ${outcomeText(o)}`,
         });
       });
     }
@@ -357,12 +374,16 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               className="mt-1 w-full rounded-md border bg-background px-2 py-1.5"
             >
               <option value="">any</option>
-              {fuelFamilies.map(([f, n]) => (
+              <optgroup label="Exact materials and compositions">{fuelFamilies.map(([f, n]) => (
                 <option key={f} value={f}>
                   {f} ({n})
                 </option>
-              ))}
+              ))}</optgroup>
+              <optgroup label="Families including blends and variants">{fuelGroups.map(([f, n]) => (
+                <option key={f} value={`${f}*`}>{f} family ({n})</option>
+              ))}</optgroup>
             </select>
+            <span className="mt-1 block text-xs text-muted-foreground">Exact compositions by default. Family groups also include blends and variants.</span>
           </label>
           <label className="block text-sm">
             <span className="text-muted-foreground">Geometry class</span>
@@ -434,6 +455,9 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
 
       {/* ── results ─────────────────────────────────── */}
       <div className="min-w-0 space-y-6">
+        {comparisonIds.length > 0 && runs && <RunComparison records={comparisonIds.flatMap(id => { const r = runs.find(r => r.id === id); return r ? [r] : []; })}
+          selectedQuantity={comparisonQuantity} setSelectedQuantity={setComparisonQuantity} varied={comparisonVaried} setVaried={setComparisonVaried}
+          investigations={invIndex} dataset={dataset} onRemove={id => setComparisonIds(ids => ids.filter(v => v !== id))} onInspect={setSelected} />}
         {loadError && <p className="rounded-lg border p-4 text-sm">Could not load the run table. <button className="text-primary underline" onClick={() => window.location.reload()}>Retry</button></p>}
         {!runs && !loadError && <p className="rounded-lg border p-4 text-sm text-muted-foreground">Loading {investigations.reduce((s, i) => s + i.runs, 0).toLocaleString("en-US")} test records…</p>}
         {result && <>
@@ -535,7 +559,9 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
             </div>
             <div className="min-w-0">
               {selectedRun ? (
-                <RunDetail run={selectedRun} investigation={invIndex[selectedRun.investigation]} basePath={basePath} onClose={() => setSelected(null)} />
+                <><button className="mb-3 rounded border border-border px-3 py-2 text-sm" disabled={comparisonIds.includes(selectedRun.id) || comparisonIds.length >= 2}
+                  onClick={() => setComparisonIds(ids => [...ids, selectedRun.id])}>{comparisonIds.includes(selectedRun.id) ? "Added to comparison" : comparisonIds.length >= 2 ? "Remove a test to compare another" : "Add selected test to comparison"}</button>
+                <RunDetail run={selectedRun} investigation={invIndex[selectedRun.investigation]} basePath={basePath} onClose={() => setSelected(null)} /></>
               ) : (
                 <div className="border border-dashed border-border p-6 text-sm text-muted-foreground">
                   Select a test — in the list or on the map — to see every condition, result and source cell behind it.
@@ -551,11 +577,13 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               <div>
                 <h2 className="font-display text-lg">Results against conditions</h2>
                 <p className="text-xs text-muted-foreground">
-                  Measured results from tests passing your material / geometry filters. Where a test reports a result per flow setting, each is plotted at its own flow.
+                  Recorded numeric outcomes from tests passing your material / geometry filters. Source-processed workbook results are labeled separately.
+                  Where a test reports a result per flow setting, each is plotted at its own flow.
+                  Reported ranges show source intervals; measurement uncertainty is shown in test details and tooltips, without error bars.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2 text-sm">
-                <select aria-label="Outcome quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="rounded-md border bg-background px-2 py-1">
+              <div className="flex min-w-0 max-w-full flex-wrap gap-2 text-sm">
+                <select aria-label="Outcome quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="min-w-0 max-w-full rounded-md border bg-background px-2 py-1">
                   {outcomeQuantities.map(([k, n]) => (
                     <option key={k} value={k}>
                       {QUANTITY_LABEL[k] ?? k} ({n})

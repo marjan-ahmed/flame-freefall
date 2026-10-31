@@ -13,7 +13,7 @@
     "counts": {
      "match": 0,
      "partial": 28,
-     "near_pool": 123
+     "near_pool": 122
     },
     "match_ids": [],
     "partial_ids": [
@@ -157,7 +157,7 @@
    "tolerances": null,
    "expect": {
     "counts": {
-     "match": 29,
+     "match": 28,
      "partial": 0,
      "near_pool": 92
     },
@@ -274,6 +274,11 @@
      },
      {
       "fuel_family": "ethanol",
+      "investigation": "FLEX-2",
+      "runs": 1
+     },
+     {
+      "fuel_family": "n-heptane/iso-octane",
       "investigation": "FLEX-2",
       "runs": 1
      },
@@ -636,6 +641,277 @@
    }
   },
   {
+   "name": "pure n-dodecane excludes blends",
+   "query": {
+    "fuel_family": "n-dodecane"
+   },
+   "tolerances": null,
+   "expect": {
+    "counts": {
+     "match": 22,
+     "partial": 0,
+     "near_pool": 0
+    },
+    "match_ids": [
+     "PSI-39:Flex 1206",
+     "PSI-39:Flex 1207",
+     "PSI-39:Flex 1208",
+     "PSI-39:Flex 1209",
+     "PSI-39:Flex 1210",
+     "PSI-39:Flex 1211",
+     "PSI-39:Flex 1213",
+     "PSI-39:Flex 1215",
+     "PSI-39:Flex 1216",
+     "PSI-39:Flex 1217",
+     "PSI-39:Flex 1218",
+     "PSI-39:Flex 1219",
+     "PSI-39:Flex 1220",
+     "PSI-39:Flex 1221",
+     "PSI-39:Flex 1222"
+    ],
+    "partial_ids": [],
+    "near_ids": [],
+    "coverage": {
+     "cfi": {}
+    },
+    "relaxed": []
+   }
+  },
+  {
+   "name": "explicit n-dodecane family includes blends",
+   "query": {
+    "fuel_family": "n-dodecane*"
+   },
+   "tolerances": null,
+   "expect": {
+    "counts": {
+     "match": 79,
+     "partial": 0,
+     "near_pool": 0
+    },
+    "match_ids": [
+     "PSI-39:Flex 1206",
+     "PSI-39:Flex 1207",
+     "PSI-39:Flex 1208",
+     "PSI-39:Flex 1209",
+     "PSI-39:Flex 1210",
+     "PSI-39:Flex 1211",
+     "PSI-39:Flex 1213",
+     "PSI-39:Flex 1215",
+     "PSI-39:Flex 1216",
+     "PSI-39:Flex 1217",
+     "PSI-39:Flex 1218",
+     "PSI-39:Flex 1219",
+     "PSI-39:Flex 1220",
+     "PSI-39:Flex 1221",
+     "PSI-39:Flex 1222"
+    ],
+    "partial_ids": [],
+    "near_ids": [],
+    "coverage": {
+     "cfi": {}
+    },
+    "relaxed": []
+   }
+  },
+  {
+   "name": "exact blend identity",
+   "query": {
+    "fuel_family": "n-dodecane/iso-dodecane"
+   },
+   "tolerances": null,
+   "expect": {
+    "counts": {
+     "match": 57,
+     "partial": 0,
+     "near_pool": 0
+    },
+    "match_ids": [
+     "PSI-39:Flex 1285",
+     "PSI-39:Flex 1286",
+     "PSI-39:Flex 1287",
+     "PSI-39:Flex 1288",
+     "PSI-39:Flex 1289",
+     "PSI-39:Flex 1290",
+     "PSI-39:Flex 1291",
+     "PSI-39:Flex 1292",
+     "PSI-39:Flex 1293",
+     "PSI-39:Flex 1294",
+     "PSI-39:Flex 1295",
+     "PSI-39:Flex 1296",
+     "PSI-39:Flex 1297",
+     "PSI-39:Flex 1300",
+     "PSI-39:Flex 1301"
+    ],
+    "partial_ids": [],
+    "near_ids": [],
+    "coverage": {
+     "cfi": {}
+    },
+    "relaxed": []
+   }
+  },
+  {
+   "name": "pure PMMA excludes composites",
+   "query": {
+    "fuel_family": "PMMA"
+   },
+   "tolerances": null,
+   "expect": {
+    "counts": {
+     "match": 150,
+     "partial": 0,
+     "near_pool": 0
+    },
+    "match_ids": [
+     "PSI-25:B1",
+     "PSI-25:B10",
+     "PSI-25:B11",
+     "PSI-25:B12",
+     "PSI-25:B13",
+     "PSI-25:B14",
+     "PSI-25:B15",
+     "PSI-25:B16",
+     "PSI-25:B17",
+     "PSI-25:B18",
+     "PSI-25:B19",
+     "PSI-25:B2",
+     "PSI-25:B20",
+     "PSI-25:B21",
+     "PSI-25:B22"
+    ],
+    "partial_ids": [],
+    "near_ids": [],
+    "coverage": {
+     "bass": {},
+     "bass-ii": {},
+     "saffire-iv-vi": {},
+     "saffire-2": {}
+    },
+    "relaxed": []
+   }
+  },
+  {
+   "name": "explicit PMMA family includes composites",
+   "query": {
+    "fuel_family": "PMMA*"
+   },
+   "tolerances": null,
+   "expect": {
+    "counts": {
+     "match": 151,
+     "partial": 0,
+     "near_pool": 0
+    },
+    "match_ids": [
+     "PSI-25:B1",
+     "PSI-25:B10",
+     "PSI-25:B11",
+     "PSI-25:B12",
+     "PSI-25:B13",
+     "PSI-25:B14",
+     "PSI-25:B15",
+     "PSI-25:B16",
+     "PSI-25:B17",
+     "PSI-25:B18",
+     "PSI-25:B19",
+     "PSI-25:B2",
+     "PSI-25:B20",
+     "PSI-25:B21",
+     "PSI-25:B22"
+    ],
+    "partial_ids": [],
+    "near_ids": [],
+    "coverage": {
+     "bass": {},
+     "bass-ii": {},
+     "saffire-iv-vi": {},
+     "saffire-2": {}
+    },
+    "relaxed": []
+   }
+  },
+  {
+   "name": "explicit wax family",
+   "query": {
+    "fuel_family": "wax*"
+   },
+   "tolerances": null,
+   "expect": {
+    "counts": {
+     "match": 24,
+     "partial": 0,
+     "near_pool": 0
+    },
+    "match_ids": [
+     "PSI-25:F4",
+     "PSI-26:As-run 100",
+     "PSI-26:As-run 101",
+     "PSI-26:As-run 102",
+     "PSI-26:As-run 103",
+     "PSI-26:As-run 112",
+     "PSI-26:As-run 113",
+     "PSI-26:As-run 114",
+     "PSI-26:As-run 46",
+     "PSI-26:As-run 47",
+     "PSI-26:As-run 48",
+     "PSI-26:As-run 68",
+     "PSI-26:As-run 69",
+     "PSI-26:As-run 70",
+     "PSI-26:As-run 71"
+    ],
+    "partial_ids": [],
+    "near_ids": [],
+    "coverage": {
+     "bass": {},
+     "bass-ii": {}
+    },
+    "relaxed": []
+   }
+  },
+  {
+   "name": "methane family includes a second-position blend constituent",
+   "query": {
+    "fuel_family": "methane*"
+   },
+   "tolerances": null,
+   "expect": {
+    "counts": {
+     "match": 48,
+     "partial": 0,
+     "near_pool": 0
+    },
+    "match_ids": [
+     "PSI-107:GMT 168 10:42:48 · line 349",
+     "PSI-107:GMT 168 11:16:48 · line 350",
+     "PSI-107:GMT 168 11:30:21 · line 351",
+     "PSI-107:GMT 168 11:41:18 · line 352",
+     "PSI-106:2012-FEB-09",
+     "PSI-106:2012-FEB-13",
+     "PSI-106:2012-FEB-17",
+     "PSI-106:2012-FEB-27",
+     "PSI-106:2012-MAR-01",
+     "PSI-106:2012-MAR-05",
+     "PSI-106:2012-MAR-12",
+     "PSI-106:2012-MAR-19",
+     "PSI-20:2020-12-04",
+     "PSI-20:2020-12-05",
+     "PSI-21:17319"
+    ],
+    "partial_ids": [],
+    "near_ids": [],
+    "coverage": {
+     "acme-bre": {},
+     "acme-cld": {},
+     "acme-efield": {},
+     "acme-s-flame": {},
+     "slice": {},
+     "spice": {}
+    },
+    "relaxed": []
+   }
+  },
+  {
    "name": "opposed-flow PMMA, 5 cm/s",
    "query": {
     "flow_cm_s": 5,
@@ -939,6 +1215,8686 @@
      "propylene",
      "unassigned"
     ]
+   }
+  }
+ ],
+ "comparison_cases": [
+  {
+   "name": "complete metadata",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "condition_matched",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [],
+    "differences": [],
+    "can_compare": true,
+    "status": "condition_matched",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "same record is not a second test",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:a",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "same_record"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "missing pressure",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": null,
+      "status": "unknown"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "pressure_atm"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "missing specimen width",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": null,
+      "status": "unknown"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "width_cm"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "unit change is not controlled variation",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "mm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": "flow_cm_s",
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": "flow_cm_s",
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "mm/s",
+       "raw": "5"
+      },
+      "status": "unknown"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "flow_cm_s"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "different flow",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "different_conditions",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "different"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [],
+    "differences": [
+     "flow_cm_s"
+    ],
+    "can_compare": false,
+    "status": "different_conditions",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "declared flow variation",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": "flow_cm_s",
+   "status": "controlled_difference",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": "flow_cm_s",
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "different"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [],
+    "differences": [
+     "flow_cm_s"
+    ],
+    "can_compare": true,
+    "status": "controlled_difference",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "conflict",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "conflicts": [
+     {
+      "field": "pressure_atm"
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "source-conflict"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "pressure_atm"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "unresolved source definition",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s",
+       "flags": [
+        "source_definition_unresolved"
+       ]
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": null,
+       "raw": "0.1",
+       "unit": "mm/s"
+      },
+      "status": "unknown"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "outcome:spread_rate"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s",
+       "flags": [
+        "source_definition_unresolved"
+       ]
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "summary",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "summary",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "summary",
+       "unit": null,
+       "raw": "summary"
+      },
+      "status": "different"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "non_individual_record"
+    ],
+    "differences": [
+     "record_type"
+    ],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "censored outcome",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "<.1",
+       "detection_limit": {
+        "value": 0.1,
+        "operator": "<"
+       }
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": null,
+       "raw": "<.1",
+       "unit": null
+      },
+      "status": "unknown"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "outcome:spread_rate",
+     "outcome_unit"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "<.1",
+       "detection_limit": {
+        "value": 0.1,
+        "operator": "<"
+       }
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "outcome unit differs",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "cm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "cm/s",
+       "raw": "0.1"
+      },
+      "status": "unknown"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "outcome:spread_rate",
+     "outcome_unit"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "cm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "outcome unit missing",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": null,
+       "raw": "0.1"
+      },
+      "status": "unknown"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "outcome:spread_rate",
+     "outcome_unit"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "unpaired outcome condition",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      },
+      "at": {
+       "flow_cm_s": 9
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome_at:flow_cm_s",
+      "left": {
+       "value": null,
+       "raw": "not reported",
+       "unit": null
+      },
+      "right": {
+       "value": 9,
+       "unit": null,
+       "raw": "9"
+      },
+      "status": "unknown"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "outcome_at:flow_cm_s"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      },
+      "at": {
+       "flow_cm_s": 9
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "missing diluent",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     },
+     "diluent": {
+      "value": "helium"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "diluent",
+      "left": null,
+      "right": {
+       "value": "helium",
+       "unit": null,
+       "raw": "helium"
+      },
+      "status": "unknown"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "diluent"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "range is not exact",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 20,
+      "max": 22,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": null,
+       "raw": "21",
+       "unit": "%"
+      },
+      "status": "unknown"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "o2_pct"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "duplicate outcomes",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": null,
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": null,
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": null,
+      "status": "unknown"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "outcome:spread_rate"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     null
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
+   }
+  },
+  {
+   "name": "invalid varied axis",
+   "left": {
+    "id": "synthetic:a",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "right": {
+    "id": "synthetic:b",
+    "investigation": "synthetic",
+    "granularity": "test",
+    "conditions": {
+     "fuel_family": {
+      "value": "PMMA"
+     },
+     "fuel": {
+      "value": "PMMA"
+     },
+     "gravity": {
+      "value": "microgravity"
+     },
+     "flow_direction": {
+      "value": "opposed"
+     },
+     "apparatus": {
+      "value": "test chamber"
+     },
+     "confinement": {
+      "value": "duct"
+     },
+     "instrument": {
+      "value": "camera"
+     },
+     "measurement_method": {
+      "value": "front tracking"
+     },
+     "fuel_form": {
+      "value": "sheet"
+     },
+     "o2_pct": {
+      "value": 21,
+      "min": 21,
+      "max": 21,
+      "unit": "%",
+      "raw": "21"
+     },
+     "pressure_atm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "atm",
+      "raw": "1"
+     },
+     "flow_cm_s": {
+      "value": 5,
+      "min": 5,
+      "max": 5,
+      "unit": "cm/s",
+      "raw": "5"
+     },
+     "thickness_mm": {
+      "value": 1,
+      "min": 1,
+      "max": 1,
+      "unit": "mm",
+      "raw": "1"
+     },
+     "width_cm": {
+      "value": 2,
+      "min": 2,
+      "max": 2,
+      "unit": "cm",
+      "raw": "2"
+     },
+     "length_cm": {
+      "value": 10,
+      "min": 10,
+      "max": 10,
+      "unit": "cm",
+      "raw": "10"
+     }
+    },
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ]
+   },
+   "investigations": {
+    "synthetic": {
+     "geometry_class": "solid-fuel"
+    }
+   },
+   "quantity": "spread_rate",
+   "varied_axis": "gravity",
+   "status": "insufficient_metadata",
+   "expect": {
+    "method_version": "comparability-v1",
+    "left_id": "synthetic:a",
+    "right_id": "synthetic:b",
+    "quantity": "spread_rate",
+    "varied_axis": "gravity",
+    "checks": [
+     {
+      "field": "geometry_class",
+      "left": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "right": {
+       "value": "solid-fuel",
+       "unit": null,
+       "raw": "solid-fuel"
+      },
+      "status": "match"
+     },
+     {
+      "field": "record_type",
+      "left": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "right": {
+       "value": "individual",
+       "unit": null,
+       "raw": "individual"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_family",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel",
+      "left": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "right": {
+       "value": "PMMA",
+       "unit": null,
+       "raw": "PMMA"
+      },
+      "status": "match"
+     },
+     {
+      "field": "gravity",
+      "left": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "right": {
+       "value": "microgravity",
+       "unit": null,
+       "raw": "microgravity"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_direction",
+      "left": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "right": {
+       "value": "opposed",
+       "unit": null,
+       "raw": "opposed"
+      },
+      "status": "match"
+     },
+     {
+      "field": "apparatus",
+      "left": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "right": {
+       "value": "test chamber",
+       "unit": null,
+       "raw": "test chamber"
+      },
+      "status": "match"
+     },
+     {
+      "field": "confinement",
+      "left": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "right": {
+       "value": "duct",
+       "unit": null,
+       "raw": "duct"
+      },
+      "status": "match"
+     },
+     {
+      "field": "instrument",
+      "left": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "right": {
+       "value": "camera",
+       "unit": null,
+       "raw": "camera"
+      },
+      "status": "match"
+     },
+     {
+      "field": "measurement_method",
+      "left": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "right": {
+       "value": "front tracking",
+       "unit": null,
+       "raw": "front tracking"
+      },
+      "status": "match"
+     },
+     {
+      "field": "o2_pct",
+      "left": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "right": {
+       "value": 21,
+       "unit": "%",
+       "raw": "21"
+      },
+      "status": "match"
+     },
+     {
+      "field": "pressure_atm",
+      "left": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "atm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "flow_cm_s",
+      "left": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "right": {
+       "value": 5,
+       "unit": "cm/s",
+       "raw": "5"
+      },
+      "status": "match"
+     },
+     {
+      "field": "fuel_form",
+      "left": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "right": {
+       "value": "sheet",
+       "unit": null,
+       "raw": "sheet"
+      },
+      "status": "match"
+     },
+     {
+      "field": "thickness_mm",
+      "left": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "right": {
+       "value": 1,
+       "unit": "mm",
+       "raw": "1"
+      },
+      "status": "match"
+     },
+     {
+      "field": "width_cm",
+      "left": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "right": {
+       "value": 2,
+       "unit": "cm",
+       "raw": "2"
+      },
+      "status": "match"
+     },
+     {
+      "field": "length_cm",
+      "left": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "right": {
+       "value": 10,
+       "unit": "cm",
+       "raw": "10"
+      },
+      "status": "match"
+     },
+     {
+      "field": "outcome:spread_rate",
+      "left": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "right": {
+       "value": 0.1,
+       "unit": "mm/s",
+       "raw": "0.1"
+      },
+      "status": "match"
+     }
+    ],
+    "unknown_or_conflicted": [
+     "invalid_varied_axis"
+    ],
+    "differences": [],
+    "can_compare": false,
+    "status": "insufficient_metadata",
+    "outcomes": [
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     },
+     {
+      "quantity": "spread_rate",
+      "source": 0,
+      "measure": {
+       "raw": "0.1",
+       "value": 0.1,
+       "min": 0.1,
+       "max": 0.1,
+       "unit": "mm/s"
+      }
+     }
+    ],
+    "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."
    }
   }
  ]

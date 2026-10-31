@@ -55,11 +55,10 @@ export function RunDetail({
     };
   }, [basePath, run.id, run.investigation]);
 
-  const cit = investigation?.citation;
   const conditions = Object.entries(run.conditions).filter(([k]) => k !== "gravity");
 
   return (
-    <article className="border border-border border-t-2 border-t-orange-400 bg-card p-4 text-sm" aria-label={`Run ${run.id}`}>
+    <article className="min-w-0 border border-border border-t-2 border-t-orange-400 bg-card p-4 text-sm [overflow-wrap:anywhere]" aria-label={`Run ${run.id}`}>
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -82,9 +81,9 @@ export function RunDetail({
             <li key={i}>
               {s.kind === "report" ? (
                 <>
-                  {s.doc && cit?.url ? (
-                    <a href={cit.url} className="text-primary underline underline-offset-2" target="_blank" rel="noreferrer">
-                      {cit.title}
+                  {s.url ? (
+                    <a href={s.url} className="text-primary underline underline-offset-2" target="_blank" rel="noreferrer">
+                      {s.title ?? s.url}
                     </a>
                   ) : (
                     (s.title ?? s.doc)
@@ -112,6 +111,10 @@ export function RunDetail({
                       — checked against it, not yet reviewed by a person
                     </span>
                   )}
+                  {s.descriptor && !s.url ? (
+                    <span className="block text-xs text-muted-foreground">{s.descriptor}</span>
+                  ) : null}
+                  {s.scope ? <span className="block text-xs text-muted-foreground">{s.scope}: inherited apparatus metadata, not test-specific conditions</span> : null}
                 </>
               ) : (
                 <>
@@ -192,6 +195,7 @@ export function RunDetail({
                     ))}
                     {confirmed && <span className="text-emerald-700 dark:text-emerald-400">✓ 2 sources</span>}
                     {isCat(c) && c.basis ? <span className="block italic">basis: {c.basis}</span> : null}
+                    {isCat(c) && c.source !== undefined ? <span className="block">source {c.source + 1}: {sourceLabel(run, c.source, investigation)}</span> : null}
                   </td>
                 </tr>
               );
@@ -218,9 +222,9 @@ export function RunDetail({
         {rawError && <p className="mt-1 text-xs text-muted-foreground">Could not load source cells.</p>}
         {!raw && !rawError && <p className="mt-1 text-xs text-muted-foreground">Loading…</p>}
         {raw?.map((cells, i) => (
-          <div key={i} className="mt-2">
+          <div key={i} className="mt-2 min-w-0 overflow-x-auto">
             <p className="text-[11px] text-muted-foreground">{sourceLabel(run, i, investigation)}</p>
-            <table className="mt-1 w-full text-[11px]">
+            <table className="mt-1 w-full table-fixed text-[11px]">
               <tbody>
                 {Object.entries(cells).map(([k, v]) => (
                   <tr key={k} className="border-b last:border-0 align-top">

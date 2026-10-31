@@ -3,3 +3,12 @@
 * text=auto
 *.md text eol=lf
 instance.md text eol=lf
+
+# Dataset fingerprints must identify the same bytes on Windows and Linux.
+psi-data/derived/*.json text eol=lf
+psi-data/query-fixtures.json text eol=lf
+system/chatkit-server/data/*.json text eol=lf
+
+# Saved source extractions retain their original whitespace for verification.
+psi-data/derived/report-extractions/*.md whitespace=-blank-at-eol,-blank-at-eof
+psi-data/extracted/literature/*.md whitespace=-blank-at-eol,-blank-at-eof

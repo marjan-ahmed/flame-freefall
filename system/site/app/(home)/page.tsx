@@ -14,6 +14,9 @@ import {
 } from "@/lib/dashboard-data";
 import { lunarEvidenceBrief } from "@/lib/mission-evidence";
 import { appDescription, appTitle } from "@/lib/shared";
+import { source } from "@/lib/source";
+import { psiGeneratedAt, slimRuns } from "@/lib/psi-data";
+import Link from "next/link";
 
 const SITE_URL = "https://marjan-ahmed.github.io/flame-freefall/";
 
@@ -49,10 +52,38 @@ export default function HomePage(): ReactElement {
   const markers = atmosphereMarkers();
   const readiness = missionReadinessSummary();
   const totalGaps = totalCoverageGaps(heatmaps, readiness);
+  const records = slimRuns();
+  const outcomes = records.filter(r => r.outcomes.length > 0).length;
+  const literature = [
+    ["literature", "luci-rotating-rocket"],
+    ["literature", "daft-cabin-aerosol"],
+    ["investigations", "droplet-combustion", "flex-2-cool-flame-results"],
+  ].flatMap(slug => { const page = source.getPage(slug); return page ? [page] : []; });
 
   return (
     <>
       <ExperimentAtlas investigations={psiInvestigations()} />
+
+      <section className="mx-auto max-w-6xl border-y border-border px-4 py-10 sm:px-6" aria-labelledby="evidence-update-heading">
+        <h2 id="evidence-update-heading" className="font-display text-2xl font-semibold">The current evidence record</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+          {records.length.toLocaleString("en-US")} indexed records; {outcomes.toLocaleString("en-US")} with recorded outcomes.
+          Counts include planned envelopes and summaries, and measure availability rather than accuracy or safety.
+          Dataset generated {new Date(psiGeneratedAt()).toISOString().slice(0, 10)}.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm">
+          <Link className="text-primary underline" href="/explore/?investigation=saffire-iv-vi&run=saffire-iv-vi%3AVI-3">Inspect SAFFIRE temperature, gas and smoke-threshold evidence</Link>
+          <Link className="text-primary underline" href="/explore/?investigation=flex-2">Inspect FLEX-2 fuel envelopes and literature outcomes</Link>
+        </div>
+        {literature.length > 0 && <>
+          <h3 className="mt-7 font-medium">Published literature beyond PSI test rows</h3>
+          <p className="mt-2 text-sm text-muted-foreground">Campaign observations and rotating-platform results remain distinct from individual PSI tests.</p>
+          <ul className="mt-4 grid gap-4 md:grid-cols-3">{literature.map(page => <li key={page.url} className="min-w-0 border-l-2 border-primary pl-4">
+            <Link className="text-sm font-medium text-primary underline" href={page.url}>{page.data.title}</Link>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{page.data.description}</p>
+          </li>)}</ul>
+        </>}
+      </section>
 
       <section className="bg-muted/40 text-foreground">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">

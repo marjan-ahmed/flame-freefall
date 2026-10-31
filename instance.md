@@ -26,6 +26,9 @@ embedding:
   provider: sentence-transformers
   model: sentence-transformers/all-MiniLM-L6-v2
   dim: 1536
+retrieval:
+  vector_floor: 0.415   # calibrated 2026-10-31, generation 9, all-MiniLM-L6-v2/d1536, door: queries-file
+  floor_digest: 8bfb07d0e6f5
 # Where agents reach this record's MCP surface, and the semver it publishes as.
 # Both go into /.well-known/mcp/server.json, the document an agent reads to
 # DISCOVER this record instead of being told the URL. Leave mcp_url out until
@@ -40,7 +43,10 @@ droplet investigations (FLEX, FLEX-2, CFI), gaseous-flame investigations includi
 ACME and SPICE, and smoke/aerosol investigations SAME and SAME-R. Data-source
 inventories describe additional PSI tables; an inventory is not a scientific
 review of every investigation it lists. Foundations cover NASA-STD-6001B and
-the cited decadal-survey research priorities.
+the cited decadal-survey research priorities. Approved literature also covers
+FLEX-team cool-flame results, LUCI rotating-platform partial-gravity observations
+and DAFT cabin-aerosol campaign bounds. These publication observations are not
+additional individually identified PSI tests.
 
 The record is not a fire-risk predictor, materials qualification authority or
 validation of combustion at lunar or Martian gravity. Missing data describes

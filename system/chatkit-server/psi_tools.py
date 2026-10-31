@@ -240,7 +240,8 @@ def _reply(repeat: bool, instructions: str, payload: dict, cite_run_ids: bool = 
         "(tests at the conditions, partial matches, nearest tests, coverage gaps). Use for any question about "
         "which tests exist or what was measured at some O2 %, flow cm/s, pressure atm, or fuel. Pass only what "
         "the user stated. fuel_family e.g. PMMA, SIBAL, Nomex, silicone, n-heptane, methanol, n-dodecane, "
-        "ethylene, methane, propane, propylene."
+        "ethylene, methane, propane, propylene. Fuel names match exactly; append * only when the user "
+        "explicitly requests the broader family including blends (for example n-dodecane*)."
     )
 )
 @_guarded
@@ -494,8 +495,24 @@ async def show_mission_readiness(ctx: RunContextWrapper[AgentContext], atmospher
                   cite_run_ids=False)
 
 
+@function_tool(description_override="Audit comparability of two identified test records for one measured quantity. Checks conditions, dimensions, apparatus, instrument, method and units; missing metadata blocks a condition-matched claim. Use canonical run ids obtained from query_test_runs. varied_axis is only a condition the user explicitly wants to vary.")
+@_guarded
+async def compare_test_runs(ctx: RunContextWrapper[AgentContext], left_id: str, right_id: str,
+                            quantity: str, varied_axis: str | None = None) -> str:
+    runs, invs = psi_query.load()
+    index = {r["id"].lower(): r for r in runs}
+    left, right = index.get(left_id.strip().lower()), index.get(right_id.strip().lower())
+    if left is None or right is None:
+        return "A requested test id was not found. Use query_test_runs to obtain canonical test ids."
+    repeat = _is_repeat(ctx, "pairwise", {"left": left["id"], "right": right["id"], "quantity": quantity, "varied_axis": varied_axis})
+    if not repeat:
+        await ctx.context.stream_widget(psi_widgets.pairwise_widget(left, right, invs, quantity, varied_axis, site=_site(ctx)))
+    return _reply(repeat, "Briefly direct the reader to the rendered audit and its source inspection link.",
+                  {"audit_rendered": True}, cite_run_ids=False)
+
+
 TOOLS = [query_test_runs, show_gap_map, compare_investigations, show_test_details, plot_results, rank_results,
-         show_mission_readiness]
+         show_mission_readiness, compare_test_runs]
 
 # Activate the tolerant-argument wrapper (see _harden_args above) on every
 # tool. The live model sent o2_pct="30"/flow_cm_s="null"-style string

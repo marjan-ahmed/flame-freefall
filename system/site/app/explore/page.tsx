@@ -23,9 +23,16 @@ type Totals = {
   rows_read: number;
 };
 
+type Completeness = { by_geometry: Record<string, {
+  records: number;
+  records_with_numeric_outcomes: number;
+  records_with_source_processed_outcomes: number;
+  conditions_reported_by: Record<"o2_pct" | "pressure_atm" | "flow_cm_s", number>;
+}> };
+
 export default function ExplorePage(): ReactElement {
   const investigations = psiInvestigations();
-  const totals = (psiIngestReport() as { totals: Totals }).totals;
+  const { totals, completeness } = psiIngestReport() as { totals: Totals; completeness: Completeness };
   const tests = (totals.by_granularity.test ?? 0) + (totals.by_granularity["test-point"] ?? 0);
   return (
     <>
@@ -47,8 +54,8 @@ export default function ExplorePage(): ReactElement {
           <Figure n={totals.investigations} label="investigations" />
           <Figure n={tests} label="individual tests & test points" />
           <Figure n={totals.runs - tests} label="daily summaries & planned envelopes" />
-          <Figure n={totals.runs_with_outcomes} label="with measured results" />
-          <Figure n={totals.runs_with_report_data} label="cross-checked against a NASA report" />
+          <Figure n={totals.runs_with_outcomes} label="with recorded outcomes" />
+          <Figure n={totals.runs_with_report_data} label="with NASA report evidence" />
           <Figure n={totals.conflicts} label="source disagreements, flagged not hidden" />
         </dl>
         </div>
@@ -79,6 +86,44 @@ export default function ExplorePage(): ReactElement {
           })}
         </div>
       </section>
+      <details className="mb-8 rounded border border-border bg-card">
+        <summary className="cursor-pointer px-4 py-3 font-medium">Data completeness and processing</summary>
+        <div className="border-t border-border px-4 py-4">
+          <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+            Counts below cover the whole index, including summaries and planned envelopes. Numeric outcomes include
+            source-processed workbook results. Availability is not an accuracy or safety score; missing values remain unknown.
+          </p>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
+              <caption className="sr-only">Records with numeric outcomes and reported conditions, by geometry class</caption>
+              <thead><tr className="border-b border-border text-left">
+                <th scope="col" className="py-2 pr-4">Geometry</th>
+                <th scope="col" className="py-2 pr-4">Records</th>
+                <th scope="col" className="py-2 pr-4">Numeric outcomes</th>
+                <th scope="col" className="py-2 pr-4">Source processed</th>
+                <th scope="col" className="py-2 pr-4">O₂ reported</th>
+                <th scope="col" className="py-2 pr-4">Pressure reported</th>
+                <th scope="col" className="py-2">Flow reported</th>
+              </tr></thead>
+              <tbody>{Object.entries(completeness.by_geometry).map(([geometry, row]) => (
+                <tr key={geometry} className="border-b border-border last:border-0 tabular-nums">
+                  <th scope="row" className="py-3 pr-4 text-left font-medium">{GEOMETRY_LABEL[geometry] ?? geometry}</th>
+                  <td className="py-3 pr-4">{row.records.toLocaleString("en-US")}</td>
+                  <td className="py-3 pr-4">{row.records_with_numeric_outcomes.toLocaleString("en-US")}</td>
+                  <td className="py-3 pr-4">{row.records_with_source_processed_outcomes.toLocaleString("en-US")}</td>
+                  <td className="py-3 pr-4">{row.conditions_reported_by.o2_pct.toLocaleString("en-US")}</td>
+                  <td className="py-3 pr-4">{row.conditions_reported_by.pressure_atm.toLocaleString("en-US")}</td>
+                  <td className="py-3">{row.conditions_reported_by.flow_cm_s.toLocaleString("en-US")}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+          <p className="mt-3 max-w-3xl text-xs leading-5 text-muted-foreground">
+            Source-processed records are a subset of numeric-outcome records, not additional tests. Each count uses
+            the Records column as its denominator. Open a test to inspect its source cells and processing notes.
+          </p>
+        </div>
+      </details>
       <Suspense fallback={<p className="text-sm text-muted-foreground">Loading…</p>}>
         <Explorer investigations={investigations} basePath={basePath} />
       </Suspense>

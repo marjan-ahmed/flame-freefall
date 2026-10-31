@@ -1,0 +1,149 @@
+{
+  "measured_at": "2026-10-31T12:55:19.013429+00:00",
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.22631-SP0",
+  "dataset_sha256": "3286c2da58bd7c85704551d1021f8bd9c9f1564ed368fa236725b4c01fd3fcb2",
+  "scope": "Local warm deterministic query latency; offline regression cases and source-index validity. No live chatbot, MCP retrieval, predictive accuracy, scientific expert review or safety validation.",
+  "cases": [
+    {
+      "name": "pure fuel",
+      "query": {
+        "fuel_family": "n-dodecane"
+      },
+      "expected_matches": 22,
+      "actual_matches": 22,
+      "passed": true,
+      "samples": 30,
+      "p50_ms": 7.373,
+      "p95_ms": 9.578
+    },
+    {
+      "name": "explicit family",
+      "query": {
+        "fuel_family": "n-dodecane*"
+      },
+      "expected_matches": 79,
+      "actual_matches": 79,
+      "passed": true,
+      "samples": 30,
+      "p50_ms": 10.738,
+      "p95_ms": 12.701
+    },
+    {
+      "name": "unknown material",
+      "query": {
+        "fuel_family": "unsupported-material"
+      },
+      "expected_matches": 0,
+      "actual_matches": 0,
+      "passed": true,
+      "samples": 30,
+      "p50_ms": 6.651,
+      "p95_ms": 8.013
+    },
+    {
+      "name": "missing BASS pressure",
+      "query": {
+        "investigation": "BASS",
+        "pressure_atm": 1
+      },
+      "expected_matches": 0,
+      "actual_matches": 0,
+      "passed": true,
+      "samples": 30,
+      "p50_ms": 39.133,
+      "p95_ms": 42.6
+    },
+    {
+      "name": "unknown investigation",
+      "query": {
+        "investigation": "unsupported-investigation"
+      },
+      "expected_matches": 0,
+      "actual_matches": 0,
+      "passed": true,
+      "samples": 30,
+      "p50_ms": 174.576,
+      "p95_ms": 197.814
+    },
+    {
+      "name": "unsupported atmosphere",
+      "query": {
+        "o2_pct": 99,
+        "pressure_atm": 100
+      },
+      "expected_matches": 0,
+      "actual_matches": 0,
+      "passed": true,
+      "samples": 30,
+      "p50_ms": 22.077,
+      "p95_ms": 38.709
+    }
+  ],
+  "source_indices_checked": 4004,
+  "saffire_table2_checks": [
+    {
+      "run": "saffire-iv-vi:IV-1",
+      "quantity": "max_temp_ffd_nearest",
+      "value": 25,
+      "unit": "\u00b0C"
+    },
+    {
+      "run": "saffire-iv-vi:IV-1",
+      "quantity": "co2_partial_pressure_increase",
+      "value": 1.03,
+      "unit": "mmHg"
+    },
+    {
+      "run": "saffire-iv-vi:V-2",
+      "quantity": "max_temp_ffd_nearest",
+      "value": 23,
+      "unit": "\u00b0C"
+    },
+    {
+      "run": "saffire-iv-vi:V-2",
+      "quantity": "co2_partial_pressure_increase",
+      "value": 1.26,
+      "unit": "mmHg"
+    },
+    {
+      "run": "saffire-iv-vi:VI-2",
+      "quantity": "max_temp_ffd_nearest",
+      "value": 20,
+      "unit": "\u00b0C"
+    },
+    {
+      "run": "saffire-iv-vi:VI-2",
+      "quantity": "co2_partial_pressure_increase",
+      "value": 1.15,
+      "unit": "mmHg"
+    },
+    {
+      "run": "saffire-iv-vi:VI-3",
+      "quantity": "max_temp_ffd_nearest",
+      "value": 21,
+      "unit": "\u00b0C"
+    },
+    {
+      "run": "saffire-iv-vi:VI-3",
+      "quantity": "co2_partial_pressure_increase",
+      "value": 3.51,
+      "unit": "mmHg"
+    },
+    {
+      "run": "saffire-iv-vi:VI-4",
+      "quantity": "max_temp_ffd_nearest",
+      "value": 21,
+      "unit": "\u00b0C"
+    },
+    {
+      "run": "saffire-iv-vi:VI-4",
+      "quantity": "co2_partial_pressure_increase",
+      "value": 3.37,
+      "unit": "mmHg"
+    }
+  ],
+  "draft_sources_in_serving_data": 0,
+  "flex2_envelopes": 8,
+  "flex2_literature_outcomes": 13
+}

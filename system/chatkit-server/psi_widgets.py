@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import os
 import math
+from psi_comparison import compare_runs
 from collections import Counter, defaultdict
 from urllib.parse import urlencode
 
@@ -51,6 +52,9 @@ AXIS_LABEL = {"o2_pct": "O₂", "flow_cm_s": "flow", "pressure_atm": "pressure",
 GEOMETRY_LABEL = {"solid-fuel": "Solid fuel", "droplet-combustion": "Droplet combustion",
                   "gaseous-flames": "Gaseous flames", "smoke-aerosol": "Smoke / aerosol"}
 QUANTITY_LABEL = {
+    "smoke_threshold_crossing_time": "Reported smoke-threshold crossing time",
+    "max_temp_ffd_nearest": "Max temperature at far-field device / nearest location",
+    "co2_partial_pressure_increase": "CO₂ partial-pressure increase",
     "spread_rate": "Flame spread rate", "burning_rate_k": "Burning-rate constant k",
     "burning_rate_k_hot": "Burning-rate constant k (hot flame)", "burning_rate_k_cool": "Burning-rate constant k (cool flame)",
     "extinction_diameter": "Extinction diameter", "extinction_diameter_hot": "Extinction diameter (hot flame)",
@@ -63,6 +67,12 @@ QUANTITY_LABEL = {
     "extinction_diameter_cool": "Extinction diameter (cool flame)", "tem_particles_counted_unaged": "TEM particles counted (unaged)",
     "tem_particles_counted_aged": "TEM particles counted (aged)", "smoke_points_observed": "Smoke points observed",
     "comment": "Comment", "flame_color": "Flame color", "cool_flame": "Cool flame",
+    "dusttrak_a_mass_concentration": "DustTrak A mass concentration (source processed)",
+    "dusttrak_b_mass_concentration": "DustTrak B mass concentration (source processed)",
+    "aerosol_arithmetic_mean_diameter": "Arithmetic mean aerosol diameter (source processed)",
+    "aerosol_diameter_of_average_mass": "Diameter of average mass (source processed)",
+    "iss_detector_scatter_volts": "ISS smoke-detector scattering signal (source processed)",
+    "sts_detector_volts": "STS smoke-detector signal (source processed)",
 }
 GRANULARITY_LABEL = {"day": "daily summary", "summary": "per-fuel summary", "envelope": "planned envelope"}
 PALETTE = ["#dc2626", "#2563eb", "#16a34a", "#d97706", "#7c3aed", "#0891b2", "#db2777", "#65a30d", "#ea580c", "#4f46e5"]
@@ -601,7 +611,34 @@ def compare_widget(q: dict, investigations: list[str] | None = None) -> Card:
                                 size="sm", color="warning"))
     children.append(Caption(value="Ranges are what each table reports (count of records in brackets). Result ranges span "
                                   "individual tests; they are not averages.", size="sm", color="tertiary"))
+    children.append(Caption(value="This overview does not establish condition-matched comparability. Use a pairwise test audit to check apparatus, dimensions, method and missing metadata.", size="sm"))
     children += [Divider(spacing=2), nav_buttons(q, skip="compare")]
+    return Card(size="full", children=children)
+
+
+def pairwise_widget(left: dict, right: dict, investigations: dict, quantity: str,
+                    varied_axis: str | None = None, site: str | None = None) -> Card:
+    audit = compare_runs(left, right, investigations, quantity, varied_axis)
+    labels = {"insufficient_metadata": "Insufficient metadata for a condition-matched comparison.",
+              "different_conditions": "Other conditions differ; this is not an isolated comparison.",
+              "controlled_difference": "Reported metadata supports a descriptive comparison of the selected varied condition.",
+              "condition_matched": "Reported conditions match for a descriptive comparison."}
+    children = [Title(value="Pairwise test audit", size="md"),
+                Text(value=f"{left['id']} / {right['id']}", size="sm"),
+                Text(value=labels[audit["status"]], size="sm", weight="semibold")]
+    for c in audit["checks"]:
+        if c["status"] == "match" or c["field"].startswith("outcome:"):
+            continue
+        children.append(Caption(value=f"{c['field'].replace('_', ' ')}: {c['status']}; "
+                                      f"first: {(c['left'] or {}).get('raw', 'not reported')}; "
+                                      f"second: {(c['right'] or {}).get('raw', 'not reported')}", size="sm"))
+    for run in (left, right):
+        for outcome in psi_query._outcome_summary(run, {}):
+            if outcome["quantity"] == quantity:
+                children.append(Caption(value=f"{run['id']}: {psi_query.fmt_sourced_outcome(outcome)}", size="sm"))
+    children.append(Caption(value=audit["limitations"], size="sm"))
+    url = explorer_url({}, site=site) + urlencode([("compare", left["id"]), ("compare", right["id"]), ("run", left["id"]), ("compare_quantity", quantity), ("compare_varied", varied_axis or "")])
+    children.append(Markdown(value=f"[Inspect source cells and export this comparison in Explorer]({url})"))
     return Card(size="full", children=children)
 
 
@@ -630,7 +667,13 @@ def _cond_text(c: dict) -> str:
     if isinstance(c.get("value"), str):
         return c["value"] + (f"  (basis: {c['basis']})" if c.get("basis") else "")
     unit = f" {c['unit']}" if c.get("unit") else ""
-    if c.get("values") and c.get("value") is None:
+    if c.get("detection_limit"):
+        bound = c["detection_limit"]
+        val = f"{bound['operator']}{_fmt(bound['value'])}{unit} (reported bound)"
+    elif c.get("uncertainty") and c.get("value") is not None:
+        u = c["uncertainty"]
+        val = f"{_fmt(c['value'])} +{_fmt(u['plus'])}/−{_fmt(u['minus'])}{unit} (reported uncertainty)"
+    elif c.get("values") and c.get("value") is None:
         val = ", ".join(_fmt(v) for v in c["values"]) + unit
     elif c.get("min") is not None and c.get("max") is not None and c["min"] != c["max"]:
         val = f"{_fmt(c['min'])}–{_fmt(c['max'])}{unit}"
@@ -654,7 +697,7 @@ def detail_sections(run: dict) -> list:
                 val = f'{o["text"]}  cell "{m["raw"]}"'
             else:
                 val = _cond_text(m) if m else (o.get("text") or "")
-            at = f" at {_fmt(o['at']['flow_cm_s'])} cm/s" if o.get("at") else ""
+            at = f" at {psi_query.outcome_conditions(o['at'])}" if o.get("at") else ""
             conf = " ✓ two sources" if o.get("confirmed_by") else ""
             children.append(Caption(value=f"{QUANTITY_LABEL.get(o['quantity'], o['quantity'].replace('_', ' '))}: {val}{at}{conf}"
                                           f"  (source {o['source'] + 1})", size="sm", maxLines=4))
@@ -731,7 +774,8 @@ X_AXES = ("flow_cm_s", "o2_pct", "pressure_atm", "thickness_mm", "droplet_d0_mm"
 
 def _numeric_outcomes(runs: list[dict]) -> Counter:
     return Counter(o["quantity"] for r in runs for o in r["outcomes"]
-                   if (o.get("measure") or {}).get("min") is not None)
+                   if (o.get("measure") or {}).get("min") is not None
+                   and "source_definition_unresolved" not in (o.get("measure") or {}).get("flags", []))
 
 
 def _unresolved_investigation(q: dict) -> str | None:
@@ -748,17 +792,23 @@ def _unresolved_investigation(q: dict) -> str | None:
 def results_data(q: dict, quantity: str | None = None, x_axis: str = "flow_cm_s") -> dict:
     runs = _filtered_runs(q)
     available = _numeric_outcomes(runs)
+    if quantity is not None and quantity not in available:
+        return {"quantity": None, "requested_quantity": quantity, "requested_unavailable": True,
+                "available": dict(available.most_common(6)), "mode": None, "points": [],
+                **({"investigation_unresolved": unresolved} if (unresolved := _unresolved_investigation(q)) else {})}
     if not available:
         unresolved = _unresolved_investigation(q)
         return {"quantity": None, "available": {}, "mode": None, "points": [],
                 **({"investigation_unresolved": unresolved} if unresolved else {})}
-    if quantity not in available:
+    if quantity is None:
         quantity = available.most_common(1)[0][0]
     pts = []  # (run, x, y, source_raw)
     for r in runs:
         for o in r["outcomes"]:
             m = o.get("measure")
             if o["quantity"] != quantity or not m or m.get("min") is None:
+                continue
+            if "source_definition_unresolved" in m.get("flags", []):
                 continue
             if x_axis == "flow_cm_s" and o.get("at", {}).get("flow_cm_s") is not None:
                 x = o["at"]["flow_cm_s"]
@@ -768,7 +818,9 @@ def results_data(q: dict, quantity: str | None = None, x_axis: str = "flow_cm_s"
                     continue
                 x = (xm["min"] + xm["max"]) / 2 if xm.get("value") is None else xm["value"]
             y = m["value"] if m.get("value") is not None else None
-            pts.append({"run": r, "x": x, "y": y, "lo": m["min"], "hi": m["max"], "unit": m.get("unit"), "raw": m["raw"]})
+            pts.append({"run": r, "x": x, "y": y, "lo": m["min"], "hi": m["max"], "unit": m.get("unit"), "raw": m["raw"],
+                        **({"uncertainty": m["uncertainty"]} if m.get("uncertainty") else {}),
+                        **({"source_processed": True} if "source_processed" in m.get("flags", []) else {})})
     paired = [p for p in pts if p["y"] is not None and x_axis == "flow_cm_s"
               and any(o.get("at") for o in p["run"]["outcomes"] if o["quantity"] == quantity)]
     mode = "lines" if len({p["run"]["id"] for p in paired}) >= 2 and len(paired) >= 4 else "bars"
@@ -780,14 +832,26 @@ def results_widget(q: dict, quantity: str | None = None, x_axis: str = "flow_cm_
     d = results_data(q, quantity, x_axis)
     title = query_title(_cat_q(q)) if _cat_q(q) else "all investigations"
     if not d["quantity"]:
-        return Card(size="full", children=[Title(value="Results chart", size="md"),
-                                           Text(value=f"No measured numeric results for {title}.", size="sm"),
-                                           Divider(spacing=2), nav_buttons(q, skip="results")])
+        requested = d.get("requested_quantity")
+        label = QUANTITY_LABEL.get(requested, requested.replace("_", " ")) if requested else None
+        children = [Title(value="Results chart", size="md"),
+                    Text(value=f"No measured {label.lower()} results for {title}." if label else
+                         f"No measured numeric results for {title}.", size="sm")]
+        if d["available"]:
+            children += [Caption(value="Available measurements:", size="sm"), Row(gap=2, wrap="wrap", children=[
+                Button(label=QUANTITY_LABEL.get(k, k.replace("_", " ")), size="xs", variant="soft",
+                       onClickAction=action("results", q=q, quantity=k, x=x_axis)) for k in d["available"]])]
+        return Card(size="full", children=[*children, Divider(spacing=2), nav_buttons(q, skip="results")])
     qn = d["quantity"]
     qlabel = QUANTITY_LABEL.get(qn, qn.replace("_", " "))
     unit = next((p["unit"] for p in d["points"] if p["unit"]), "")
     xname = AXIS_LABEL.get(x_axis, x_axis)
     children = [Title(value=f"{qlabel} vs {xname}", size="md"), Caption(value=title)]
+    if any(p.get("uncertainty") for p in d["points"]):
+        children.append(Caption(value="Chart shows reported central values. Source-reported measurement uncertainty is retained in each test's details; error bars are not displayed.", size="sm"))
+    if any(p.get("source_processed") for p in d["points"]):
+        children.append(Caption(value="Source-processed cached workbook values; not recalculated. "
+                                      "Measurement uncertainty is not supplied.", size="sm"))
 
     if not d["points"]:
         children.append(Text(value=f"No test reports both {qlabel.lower()} and {xname}.", size="sm"))
@@ -849,6 +913,9 @@ def results_summary(q: dict, quantity: str | None = None, x_axis: str = "flow_cm
             "range": [min(p["lo"] for p in pts), max(p["hi"] for p in pts)] if pts else None,
             "unit": next((p["unit"] for p in pts if p["unit"]), None),
             "other_results_available": list(d["available"]),
+            **({"source_processed": True} if any(p.get("source_processed") for p in pts) else {}),
+            **({"requested_quantity": d["requested_quantity"], "requested_unavailable": True}
+               if d.get("requested_unavailable") else {}),
             **({"investigation_unresolved": d["investigation_unresolved"]} if "investigation_unresolved" in d else {})}
 
 

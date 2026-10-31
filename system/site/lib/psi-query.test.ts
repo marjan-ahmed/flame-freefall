@@ -26,6 +26,30 @@ const { cases, rank_cases } = read("psi-data/query-fixtures.json") as {
   }[];
 };
 
+test("pure fuels, explicit blends, and requested families have distinct populations", () => {
+  const ids = (fuel_family: string) => new Set(query(runs, investigations, { fuel_family }).match.map(v => v.run.id));
+  const pure = ids("n-dodecane");
+  const blend = ids("n-dodecane/iso-dodecane");
+  assert.ok(pure.size && blend.size);
+  assert.ok([...pure].every(id => !blend.has(id)));
+  assert.deepEqual(ids("n-dodecane*"), new Set([...pure, ...blend]));
+  assert.equal(ids("*").size, 0);
+  assert.deepEqual(ids("sibal"), ids("SIBAL (cotton-fiberglass)"));
+  assert.deepEqual(ids("methane*"), new Set([...ids("methane"), ...ids("hydrogen/methane")]));
+});
+
+test("source quarantine excludes values from ranked aggregates", () => {
+  const baseline = rank(runs, investigations, {}, "burning_rate_k", "droplet-combustion");
+  assert.ok(!("error" in baseline));
+  const record = structuredClone(runs.find((r: { id: string }) => r.id === baseline.rows[0].runs[0]));
+  const before = rank([record], investigations, {}, "burning_rate_k", "droplet-combustion");
+  assert.ok(!("error" in before) && before.total_ranked === 1);
+  for (const outcome of record.outcomes) if (outcome.quantity === "burning_rate_k")
+    outcome.measure.flags = [...(outcome.measure.flags ?? []), "source_definition_unresolved"];
+  const after = rank([record], investigations, {}, "burning_rate_k", "droplet-combustion");
+  assert.ok(!("error" in after) && after.total_ranked === 0);
+});
+
 for (const c of cases) {
   test(c.name, () => {
     const r = query(runs, investigations, c.query, c.tolerances ?? {});

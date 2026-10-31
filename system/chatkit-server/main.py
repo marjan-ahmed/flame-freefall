@@ -68,63 +68,16 @@ from store import InMemoryChatKitStore
 from turn_guard import TurnGuard
 
 # ONE .env at the repo root — same convention system/site/next.config.mjs
-# uses, so the Groq key set up earlier is already in the right place.
+# uses, so the configured provider key is already in the right place.
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 # Tracing would otherwise try to authenticate against OpenAI's own platform
-# with a key this backend never has — it only ever talks to Groq.
+# with a key this backend never has; it uses the configured provider.
 set_tracing_disabled(True)
 
-# Automatic cross-provider fallback: OpenAIChatCompletionsModel just needs
-# an object shaped like AsyncOpenAI (duck-typed — it only ever calls
-# .chat.completions.create). Each provider needs its OWN model id (Groq
-# wants "openai/gpt-oss-120b", HF's router wants a full repo id like
-# "Qwen/Qwen2.5-72B-Instruct") — since OpenAIChatCompletionsModel
-# binds one model id for its whole lifetime, this rewrites `model` in the
-# call kwargs per provider, tried in order, falling through on a rate limit
-# OR a bad/unreachable model (see Caveat 3).
-#
-# Caveat 1: Groq's rate-limit error names an ORGANIZATION, not a key — two
-# keys on the same Groq account share the same daily quota FOR THE SAME
-# MODEL (confirmed live 2026-09-22, same pattern the Gemini keys hit earlier
-# this session), so GROQ_API_KEY_FALLBACK is not real headroom against a
-# quota 429 on one model, only against a transient/per-key outage. Quota IS
-# scoped per model id, though (confirmed live 2026-09-24: gpt-oss-120b's
-# daily quota was fully exhausted while qwen/qwen3.8-27b, same account, same
-# keys, was still reachable) -- see Caveat 5. Once every Groq (key, model)
-# pair is exhausted, HF_MODEL_ID is the only tier with independent quota.
-# Caveat 2: HF's router only serves a model through the providers THIS
-# account has enabled (confirmed live 2026-09-24: this account only has
-# `together` enabled, not `featherless-ai` — meta-llama/Llama-3.1-8B-Instruct
-# routes through together and works, Qwen/Qwen2.5-7B-Instruct's only live
-# provider is featherless-ai and 400s outright as "not supported by any
-# provider you have enabled"). Verify a candidate HF_MODEL_ID with a plain
-# curl against router.huggingface.co before changing this, not just a Hub
-# model-card lookup.
-# Caveat 3: a BadRequestError (wrong/unreachable model id, as above) used to
-# NOT be caught below — only RateLimitError was — so a broken HF_MODEL_ID
-# would crash the whole chat turn instead of degrading, and Groq being
-# exhausted (Caveat 1) makes that the exact moment this tier is needed most.
-# Caveat 4: narrowing to RateLimitError/BadRequestError still missed every
-# OTHER HTTP-status failure a provider can return -- confirmed live
-# 2026-09-24 in production: Groq's daily quota was exhausted (RateLimitError,
-# caught, fell through correctly) and the HF tier then returned a 402
-# ("depleted your monthly included credits"), which is an APIStatusError but
-# neither of the two caught subtypes, so it crashed the whole turn with a raw
-# traceback instead of the graceful fallback this class exists for. Widened
-# to APIStatusError, the actual base class RateLimitError/BadRequestError
-# both already derive from -- ANY HTTP-status failure from one provider now
-# tries the next, not just those two.
-# Caveat 5: since quota is per model id (Caveat 1), the primary/fallback
-# split below isn't just "strong model, weak model" -- it's real independent
-# headroom. GROQ_PRIMARY_MODEL_ID (qwen/qwen3.8-27b) is tried on every Groq
-# key first, THEN GROQ_FALLBACK_MODEL_ID (openai/gpt-oss-120b) on every Groq
-# key, before HF. Swapping which model leads buys nothing on its own if both
-# are already exhausted -- it only helps when one model's daily quota still
-# has headroom while the other's doesn't, which is exactly what was
-# happening live 2026-09-24.
-# NOW USING XKIRO: env vars GROQ_API_KEY/GROQ_API_KEY_FALLBACK/HF_TOKEN hold XKIRO keys
-# XKIRO_BASE_URL and XKIRO_MODEL from env configure the endpoint and model.
+# One configured OpenAI-compatible provider. GROQ_API_KEY is retained as the
+# legacy credential name; XKIRO_BASE_URL and XKIRO_MODEL select the endpoint
+# and model. This client does not implement cross-provider fallback.
 _xkiro_key = os.environ["GROQ_API_KEY"]
 _xkiro_base = os.environ.get("XKIRO_BASE_URL", "https://api.xkiro.com/v1")
 _xkiro_model = os.environ.get("XKIRO_MODEL", "qwen/qwen3.7-max:free")

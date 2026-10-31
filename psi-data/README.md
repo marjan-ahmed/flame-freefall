@@ -24,7 +24,7 @@ Regenerate: `cd system/psi-ingest && uv run psi-ingest`.
 | `csvs/PSI-26_…BASS.csv` | PSI-26 | BASS tests (121; one "SOOT Cleaning" row skipped) |
 | `csvs/PSI-98/99/100_…SAFFIRE-1/2/3.csv` | PSI-98/99/100 | Saffire burn samples (flow-visualization rows skipped; SAFFIRE-2 table notes kept) |
 | `csvs/PSI-69_…FLEX.csv` | PSI-69 | FLEX droplet tests (274) |
-| `csvs/PSI-68_…Flex2.csv` | PSI-68 | FLEX-2 planned condition envelopes, per fuel (not tests) |
+| `csvs/PSI-68_…Flex2.csv` | PSI-68 | FLEX-2 planned condition envelopes, per fuel (not tests); approved cool-flame literature supplement attaches by fuel identity |
 | `csvs/PSI-39_…CFI.csv` + `matrices/CFI_DataSummary_Spreadsheet_Jan2021.xlsx` (sheet DATA) | PSI-39 | CFI droplet tests, outcomes joined on Flex Number (8 duplicate rows skipped) |
 | `csvs/PSI-159_…CFI-G_*.csv` | PSI-159 | CFI-G normal and inverse gaseous flames (861 blank rows skipped) |
 | `csvs/PSI-10_…Flame Design_*.csv` | PSI-10 | ACME Flame Design normal and inverse flames |
@@ -37,6 +37,7 @@ Regenerate: `cd system/psi-ingest && uv run psi-ingest`.
 | `reports/BASS-II Summary Report.pdf` (via `investigation_reports/_converted/TM-20210011385.md`) | — | Appendix A, Tables A.1–A.6: flow direction + observation for all 126 BASS-II tests. Numeric columns are skipped: their headers did not survive conversion |
 | `reports/SPICE Final Report…pdf` | — | Table 1: per-fuel smoke-point length ranges, nozzle and air-velocity ranges, count of smoke points (5 summary records, not tests) |
 | `reports/SAMER_Final…pdf` | — | Table 2: sample temperature and TEM particle count (aged / unaged) for 7 SAME-R tests. Diameter columns skipped (garbled headers) |
+| `summaries/Combined SAMER Results 06 02 14.xlsx` | PSI-101 | `Reduced data sheet`: source-processed DustTrak A/B mass concentrations and aerosol diameters joined to existing SAME-R records by exact test number and material. `Reduced Data with ISS Det`: the same rows plus the ISS and STS smoke-detector analog signals (cached instrument readings; smoke deflects the ISS signal positive and the STS signal negative). Cached values and formulas retained; nonpositive diagnostics and unmatched identities excluded, with reasons |
 | other `matrices/`, `summaries/`, `reports/` | — | not ingested; reasons listed in `derived/ingest-report.json` → `not_ingested` (e.g. the SAFFIRE MergeResult workbooks are camera-image downlink logs, not combustion data) |
 
 ## Normalization rules (the short version)
@@ -53,3 +54,76 @@ Regenerate: `cd system/psi-ingest && uv run psi-ingest`.
 - Report tables from `knowledge/` are joined per test. A matching value confirms
   the PSI value; a differing one is recorded as a conflict with both values, and
   neither is chosen.
+- SAME-R workbook diagnostics are source-processed cached values, not newly
+  computed or independently measured results. Each value retains its sheet,
+  row, cached cell and formula. A join requires the test number **and** material;
+  unmatched identities and nonpositive diagnostics with ambiguous instrument
+  availability are excluded and accounted for in the ingest report. No test
+  number, material or zero-reading interpretation is silently repaired.
+- `derived/ingest-report.json` includes generated completeness counts by
+  geometry class, with separate counts for numeric and source-processed
+  outcomes. These count data availability, not scientific accuracy or safety.
+
+## Comparisons, uncertainty and literature
+
+Explorer comparisons audit geometry, individual-record status, exact fuel,
+recorded atmosphere/flow, specimen and duct dimensions, apparatus, confinement,
+instrument, method, composition, outcome units and per-outcome conditions.
+Unknown or conflicted required metadata blocks a condition-matched claim.
+An intentionally varied axis does not waive missing values or unknown units.
+The Python and TypeScript comparison engines share generated adversarial cases
+in `query-fixtures.json`.
+
+`Measure.uncertainty` retains explicitly reported plus/minus values separately
+from ranges, swept conditions and source disagreements. `detection_limit`
+retains a reported censoring operator and bound, without creating a measured
+point. A bound does not by itself establish an instrument detection limit.
+Charts show central values and reported intervals; they disclose that they do
+not draw measurement-uncertainty error bars. Details and exports retain the
+uncertainty metadata. No confidence level is inferred.
+
+`literature.yaml` holds owner-approved publication observations and campaign
+summaries with source quotes and saved extraction paths. LUCI and DAFT live in
+`knowledge/literature/`; neither contributes test records to `runs.json`.
+They are published through the governed narrative retrieval corpus.
+
+The approved FLEX-2 cool-flame supplement has 13 rates for literature-identified
+burns attached to two planned fuel envelopes. These do not become individual
+PSI tests or replace the envelopes' swept conditions. Ingest excludes any future
+draft supplement by default; programmatic draft review uses
+`run(write=False, include_review=True)` and cannot write serving files.
+
+SAFFIRE Table 2 supplies maximum far-field-device/nearest-location temperature
+and CO₂ partial-pressure increase for five existing records. Complete-row checks
+against the saved extraction preserve identity, empty cells and column positions.
+Figure 7 supplies one VI-3 smoke-threshold crossing at a report-selected 1 mg/m³
+threshold and reported time of 981 s; this is not a known ignition-to-alarm delay,
+universal alarm setting or instrument detection limit. A conditional energy
+consistency policy quarantines the VI-2 heat-release/time bundle from numeric
+analysis while preserving its reported values for source inspection. Unaffected
+temperature, gas and smoke measurements remain available.
+
+The internal scientific evaluation is generated with
+`python scripts/evaluate-scientific-evidence.py` using the backend environment.
+It writes `research/scientific-evaluation.md` and `.json`; it is neither a NASA
+review nor a validation of pooled predictive models or material safety.
+
+Campaign apparatus metadata is inherited only from a verified source quote
+(`psi_ingest/apparatus.py`), with its own citation and source index. Duct
+dimensions are distinct from specimen dimensions. This adds no pressure,
+temperature, test-specific instrument or measurement-method assumptions.
+
+Reproduce local validation from the repository root (PowerShell):
+
+```powershell
+.\system\psi-ingest\.venv\Scripts\python.exe system/psi-ingest/tests/audit_source_agreement.py
+.\system\chatkit-server\.venv\Scripts\python.exe system/chatkit-server/tests/benchmark_evidence.py
+npm run build
+# In another terminal, set PORT=3100 in your shell and run npm run preview.
+python scripts/verify-evidence-browser.py --url http://localhost:3100
+```
+
+These write bounded reports under `research/`: cached-cell transfer agreement,
+offline query regression expectations and warm latency, and a Chromium static
+export comparison/source/download journey at desktop and mobile widths. They
+do not measure predictive accuracy, expert relevance, or deployed performance.

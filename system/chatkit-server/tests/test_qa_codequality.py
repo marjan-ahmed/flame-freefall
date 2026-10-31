@@ -158,9 +158,10 @@ def test_psi_tool_failure_is_flagged_like_a_search_failure():  # C8 fixed
     (psi_tools.plot_results, {}),
     (psi_tools.rank_results, {"geometry_class": "solid-fuel", "quantity": "spread_rate"}),
     (psi_tools.show_mission_readiness, {"atmosphere": "iss"}),
+    (psi_tools.compare_test_runs, {"left_id": "PSI-25:M18", "right_id": "PSI-25:M18", "quantity": "spread_rate"}),
 ])
 def test_every_psi_tool_is_guarded(tool, args):
-    """Every one of the seven PSI tools (AGENTS.md) is wrapped by
+    """Every PSI tool (AGENTS.md) is wrapped by
     psi_tools._guarded, not just query_test_runs -- a regression here would
     silently narrow C8's fix back down to one tool."""
     g = TurnGuard()
@@ -232,11 +233,8 @@ def test_blank_investigation_name_resolves_to_nothing():  # found during the C1-
 
 # ── 5. fuel_family prefix admits blends into a pure-fuel query ────────────────
 
-@open_defect("A7 fuel_family prefix match counts blends as the pure fuel")
 def test_pure_fuel_filter_does_not_count_blends():
-    """_cat_match does a prefix match on fuel_family, so 'n-dodecane' also
-    matches 'n-dodecane/iso-dodecane' (57 of 79 matches are the blend). The
-    count the model reports as 'n-dodecane tests' is mostly mixture tests."""
+    """Regression: an exact n-dodecane query used to include 57 blend records."""
     r = psi_query.query({"fuel_family": "n-dodecane"})
     fams = {v["fuel_family"] for v in r["match"]}
     assert fams == {"n-dodecane"}, fams
@@ -244,11 +242,8 @@ def test_pure_fuel_filter_does_not_count_blends():
 
 # ── 6. plot_results silently swaps the requested quantity ─────────────────────
 
-@open_defect("A8 plot_results silently swaps an unavailable quantity")
 def test_results_summary_says_when_requested_quantity_is_unavailable():
-    """results_data() replaces an unavailable quantity with the most common one
-    (droplet 'spread_rate' -> 'burn_time') and results_summary() carries no
-    flag saying so; the model is told to describe 'what the chart shows'."""
+    """Regression: a spread-rate request used to silently draw burn time."""
     s = w.results_summary({"geometry_class": "droplet-combustion"}, "spread_rate")
     assert s["quantity"] == "spread_rate" or any(
         k in s for k in ("requested_quantity", "substituted_for", "requested_unavailable")
@@ -257,11 +252,9 @@ def test_results_summary_says_when_requested_quantity_is_unavailable():
 
 # ── 7. rank() silently picks one side of an outcome conflict ──────────────────
 
-@open_defect("A9 rank() picks one side of a conflict (latent)")
 def test_rank_does_not_silently_choose_between_conflicting_outcomes():
-    """reports.Merger.outcome() keeps BOTH outcomes when two sources disagree
-    ('nothing is silently chosen'), but rank() takes min() over candidates with
-    identical keys and so always ranks the first source's value."""
+    """Conflicting outcomes stay in the evidence but are excluded from ranking.
+    A widened interval would still imply a supported scalar aggregate."""
     invs = {"x": {"id": "x", "name": "X", "geometry_class": "solid-fuel"}}
     run = {
         "id": "PSI-1:A", "investigation": "x", "label": "A", "granularity": "test",
@@ -272,11 +265,11 @@ def test_rank_does_not_silently_choose_between_conflicting_outcomes():
             {"quantity": "spread_rate", "source": 1, "measure": {"raw": "5.0", "value": 5.0, "min": 5.0, "max": 5.0, "unit": "mm/s"}},
         ],
         "conflicts": [{"field": "outcome:spread_rate", "values": [{"source": 0, "raw": "1.0"}, {"source": 1, "raw": "5.0"}]}],
-        "sources": [{"kind": "psi", "dataset": "PSI-1", "file": "f.csv", "row": 2}],
+        "sources": [{"kind": "psi", "dataset": "PSI-1", "file": "f.csv", "row": 2},
+                    {"kind": "psi", "dataset": "PSI-1", "file": "other.csv", "row": 2}],
     }
     r = psi_query.rank({"o2_pct": 21}, "spread_rate", "solid-fuel", runs=[run], invs=invs)
-    row = r["rows"][0]
-    assert (row["min"], row["max"]) == (1.0, 5.0), f"one source's value was chosen silently: {row}"
+    assert r["rows"] == [] and r["total_ranked"] == 0
 
 
 # ── 8. uploaded PDF text reaches the model with no provenance framing ─────────

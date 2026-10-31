@@ -130,12 +130,18 @@ def _investigation_ids(name: str, invs: dict[str, dict]) -> set[str]:
 
 
 def _cat_match(run: dict, key: str, want: str, invs: dict[str, dict]) -> bool:
-    """Case-insensitive. fuel_family matches by prefix ("sibal" → "SIBAL
-    (cotton-fiberglass)", "wax" → every wax); investigation by _investigation_ids."""
+    """Case-insensitive identity matching; an explicit trailing * requests
+    a broader fuel/constituent prefix, including blends. SIBAL is a named alias,
+    not permission to include every fuel that starts with a pure fuel's name."""
     if key == "investigation":
         return run["investigation"] in _investigation_ids(want, invs)
     have = (_cat_value(run, key, invs) or "").lower()
-    return have.startswith(want) if key == "fuel_family" else have == want
+    if key == "fuel_family":
+        if want.endswith("*"):
+            prefix = want[:-1].strip()
+            return bool(prefix) and (have.startswith(prefix) or any(part.strip().startswith(prefix) for part in have.split("/")))
+        want = {"sibal": "sibal (cotton-fiberglass)"}.get(want, want)
+    return have == want
 
 
 def _cat_value(run: dict, key: str, invs: dict[str, dict]) -> str | None:
@@ -223,11 +229,21 @@ def _outcome_summary(run: dict, q: dict) -> list[dict]:
             entry["also_from"] = [_source_ref(run["sources"][i]) for i in o["confirmed_by"]]
         if "measure" in o:
             m = o["measure"]
+            if "source_definition_unresolved" in m.get("flags", []):
+                entry["text"] = "Excluded from quantitative analysis: source method/interval definitions unresolved; reported raw value retained in record."
+                entry["analysis_status"] = "source_definition_unresolved"
+                outs.append(entry)
+                continue
             entry["value"] = m.get("value")
             entry["raw"] = m["raw"]
             if m.get("min") is not None and m.get("max") is not None and m["min"] != m["max"]:
                 entry["min"], entry["max"] = m["min"], m["max"]
             entry["unit"] = m.get("unit")
+            for field in ("uncertainty", "interval_kind", "detection_limit"):
+                if m.get(field) is not None:
+                    entry[field] = m[field]
+            if "source_processed" in m.get("flags", []):
+                entry["source_processed"] = True
             if m.get("values") and m.get("value") is None:
                 entry["values"] = m["values"]
             if o.get("text"):  # e.g. a FLEX 0 that means "no visible extinction", not 0 mm
@@ -530,9 +546,27 @@ def prefer_outcomes(views: list[dict]) -> list[dict]:
     return sorted(views, key=lambda v: not has_numeric(v))
 
 
+def outcome_conditions(at: dict | None) -> str:
+    """Format every outcome-specific condition without assuming a flow sweep."""
+    parts = []
+    for key, value in (at or {}).items():
+        if key == "flow_cm_s":
+            parts.append(f"{value:g} cm/s")
+        elif key == "selected_mass_concentration_mg_m3":
+            parts.append(f"{value:g} mg/m³ selected smoke threshold")
+        else:
+            parts.append(f"{key}={value:g}")
+    return ", ".join(parts)
+
+
 def _fmt_outcome(o: dict) -> str:
     """Normalized value + unit (the raw cell may be in another unit, e.g. minutes)."""
-    if o.get("min") is not None and o.get("max") is not None and o.get("at") is None:
+    if o.get("detection_limit"):
+        limit = o["detection_limit"]
+        val = f"{limit['operator']}{limit['value']:g} {limit.get('unit') or ''} (reported bound)"
+    elif o.get("uncertainty") and o.get("value") is not None and "plus" in o["uncertainty"]:
+        val = f"{o['value']:g} ± {o['uncertainty']['plus']:g} {o.get('unit') or ''} (reported uncertainty)"
+    elif o.get("min") is not None and o.get("max") is not None and o.get("at") is None:
         # a range stays a range: its midpoint is a number no source states
         val = f"{o['min']:g}–{o['max']:g}" + (f" {o['unit']}" if o.get("unit") else "")
     elif o.get("value") is not None:
@@ -541,7 +575,7 @@ def _fmt_outcome(o: dict) -> str:
         val = ", ".join(f"{x:g}" for x in o["values"]) + (f" {o['unit']}" if o.get("unit") else "")
     else:
         val = o.get("text") or o.get("raw") or "?"
-    at = f" @ {o['at']['flow_cm_s']:g} cm/s" if o.get("at") else ""
+    at = f" @ {outcome_conditions(o['at'])}" if o.get("at") else ""
     return f"{o['quantity']}={val}{at}"
 
 
@@ -551,6 +585,8 @@ def fmt_sourced_outcome(o: dict, report_keys: dict[tuple[str, str], str] | None 
     or (report_keys given) '... [report 1]' with the table/title looked up
     once in the payload's top-level "reports" map."""
     tags = [source_label(r, report_keys) for r in [o["from"], *o.get("also_from", [])]]
+    if o.get("source_processed"):
+        tags.append("source-processed cached workbook value")
     return f"{_fmt_outcome(o)} [{'; also '.join(tags)}]"
 
 

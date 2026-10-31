@@ -7,7 +7,7 @@
   "PSI-26:As-run 91",
   "PSI-101:SAME #57"
  ],
- "generated_at": "2026-10-30T07:53:59+00:00",
+ "generated_at": "2026-10-31T12:54:38+00:00",
  "generator": "system/psi-ingest",
  "totals": {
   "runs": 1951,
@@ -19,11 +19,11 @@
    "summary": 5
   },
   "investigations": 19,
-  "runs_with_outcomes": 932,
-  "runs_with_report_data": 436,
+  "runs_with_outcomes": 1035,
+  "runs_with_report_data": 558,
   "conflicts": 8,
-  "rows_read": 2860,
-  "rows_skipped": 913
+  "rows_read": 3210,
+  "rows_skipped": 1047
  },
  "files": [
   {
@@ -3868,8 +3868,625 @@
    "merged_into_previous": 0,
    "skipped": [],
    "notes": []
+  },
+  {
+   "file": "summaries/Combined SAMER Results 06 02 14.xlsx [Reduced data sheet]",
+   "investigation": "same-r",
+   "rows_read": 175,
+   "runs_emitted": 0,
+   "merged_into_previous": 108,
+   "skipped": [
+    {
+     "row": 3,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 4,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 5,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 6,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 7,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 8,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 9,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 10,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 11,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 12,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 13,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 14,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 15,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 16,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 17,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 18,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 19,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 20,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 21,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 22,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 23,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 24,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 25,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 26,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 27,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 28,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 29,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 30,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 31,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 32,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 33,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 34,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 35,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 36,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 37,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 38,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 39,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 40,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 41,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 42,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 43,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 44,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 45,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 46,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 47,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 154,
+     "reason": "no unique PSI SAME-R number/material join: 112 / kapton"
+    },
+    {
+     "row": 157,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 158,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 159,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 160,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 161,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 162,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 163,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 164,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 165,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 166,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 167,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 168,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 169,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 170,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 171,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 172,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 173,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 174,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 175,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 176,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 177,
+     "reason": "not a SAME-R flight 2 data row"
+    }
+   ],
+   "notes": [
+    "Only existing SAME-R flight 2 records are enriched; no test identifiers or material assignments are repaired.",
+    "Only the explicitly unit-labeled columns are mapped (dusttrak_a_mass_concentration, dusttrak_b_mass_concentration, aerosol_arithmetic_mean_diameter, aerosol_diameter_of_average_mass); formulas and cached cells are retained; the sheet's unlabeled computed columns (with no explicit unit) are not.",
+    "24 cached cells excluded under the sheet-admission policy"
+   ]
+  },
+  {
+   "file": "summaries/Combined SAMER Results 06 02 14.xlsx [Reduced Data with ISS Det]",
+   "investigation": "same-r",
+   "rows_read": 175,
+   "runs_emitted": 0,
+   "merged_into_previous": 108,
+   "skipped": [
+    {
+     "row": 3,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 4,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 5,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 6,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 7,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 8,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 9,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 10,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 11,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 12,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 13,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 14,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 15,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 16,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 17,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 18,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 19,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 20,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 21,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 22,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 23,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 24,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 25,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 26,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 27,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 28,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 31,
+     "reason": "no unique PSI SAME-R number/material join: 112 / kapton"
+    },
+    {
+     "row": 59,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 60,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 61,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 62,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 63,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 64,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 105,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 106,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 107,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 108,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 109,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 110,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 111,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 134,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 135,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 136,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 137,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 138,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 139,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 157,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 158,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 159,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 160,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 161,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 162,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 163,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 164,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 165,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 166,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 167,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 168,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 169,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 170,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 171,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 172,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 173,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 174,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 175,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 176,
+     "reason": "not a SAME-R flight 2 data row"
+    },
+    {
+     "row": 177,
+     "reason": "not a SAME-R flight 2 data row"
+    }
+   ],
+   "notes": [
+    "Only existing SAME-R flight 2 records are enriched; no test identifiers or material assignments are repaired.",
+    "Only the explicitly unit-labeled columns are mapped (iss_detector_scatter_volts, sts_detector_volts); formulas and cached cells are retained; the sheet's unlabeled computed columns (STS Detector offset (volts), STS detector delta, Yeild: Dust Trak mass/mass lostt) are not.",
+    "92 cached cells excluded under the sheet-admission policy; 0 negative STS readings kept as declared smoke responses."
+   ]
   }
  ],
+ "completeness": {
+  "note": "Counts measure recorded data availability, not accuracy, independent observations, safety or certification.",
+  "by_geometry": {
+   "droplet-combustion": {
+    "records": 363,
+    "individual_records": 355,
+    "records_with_outcomes": 345,
+    "records_with_numeric_outcomes": 340,
+    "records_with_source_processed_outcomes": 0,
+    "conditions_reported_by": {
+     "o2_pct": 363,
+     "pressure_atm": 362,
+     "flow_cm_s": 8
+    }
+   },
+   "gaseous-flames": {
+    "records": 1203,
+    "individual_records": 1098,
+    "records_with_outcomes": 429,
+    "records_with_numeric_outcomes": 425,
+    "records_with_source_processed_outcomes": 0,
+    "conditions_reported_by": {
+     "o2_pct": 423,
+     "pressure_atm": 681,
+     "flow_cm_s": 420
+    }
+   },
+   "smoke-aerosol": {
+    "records": 117,
+    "individual_records": 117,
+    "records_with_outcomes": 112,
+    "records_with_numeric_outcomes": 112,
+    "records_with_source_processed_outcomes": 108,
+    "conditions_reported_by": {
+     "o2_pct": 0,
+     "pressure_atm": 0,
+     "flow_cm_s": 113
+    }
+   },
+   "solid-fuel": {
+    "records": 268,
+    "individual_records": 268,
+    "records_with_outcomes": 149,
+    "records_with_numeric_outcomes": 140,
+    "records_with_source_processed_outcomes": 0,
+    "conditions_reported_by": {
+     "o2_pct": 149,
+     "pressure_atm": 5,
+     "flow_cm_s": 69
+    }
+   }
+  }
+ },
  "report_tables": [
   {
    "table": "knowledge/investigations/solid-fuel/bass-ii Table 5.1",
@@ -3940,8 +4557,8 @@
    "why": "camera image downlink logs (file names, byte counts) — no combustion data"
   },
   {
-   "file": "summaries/Combined SAMER Results 06 02 14.xlsx",
-   "why": "SAME/SAME-R smoke diagnostics workbook; not yet mapped (PSI-101/102 carry the runs)"
+   "file": "summaries/Combined SAMER Results 06 02 14.xlsx (other sheets and columns)",
+   "why": "Reduced data sheet flight 2 mass-concentration/diameter columns enrich existing SAME-R records. Other sheets, unknown-unit quantities, nonpositive diagnostics, SAME flight 1 rows and unmatched test identities are not imported."
   },
   {
    "file": "reports/*.pdf (other than BASS-II, SPICE, SAME-R)",

@@ -1,0 +1,20 @@
+{
+  "measured_at": "2026-10-31T12:42:46.824320+00:00",
+  "generation": 9,
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dimensions": 1536,
+  "door": "queries-file",
+  "in_scope_queries": 16,
+  "out_of_scope_queries": 12,
+  "min_in_scope_score_rounded": 0.422,
+  "max_out_of_scope_score_rounded": 0.407,
+  "margin_rounded": 0.016,
+  "selected_floor": 0.415,
+  "floor_digest": "8bfb07d0e6f5",
+  "separable": true,
+  "calibration_inputs": {
+    "research/retrieval-calibration-in-scope.txt": "b7cea2f4e8ea501abfae3502e793e8e6e959a3efb46dd3fa087b49b0b2e8efe7",
+    "research/retrieval-calibration-out-of-scope.txt": "892581ac2d503e6423b83600bb5822d3e866cf23b17731bbc27874be490d7b22"
+  },
+  "scope": "Internal source-anchored engineering probes, separate from the held-out evaluation. No independent expert relevance or universal abstention claim."
+}

@@ -4,8 +4,8 @@ Traceable NASA combustion evidence for researchers deciding what to investigate 
 Search by atmosphere, fuel and flow; inspect individual records; export the evidence
 and the query that selected it. The deterministic Explorer works without an AI service.
 
-[Live application](https://marjan-ahmed.github.io/flame-freefall/) ?
-[Explorer](https://marjan-ahmed.github.io/flame-freefall/explore/) ?
+[Live application](https://marjan-ahmed.github.io/flame-freefall/) ·
+[Explorer](https://marjan-ahmed.github.io/flame-freefall/explore/) ·
 [Governed record](https://marjan-ahmed.github.io/flame-freefall/docs/)
 
 **Competition eligibility is unresolved.** This project existed before the November
@@ -53,7 +53,7 @@ summaries retain their missing pressure; it is never inferred from another test.
 - Full matches report every requested axis within a numerical search window.
   Incomplete matches lack at least one requested condition. They do not establish
   coverage at that atmosphere. Neither tier proves physical equivalence.
-- The default search uses ?1.5 oxygen percentage points and ?0.1 atm pressure.
+- The default search uses ±1.5 oxygen percentage points and ±0.1 atm pressure.
   These are retrieval heuristics, not safety margins. The Explorer exposes them
   and preserves changes in the URL and download.
 - Individual tests, test points, daily summaries and planned envelopes are distinct
@@ -72,6 +72,40 @@ summaries retain their missing pressure; it is never inferred from another test.
 
 See [method and export dictionary](docs/evidence-method.md) and the
 [demonstration script](DEMO.md) for reproducible interpretation.
+
+## Current evidence and scientific review
+
+The owner approved the FLEX-2 cool-flame, LUCI and DAFT literature documents on
+2026-10-31. All 23 governed documents are stable. FLEX-2 literature rates remain
+attached to planned fuel envelopes, while LUCI rotating-platform observations
+and DAFT cabin-aerosol bounds remain separate from individual PSI tests.
+
+The index still contains 1,951 records; 1,035 now carry outcomes. The approved
+FLEX-2 supplement contributes 13 rates, and the SAFFIRE VI-3 record now includes
+a source-guarded smoke-threshold observation. Temperature, gas and detector
+measurements retain their locations, units, raw values and source identities.
+
+[Internal scientific evaluation](research/scientific-evaluation.md) and its
+[reproducible script](scripts/evaluate-scientific-evidence.py) examine paired
+burns, comparability, missingness, uncertainty and conditional energy consistency.
+The ambiguous SAFFIRE heat-release/time bundle is excluded from quantitative
+analysis and retained as flagged source evidence. This is an internal source-based review,
+not NASA endorsement, independent scientific peer review or predictive validation.
+
+The vector publication manifest is [research/rag-publication.json](research/rag-publication.json).
+The configured Neon corpus is published as generation 9: 23 documents and 270
+chunks, with 15 newly embedded chunks and no embedding failures. Direct MCP
+verification found the expected document in the top five for all nine internal
+source-anchored queries. A 0.415 retrieval floor was measured using 16 relevant
+and 12 out-of-scope calibration probes. Separate checks retained all nine target
+documents and correctly abstained on eight unrelated questions. This is bounded
+engineering validation, not universal semantic reliability. Pushes to `main`
+trigger the configured deployment workflows; their outcome must be checked
+separately from local validation and vector publication.
+
+Structured PSI measurements are served through deterministic query tools;
+governed documents are published through KSOR/pgvector. Both paths must be
+refreshed after changes; building the website alone does not ingest vectors.
 
 ## Architecture and trust
 

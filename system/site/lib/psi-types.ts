@@ -8,6 +8,9 @@ export type Measure = {
   unit?: string;
   values?: number[];
   flags?: string[];
+  interval_kind?: "source_conflict" | "test_variation" | "reported_values" | "reported_range";
+  uncertainty?: { kind: string; raw: string; plus?: number; minus?: number; relative_percent?: number; unit?: string; confidence_level?: number; source?: number; quote?: string };
+  detection_limit?: { operator: string; value: number; unit?: string; raw: string };
 };
 
 export type Category = { value: string; raw?: string; basis?: string; source?: number };
@@ -30,9 +33,13 @@ export type Source = {
   title?: string;
   url?: string;
   via?: string;
+  quote?: string;
+  scope?: string;
+  /** Textual citation for a source with no canonical URL (e.g. a poster's PSI archive filename). */
+  descriptor?: string;
 };
 
-export type SlimSource = Pick<Source, "kind" | "dataset" | "file" | "row" | "sheet" | "table" | "line" | "doc" | "source_id" | "title" | "via">;
+export type SlimSource = Pick<Source, "kind" | "dataset" | "file" | "row" | "sheet" | "table" | "line" | "doc" | "source_id" | "title" | "via" | "url" | "quote" | "scope" | "descriptor">;
 
 export type Outcome = {
   quantity: string;

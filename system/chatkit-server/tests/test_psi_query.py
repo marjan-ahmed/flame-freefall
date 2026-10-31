@@ -70,6 +70,25 @@ def test_categorical_filter_is_hard_but_reported():
     assert r["relaxed"], "matching non-PMMA runs should be listed so an empty answer says where data exists"
 
 
+def test_exact_fuel_and_explicit_family_search_have_distinct_populations():
+    exact = psi_query.query({"fuel_family": "n-dodecane"})
+    broad = psi_query.query({"fuel_family": "n-dodecane*"})
+    blend = psi_query.query({"fuel_family": "n-dodecane/iso-dodecane"})
+    exact_ids = {r["id"] for r in exact["match"]}
+    blend_ids = {r["id"] for r in blend["match"]}
+    assert exact_ids and blend_ids and exact_ids.isdisjoint(blend_ids)
+    assert {r["id"] for r in broad["match"]} == exact_ids | blend_ids
+    assert psi_query.query({"fuel_family": "*"})["counts"]["match"] == 0
+    methane = psi_query.query({"fuel_family": "methane*"})
+    assert {r["fuel_family"] for r in methane["match"]} == {"methane", "hydrogen/methane"}
+
+
+def test_sibal_alias_keeps_the_named_material_identity():
+    alias = psi_query.query({"fuel_family": "sibal"})
+    canonical = psi_query.query({"fuel_family": "SIBAL (cotton-fiberglass)"})
+    assert alias["match"] and alias["match"] == canonical["match"]
+
+
 def test_compact_fits_budget():
     c = psi_query.compact(psi_query.query({"o2_pct": 15, "flow_cm_s": 10, "fuel_family": "PMMA"}))
     assert len(json.dumps(c)) < 6000  # ≈1.5k tokens: Groq free tier is 8k TPM for the whole turn
@@ -127,3 +146,16 @@ def test_readiness_rejects_unknown_atmosphere():
 def test_compact_readiness_fits_budget():
     c = psi_query.compact_readiness(psi_query.readiness("lunar"))
     assert len(json.dumps(c)) < 4000
+
+
+def test_source_quarantine_cannot_enter_ranked_aggregates(monkeypatch):
+    from copy import deepcopy
+    records, invs = psi_query.load()
+    first = psi_query.rank({}, "burning_rate_k", "droplet-combustion")["rows"][0]["runs"][0]
+    record = deepcopy(next(r for r in records if r["id"] == first))
+    monkeypatch.setattr(psi_query, "load", lambda: ([record], invs))
+    assert psi_query.rank({}, "burning_rate_k", "droplet-combustion")["total_ranked"] == 1
+    for outcome in record["outcomes"]:
+        if outcome["quantity"] == "burning_rate_k":
+            outcome["measure"].setdefault("flags", []).append("source_definition_unresolved")
+    assert psi_query.rank({}, "burning_rate_k", "droplet-combustion")["total_ranked"] == 0

@@ -11,8 +11,8 @@ import { useTheme } from "fumadocs-ui/provider/base";
 
 /**
  * `api.url` points at the Python ChatKit backend in `system/chatkit-server`
- * (FastAPI + openai-chatkit + openai-agents, answering via Groq's
- * openai/gpt-oss-120b). In production, this is set via NEXT_PUBLIC_CHATKIT_API_URL.
+ * (FastAPI + openai-chatkit + openai-agents, with the model/provider configured
+ * in that backend). Production sets NEXT_PUBLIC_CHATKIT_API_URL.
  * For local development, it defaults to http://localhost:8000/chatkit.
  */
 export function ChatInterface({ title }: { title: string }): ReactElement {
