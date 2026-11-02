@@ -4,28 +4,27 @@
 
 [View the PDF](flame-freefall-pitch.pdf) · [Download the editable PowerPoint](flame-freefall-pitch.pptx) · [Slide overview](contact-sheet.png) · [Speaker notes](speaker-notes.md)
 
-The deck is self-contained: problem, solution, actual product capture, worked
-evidence demonstration, NASA data and technical safeguards, intended impact,
-next milestones, team and disclosures. It is designed to be read without a
+The deck is self-contained: problem, AI research companion and evidence workbench,
+actual product capture, worked demonstration, dedicated chatbot features,
+NASA data, intended impact, next milestones and team. It is designed to be read without a
 presenter. The PowerPoint retains editable text and vector shapes; only the
 actual application capture is rasterized. The PDF has embedded fonts.
 
 ## Story and demonstration
 
-1. Flame Freefall and the research decision it supports.
-2. Why finding an experiment does not establish that its findings transfer.
-3. The actual dossier UI and question → evidence → export journey.
-4. SAFFIRE direct evidence versus BRE emulation near a proposed Lunar atmosphere.
-5. Source-backed outlet temperatures and the limits of the comparison.
-6. NASA evidence, deterministic computation and the bounded role of AI.
-7. Intended benefit, next validation steps and project access.
+1. Flame Freefall: an AI research companion for NASA combustion evidence.
+2. The research problem and conversational access to source-backed evidence.
+3. Ask in chat, investigate in the workbench, export a dossier.
+4. An example chat question and the complementary Lunar workbench scenario.
+5. Source-backed comparison tools and an actual SAFFIRE evidence audit.
+6. Dedicated AI chatbot slide: cited document retrieval, test search, plots,
+   gap maps, atmosphere coverage, comparisons and ordered measurements.
+7. Combined research benefit, validation milestones and team.
 
 The deck makes no measured time-saving, independent-review, safety-certification,
-NASA-endorsement or Lunar-gravity prediction claim. Prior work and unresolved
-competition eligibility remain disclosed on slide 7 and in
-[SUBMISSION.md](../../SUBMISSION.md). This is a prepared challenge demonstration,
-not an assertion that an official submission has been accepted. Check the final
-2026 global submission guide and public download access before submission.
+NASA-endorsement or Lunar-gravity prediction claim. Chat and workbench are
+complementary interfaces; no automatic conversation-to-dossier handoff is claimed.
+The presentation contains no repository URL or eligibility commentary.
 
 ## Evidence behind the slides
 
@@ -35,8 +34,8 @@ not an assertion that an official submission has been accepted. Check the final
 | 3 | Actual saved local browser capture, `.playwright-mcp/implemented-dossier-desktop.png`, cropped without altering UI text; [workflow report](../../research/implemented-improvements-2026-11-02.md). This capture predates subsequent source-method updates and is not deployment verification. |
 | 4 | [Executable scenario](../../scripts/evaluate-research-scenarios.mjs), [saved results](../../research/research-scenario-verification.json), [relevance mapping](../../psi-data/decision-contexts.yaml) |
 | 5 | [NASA SAFFIRE report](https://ntrs.nasa.gov/citations/20240002981), Table 2; source-indexed `max_temp_sfu_outlet` for `saffire-iv-vi:VI-3` and `VI-4`; [comparison audit](../../system/site/lib/psi-comparison.ts) |
-| 6 | [Dataset](../../psi-data/derived/runs.json), [method](../evidence-method.md), [PSI response guard](../../system/chatkit-server/main.py); document count refers to 23 stable governed documents |
-| 7 | [Researcher review packet](../../research/researcher-review-packet.json) remains awaiting review; [submission disclosures](../../SUBMISSION.md) |
+| 6 | [Chat tools](../../system/chatkit-server/psi_tools.py), [widgets](../../system/chatkit-server/psi_widgets.py), [PSI response guard](../../system/chatkit-server/main.py), [dataset](../../psi-data/derived/runs.json); document count refers to 23 stable governed documents |
+| 7 | [Researcher review packet](../../research/researcher-review-packet.json) remains awaiting review; validation milestones are future work |
 
 No imagery was generated with AI. Diagrams, layout, copy and the generation script
 were prepared with Codex assistance. The product uses optional AI conversation;

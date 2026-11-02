@@ -2,28 +2,28 @@
 
 ## Slide 1
 
-I am Muhammad Marjan Ahmed, the solo builder behind Code Nashai. Flame Freefall turns NASA combustion records into a traceable research workflow across prevention, detection and suppression. Our goal is to help researchers make a better-supported next research decision. This is an independent challenge response, not NASA-approved safety software.
+I am Muhammad Marjan Ahmed, the solo builder behind Code Nashai. Flame Freefall combines an AI-powered research chatbot with a traceable evidence workbench across prevention, detection and suppression. Ask questions in natural language, inspect source-linked test results and research documents, then use the workbench to compare and export evidence. This is an independent challenge response, not NASA-approved safety software.
 
 ## Slide 2
 
-The challenge is not simply finding a paper. An engineer needs to know whether its experiment supports the question being asked. Fuel geometry, oxygen, pressure, flow and measurement methods matter. Microgravity findings do not automatically validate Lunar-gravity behavior. Flame Freefall makes those transfer limits visible.
+The challenge is not simply finding a paper. An engineer needs to know whether its experiment supports the question being asked. The AI chatbot provides a natural-language entry point into cited research and structured test tools. The evidence workbench then exposes conditions, missing fields and transfer limits. Microgravity findings do not automatically validate Lunar-gravity behavior.
 
 ## Slide 3
 
-The working product records the research question verbatim. Explicit controls determine retrieval. Investigations have source-supported direct or indirect relevance assignments, and unmatched classifications remain visible as unknown. This is an actual cropped local browser capture from the saved implementation workflow; it is not a fresh live-site screenshot. The dossier retains the shortlist, settings, underlying records and dataset identity. The deterministic Explorer works without an AI service.
+The chatbot and evidence workbench are complementary interfaces to the project. Ask the chatbot to find tests, explain cited research, show plots or audit records. In the workbench, explicitly set conditions, shortlist investigations and export a reproducible dossier. This does not claim that a chat conversation automatically becomes a dossier. The screenshot is an actual saved local capture of the dossier UI. The deterministic Explorer works without an AI service.
 
 ## Slide 4
 
-In the implemented Lunar scenario, shortlist SAFFIRE IV–VI and ACME BRE. SAFFIRE provides direct solid-fuel evidence; BRE is a gaseous experiment emulating aspects of condensed-fuel burning. Doubling the oxygen retrieval tolerance admits one full SAFFIRE record in the engineering scenario. That is sensitivity of evidence availability, not a safety margin. Then inspect an actual source-backed comparison.
+The displayed prompt is an example of an explicit natural-language condition search, not a transcript of a newly recorded provider session. The chatbot can render test-search widgets with conditions and source records. Continue the research in the workbench, where SAFFIRE IV–VI provides direct solid-fuel evidence and BRE offers indirect condensed-fuel emulation. Doubling the oxygen search tolerance admits one full SAFFIRE record in the saved engineering scenario. These are separate chat and workbench capabilities, not an automatic end-to-end handoff.
 
 ## Slide 5
 
-The comparison audit surfaces two real outlet-temperature observations from SAFFIRE Table 2. It preserves their source identities and shows the setup differences. Because key metadata are missing and the conditions differ, it refuses a condition-matched claim. We do not subtract the temperatures or attribute the difference to specimen configuration. This is a useful source audit with an explicit next evidence check. Source: https://ntrs.nasa.gov/citations/20240002981
+The chatbot has a two-record comparison tool; the Explorer provides a detailed audit interface. The source-backed example shows outlet temperatures from SAFFIRE Table 2 and the reasons a condition-matched comparison is blocked. Missing metadata and differing conditions remain visible. We do not subtract the temperatures or attribute their difference to specimen configuration. Source: https://ntrs.nasa.gov/citations/20240002981
 
 ## Slide 6
 
-NASA PSI tables and source reports feed source-preserving ingest, deterministic query twins, a static Next.js evidence interface, and optional FastAPI/ChatKit conversation. Structured PSI numbers render in code-owned widgets rather than generated prose. Narrative retrieval is separately cited. There are 1,951 indexed records; only 1,838 are individual test or test-point records, not proven independent replicates. Code was built with AI assistance; no independent expert or user validation is claimed.
+The AI-powered chatbot is built with ChatKit, FastAPI and an agent with eight local PSI tools plus cited narrative retrieval through MCP. Features include natural-language test searches, gap maps, investigation comparisons, individual test details, plots, ordering eligible measurements, atmosphere coverage and two-record comparison audits. PSI numerical answers are rendered by deterministic widgets rather than model-generated numerical prose. Ambiguous condition requests can require explicit Explorer controls. The dataset contains 1,951 indexed records, of which 1,838 are test or test-point records; these are not proven independent replicates. No universal answer accuracy, safety prediction or best-material claim is asserted.
 
 ## Slide 7
 
-Our intended contribution is a defensible starting point for spacecraft-fire research. The next milestone is observed task completion with researchers and independent domain review, not another feature count. Explore the repository for the implemented workflow and reproduction instructions. The project predates the event; organizer eligibility clarification remains unresolved. Team: Code Nashai. Solo builder: Muhammad Marjan Ahmed. No NASA endorsement, measured time-saving claim, or safety qualification is asserted.
+Flame Freefall combines an AI research companion, an Explorer and reproducible evidence dossiers. It is designed to help researchers find and inspect applicable evidence before the next study. The next milestone is observed task completion with researchers and independent domain review. Team: Code Nashai. Solo builder: Muhammad Marjan Ahmed. No measured time-saving or safety-qualification claim is asserted.
