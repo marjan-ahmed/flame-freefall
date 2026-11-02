@@ -2,7 +2,7 @@
 
 Codex internal source-based scientific evaluation; not NASA review or endorsement
 
-Dataset SHA-256: `7c7143cb7c7385d0be5dd97ce2041218305f7cfd5b1b88f15fec9fb27365e031`. Evaluated 2026-11-02T12:19:44.299601+00:00.
+Dataset SHA-256: `7c7143cb7c7385d0be5dd97ce2041218305f7cfd5b1b88f15fec9fb27365e031`. Evaluated 2026-11-02T12:52:54.970390+00:00.
 
 ## Assessment
 
@@ -37,7 +37,7 @@ If a peak heat-release rate and an integrated energy share a measurement method 
 
 Source: [SAFFIRE preliminary results, Table 2](https://ntrs.nasa.gov/citations/20240002981). Do not silently correct a published value. Method labels, integration periods and possible source errors need clarification before model fitting.
 
-The governed SAFFIRE prose labels the SIBAL cross-check VI-3, while the original report and Table 1 identify that SIBAL sample as VI-2. Structured records use the table identities. This narrative discrepancy needs governed correction and must not support the VI-3 PMMA result.
+The owner-approved governed SAFFIRE prose now identifies the SIBAL cross-check as VI-2, consistent with the original report and sample table. Structured records retain the table identities; this SIBAL cross-check must not support the VI-3 PMMA result.
 
 ## Detection and partial-gravity interpretation
 
