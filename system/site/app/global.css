@@ -24,6 +24,27 @@
    is tokens — but a component added from the registry will. */
 @custom-variant dark (&:is(.dark *));
 
+.decision-view { line-height: 1.6; }
+.decision-controls { border: 1px solid var(--border); padding: 1rem; }
+.decision-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.decision-field { display: flex; flex-direction: column; gap: .35rem; font-size: .875rem; min-width: 0; }
+.decision-field input, .decision-field select { border: 1px solid var(--border); border-radius: .3rem; padding: .55rem; background: var(--background); color: var(--foreground); width: 100%; }
+.decision-button { border: 1px solid var(--border); border-radius: .3rem; padding: .55rem .8rem; background: var(--secondary); cursor: pointer; }
+.decision-button:disabled { opacity: .5; cursor: default; }
+.decision-view :is(input, select, button, a, summary):focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.decision-view summary { cursor: pointer; }
+.decision-row { display: grid; grid-template-columns: 1.1fr 1fr 1.5fr 1fr; gap: 1rem; padding: 1rem .5rem; }
+.decision-row small { display: block; color: var(--muted-foreground); margin-top: .35rem; }
+.decision-table-heading { font-size: .875rem; font-weight: 600; background: var(--muted); }
+.decision-investigation { border-bottom: 1px solid var(--border); }
+.decision-investigation > summary::before { content: '+ Expand'; grid-column: 1 / -1; font-size: .75rem; color: var(--primary); }
+.decision-investigation[open] > summary::before { content: '− Collapse'; }
+.decision-expanded { padding: 1rem; border-top: 1px solid var(--border); background: var(--card); }
+.decision-record { border-top: 1px solid var(--border); padding: .75rem 0; overflow-wrap: anywhere; }
+.decision-values { font-size: .875rem; }
+.decision-values > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 1rem; border-bottom: 1px solid var(--border); padding: .25rem 0; }
+@media (max-width: 760px) { .decision-grid { grid-template-columns: 1fr; } .decision-row { grid-template-columns: 1fr; gap: .65rem; } .decision-table-heading { display: none; } }
+
 /* ── Ink, paper, rule ────────────────────────────────────────────────────────
    shadcn's neutral palette, retuned on two axes and otherwise left alone.
 

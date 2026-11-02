@@ -141,12 +141,11 @@ def test_nullish_strings_are_dropped_not_coerced():
         assert _payload(result)["counts"]["match"] == 12
 
 
-def test_unparseable_number_widens_openly():
-    """"about thirty" can't be parsed: the axis is dropped (the widget shows
-    the widened query) rather than the call dying."""
+def test_unparseable_number_stops_query(monkeypatch):
+    """A malformed supplied condition must never widen the evidence search."""
+    monkeypatch.setattr(psi_query, "query", lambda q: pytest.fail("query must not execute"))
     result, _ = _invoke("query_test_runs", '{"o2_pct": "about thirty", "pressure_atm": "0.55"}')
-    assert "Invalid JSON input" not in result
-    assert "match" in _payload(result)["counts"]
+    assert json.loads(result)["error"] == "invalid_arguments"
 
 
 def test_proper_json_still_works():
@@ -155,20 +154,35 @@ def test_proper_json_still_works():
     assert _payload(result)["counts"]["match"] == 12
 
 
-def test_enum_out_of_vocabulary_is_dropped_but_valid_passes():
-    """"Solid fuel" (title-case, out of vocabulary) is dropped; the real
-    literal passes through unchanged."""
+def test_enum_out_of_vocabulary_is_rejected_but_valid_passes():
+    """Unknown categorical filters never disappear from an executed query."""
     result, _ = _invoke(
         "query_test_runs",
         '{"fuel_family": "PMMA", "geometry_class": "Solid fuel", "flow_direction": "opposed"}',
     )
-    assert "Invalid JSON input" not in result
+    assert json.loads(result)["error"] == "invalid_arguments"
     result2, _ = _invoke(
         "query_test_runs",
         '{"fuel_family": "PMMA", "geometry_class": "solid-fuel", "flow_direction": "opposed"}',
     )
     assert "Invalid JSON input" not in result2
     assert "solid-fuel" in result2
+
+
+@pytest.mark.parametrize("bad", ["NaN", "Infinity", "-Infinity", True, -1, 101])
+def test_invalid_oxygen_cannot_reach_query(monkeypatch, bad):
+    monkeypatch.setattr(psi_query, "query", lambda q: pytest.fail("query must not execute"))
+    raw = json.dumps({"o2_pct": bad, "fuel_family": "PMMA"})
+    ctx = _ctx("query_test_runs", raw)
+    result = asyncio.run(tool_on("query_test_runs", ctx, raw))
+    assert json.loads(result)["error"] == "invalid_arguments"
+    assert ctx.context._guard.failures == [("query_test_runs", {"error": "invalid_arguments"})]
+
+
+def test_unknown_argument_is_rejected_instead_of_ignored(monkeypatch):
+    monkeypatch.setattr(psi_query, "query", lambda q: pytest.fail("query must not execute"))
+    result, _ = _invoke("query_test_runs", '{"oxygen_pct": 30, "fuel_family": "PMMA"}')
+    assert json.loads(result)["error"] == "invalid_arguments"
 
 
 def test_invalid_json_still_gets_the_sdk_error_and_a_guard_trace():

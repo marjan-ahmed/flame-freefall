@@ -1408,7 +1408,7 @@
    "varied_axis": null,
    "status": "condition_matched",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -1887,7 +1887,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:a",
     "quantity": "spread_rate",
@@ -2361,7 +2361,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -2831,7 +2831,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -3308,7 +3308,7 @@
    "varied_axis": "flow_cm_s",
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -3789,7 +3789,7 @@
    "varied_axis": null,
    "status": "different_conditions",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -4270,7 +4270,7 @@
    "varied_axis": "flow_cm_s",
    "status": "controlled_difference",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -4756,7 +4756,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -5240,7 +5240,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -5724,7 +5724,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -6207,7 +6207,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -6689,7 +6689,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -7170,7 +7170,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -7654,7 +7654,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -8155,7 +8155,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -8646,7 +8646,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -9138,7 +9138,7 @@
    "varied_axis": null,
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",
@@ -9605,7 +9605,7 @@
    "varied_axis": "gravity",
    "status": "insufficient_metadata",
    "expect": {
-    "method_version": "comparability-v1",
+    "method_version": "comparability-v2",
     "left_id": "synthetic:a",
     "right_id": "synthetic:b",
     "quantity": "spread_rate",

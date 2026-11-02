@@ -35,6 +35,7 @@ class Outcome:
     at: dict | None = None  # the condition this value was measured at, e.g. {"flow_cm_s": 10}
     note: str | None = None
     confirmed_by: list[int] = field(default_factory=list)  # other sources stating the same value
+    metadata: dict = field(default_factory=dict)  # outcome-specific, independently source-indexed methods/instruments
 
     def to_json(self) -> dict:
         out: dict = {"quantity": self.quantity, "source": self.source}
@@ -48,6 +49,8 @@ class Outcome:
             out["at"] = self.at
         if self.note:
             out["note"] = self.note
+        if self.metadata:
+            out["metadata"] = self.metadata
         return out
 
 
@@ -64,6 +67,7 @@ class Run:
     raw: list[dict] = field(default_factory=list)  # parallel to `sources`
     conflicts: list[dict] = field(default_factory=list)
     id: str = ""
+    observation_relationship: dict | None = None
 
     def set(self, key: str, value) -> None:
         if value is not None:
@@ -93,6 +97,8 @@ class Run:
             out["conflicts"] = self.conflicts
         if self.notes:
             out["notes"] = self.notes
+        if self.observation_relationship is not None:
+            out["observation_relationship"] = self.observation_relationship
         out["raw"] = self.raw
         return out
 

@@ -1,0 +1,53 @@
+name: Validate PSI evidence
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence:
+    name: Query twins, ingest and evidence guards
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # The test suite uses mocked model/retrieval calls, never a live key.
+      GROQ_API_KEY: dummy
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          # Match the version used for local locked-environment checks.
+          version: "0.7.9"
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: "system/**/uv.lock"
+      - name: Install JavaScript workspace dependencies
+        run: npm ci
+      - name: Check decision source assignments
+        run: npm run check:decision
+      - name: TypeScript query and comparison tests
+        run: npm --prefix system/site run test:psi
+      - name: Source-linked research scenarios
+        run: npm run evaluate:research
+      - name: Install locked chat test environment
+        working-directory: system/chatkit-server
+        run: uv sync --locked --dev
+      - name: Python query, widgets, grounding and cross-layer tests
+        working-directory: system/chatkit-server
+        run: uv run --locked python -m pytest
+      - name: Install locked ingest test environment
+        working-directory: system/psi-ingest
+        run: uv sync --locked --dev
+      - name: Python ingest invariants
+        working-directory: system/psi-ingest
+        run: uv run --locked python -m pytest

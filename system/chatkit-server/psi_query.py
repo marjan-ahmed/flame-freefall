@@ -397,21 +397,21 @@ def _outcome_value(o: dict) -> float | None:
     """Only an explicitly reported scalar. Ranges remain source evidence,
     never invented midpoint observations in a distribution."""
     value = o.get("value")
-    if value is not None and math.isfinite(value) and not o.get("values"):
+    if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and not o.get("values") and not o.get("detection_limit"):
         if o.get("min", value) == o.get("max", value):
             return value
     return None
 
 
 def _cohort_conditions(run: dict, outcome: dict) -> dict:
-    """Conservative strata: all normalized recorded conditions, not just
-    the search axes. Missing conditions never imply physical equivalence."""
+    """Reported setup for inspection, not an assertion of equivalent cohorts.
+    Missing fields remain unknown even when two dictionaries happen to match."""
     out = {}
     for key, c in sorted(run["conditions"].items()):
         if isinstance(c.get("value"), str):
             out[key] = c["value"]
         else:
-            out[key] = {k: c[k] for k in ("value", "min", "max", "unit", "values", "flags") if k in c}
+            out[key] = {k: c[k] for k in ("value", "min", "max", "unit", "values", "flags", "uncertainty", "detection_limit", "interval_kind") if k in c}
     if outcome.get("at"):
         out["outcome_at"] = outcome["at"]
     return out
@@ -419,12 +419,15 @@ def _cohort_conditions(run: dict, outcome: dict) -> dict:
 
 def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", limit: int = 10,
          runs=None, invs=None) -> dict:
-    """Descriptive distributions, stratified by investigation, all recorded
-    conditions and unit. Only individual full-match tests with scalar,
-    unconflicted outcomes contribute. This is not a material safety ranking."""
+    """Sort individual scalar observations, never pool runs into materials.
+    A full search match is not a comparability audit: unrequested or missing
+    setup metadata cannot establish physically equivalent experiments."""
     if geometry_class not in RANKABLE or quantity not in RANKABLE[geometry_class]:
         return {"error": f"{quantity!r} is not a rankable result for {geometry_class!r}",
                 "rankable": RANKABLE.get(geometry_class, [])}
+    if q.get("geometry_class") and q["geometry_class"] != geometry_class:
+        return {"error": "The requested geometry class conflicts with the ranking class; query unchanged.",
+                "rankable": RANKABLE[geometry_class]}
     if runs is None or invs is None:
         runs, invs = load()
     full_q = {**q, "geometry_class": geometry_class}
@@ -433,7 +436,6 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
     by_material: dict[str, list[dict]] = defaultdict(list)
     by_id = {run["id"]: run for run in runs}
     excluded: Counter = Counter({"incomplete_conditions": len(result["partial"])})
-    target_flow = q.get("flow_cm_s", 0.0)
     for tier in ("match",):
         for v in result[tier]:
             run = by_id[v["id"]]
@@ -449,35 +451,58 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
             ):
                 excluded["did_not_ignite"] += 1
                 continue
-            # A run may report this quantity at several flow settings (e.g.
-            # BASS-II spread rate); one contribution per run, the entry
-            # nearest the requested flow (0 if none given) — tie-broken by
-            # the flow value itself so the pick is independent of list order,
-            # which the TS twin (reading the same JSON) cannot rely on
-            # matching v["outcomes"]'s Python-side _outcome_summary sort.
+            # A run may report a measurement sweep. Keep at most one
+            # unambiguously selected observation from each individual test.
             candidates = [o for o in v["outcomes"] if o["quantity"] == quantity and _outcome_value(o) is not None]
             if not candidates:
                 excluded["no_scalar_outcome"] += 1
                 continue
-            # Do not choose an arbitrary flow if the query did not request
-            # one, or use an outcome outside the requested flow tolerance.
-            if len(candidates) > 1 and "flow_cm_s" not in q:
+            candidates = [o for o in candidates if o.get("unit")]
+            if not candidates:
+                excluded["missing_outcome_unit"] += 1
+                continue
+            # Outcome-specific conditions override the run-wide envelope.
+            # Validate every requested axis, not only flow. An unspecified
+            # axis cannot silently select a member of a measurement sweep.
+            requested_axes = set(q) & set(NUMERIC_AXES)
+            candidates = [o for o in candidates if all(
+                axis not in requested_axes or (
+                    math.isfinite(value) and
+                    _norm_distance(axis, q[axis], {"min": value, "max": value}, NUMERIC_AXES[axis][1]) <= 1 + TOLERANCE_EPS
+                ) for axis, value in o.get("at", {}).items())]
+            if not candidates:
+                excluded["outcome_outside_query_window"] += 1
+                continue
+            if len(candidates) > 1 and any(
+                axis not in requested_axes for o in candidates for axis in o.get("at", {})):
                 excluded["multiple_outcome_conditions"] += 1
                 continue
-            if "flow_cm_s" in q:
-                candidates = [o for o in candidates if "flow_cm_s" not in o.get("at", {}) or
-                              abs(o["at"]["flow_cm_s"] - target_flow) <= (abs(target_flow) or 1) * NUMERIC_AXES["flow_cm_s"][1] + TOLERANCE_EPS]
-                if not candidates:
-                    excluded["outcome_outside_flow_window"] += 1
-                    continue
-            o = min(candidates, key=lambda o: (abs(o.get("at", {}).get("flow_cm_s", target_flow) - target_flow),
-                                               o.get("at", {}).get("flow_cm_s", target_flow)))
+            # Select nearest explicitly requested conditions; equal-distance
+            # alternatives remain ambiguous rather than trusting source order.
+            def distance(o):
+                return sum(_norm_distance(axis, q[axis], {"min": value, "max": value}, NUMERIC_AXES[axis][1])
+                           for axis, value in o.get("at", {}).items() if axis in requested_axes)
+            best_distance = min(distance(o) for o in candidates)
+            nearest = [o for o in candidates if abs(distance(o) - best_distance) <= TOLERANCE_EPS]
+            if len(nearest) != 1:
+                excluded["ambiguous_outcome"] += 1
+                continue
+            o = nearest[0]
             fam = v["fuel_family"] or "unassigned"
             conditions = _cohort_conditions(run, o)
-            key = json.dumps([fam, run["investigation"], conditions, o.get("unit")], sort_keys=True)
-            by_material[key].append({"run_id": v["id"], "investigation": v["investigation"], "fuel_family": fam,
+            # A run ID is deliberately part of the identity. Equal recorded
+            # fields (including equally missing apparatus/method metadata) do
+            # not establish exchangeability or a material-level distribution.
+            key = run["id"]
+            source_index = next(original["source"] for original in run["outcomes"]
+                                if original["quantity"] == quantity
+                                and original.get("measure", {}).get("raw") == o.get("raw")
+                                and original.get("measure", {}).get("value") == o.get("value")
+                                and original.get("at", {}) == o.get("at", {}))
+            by_material[key] = [{"run_id": v["id"], "investigation": v["investigation"], "fuel_family": fam,
                                      "conditions": conditions,
-                                     "tier": v["tier"], "value": _outcome_value(o), "unit": o.get("unit")})
+                                     "tier": v["tier"], "value": _outcome_value(o), "raw": o["raw"],
+                                     "source_index": source_index, "unit": o.get("unit")}]
 
     rows = []
     for entries in by_material.values():
@@ -485,13 +510,18 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
         n = len(vals)
         median = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
         rows.append({
+            "row_kind": "individual_observation", "comparison_status": "not_audited",
+            "value": entries[0]["value"], "raw": entries[0]["raw"], "source_index": entries[0]["source_index"],
+            # Compatibility fields for existing exports; n is always one.
+            # Interfaces must display value/raw, not a replicated median.
             "fuel_family": entries[0]["fuel_family"], "n": n, "min": round(vals[0], 4), "max": round(vals[-1], 4),
             "median": round(median, 4), "unit": entries[0].get("unit"),
             "runs": sorted(e["run_id"] for e in entries),
             "conditions": entries[0]["conditions"],
             "investigations": sorted({e["investigation"] for e in entries}),
         })
-    rows.sort(key=lambda r: (-r["median"] if direction == "desc" else r["median"], r["fuel_family"], r["runs"][0]))
+    # Different units are separate display groups, never one numerical order.
+    rows.sort(key=lambda r: (r["unit"], -r["value"] if direction == "desc" else r["value"], r["fuel_family"], r["runs"][0]))
 
     # "Untested at these conditions" means no match/partial run at all under
     # this query's OWN filters (categorical + numeric) -- not "every family
@@ -509,7 +539,8 @@ def rank(q: dict, quantity: str, geometry_class: str, direction: str = "desc", l
         "query": full_q, "quantity": quantity, "geometry_class": geometry_class, "direction": direction,
         "rows": rows[:limit], "total_ranked": len(rows),
         "excluded": dict(excluded),
-        "method": "Full-match individual tests; scalar outcomes only; separate investigation, recorded-condition and unit strata. Descriptive comparison, not a safety ranking.",
+        "mode": "individual_observations", "method_version": "sorted-observations-v1",
+        "method": "Sorted individual observations, grouped by reported unit. One eligible scalar outcome per full-match test; no pooled material estimates. Recorded setups remain separate, missing metadata is unknown, and physical comparability is not established. Not a safety ranking.",
         "untested": sorted(candidate_families - tested_families),
         "coverage": result["coverage"],
     }
@@ -523,10 +554,11 @@ def compact_rank(result: dict, max_rows: int = 10) -> dict:
     return {
         "quantity": result["quantity"], "geometry_class": result["geometry_class"],
         "query": result["query"], "direction": result["direction"], "total_ranked": result["total_ranked"],
-        "top": [{"material": r["fuel_family"], "n": r["n"],
-                 "median": f"{r['median']:g}" + (f" {r['unit']}" if r["unit"] else ""),
-                 "range": f"{r['min']:g}–{r['max']:g}" + (f" {r['unit']}" if r["unit"] else ""),
-                 "runs": r["runs"][:4]} for r in result["rows"][:max_rows]],
+        "mode": result["mode"], "method_version": result["method_version"],
+        "top": [{"material": r["fuel_family"], "row_kind": r["row_kind"],
+                 "observation": f"{r['value']:g}" + (f" {r['unit']}" if r["unit"] else ""),
+                 "run": r["runs"][0], "source_index": r["source_index"],
+                 "comparison_status": r["comparison_status"]} for r in result["rows"][:max_rows]],
         "untested_at_these_conditions": result["untested"][:10],
         "excluded": result["excluded"], "method": result["method"],
     }

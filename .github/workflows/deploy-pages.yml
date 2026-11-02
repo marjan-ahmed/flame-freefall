@@ -15,8 +15,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  evidence:
+    name: Verify evidence before publication
+    permissions:
+      contents: read
+    uses: ./.github/workflows/validate-psi.yml
   build:
     name: Build static export
+    needs: evidence
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

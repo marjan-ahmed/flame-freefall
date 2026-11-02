@@ -5,14 +5,13 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactEl
 import { useSearchParams } from "next/navigation";
 
 import { ATMOSPHERES } from "@/lib/psi-atmospheres";
-import { evidenceExport, evidenceParams, individualRuns, tolerancesFromParams } from "@/lib/evidence-method";
+import { evidenceExport, evidenceParams, individualRuns, initialExplorerQuery, outcomeSeries, tolerancesFromParams } from "@/lib/evidence-method";
 import { cn } from "@/lib/utils";
 import {
   CATEGORICAL_AXES,
   NUMERIC_AXES,
   query as runQuery,
   queryFromParams,
-  queryToParams,
   type NumericAxis,
   type Query,
   type QueryResult,
@@ -46,8 +45,8 @@ const toForm = (q: Query): Form => ({ ...EMPTY, ...Object.fromEntries(Object.ent
 const fromForm = (f: Form): Query => queryFromParams(new URLSearchParams(Object.entries(f).filter(([, v]) => v !== "")));
 
 function span(m: Measure | undefined): Span | null {
-  if (!m || m.min === undefined || m.max === undefined) return null;
-  return { lo: m.min, hi: m.max, vals: m.flags?.includes("multi") ? m.values : undefined };
+  if (!m || !Number.isFinite(m.min) || !Number.isFinite(m.max) || m.detection_limit || m.min! > m.max!) return null;
+  return { lo: m.min!, hi: m.max!, vals: m.flags?.includes("multi") ? m.values : undefined };
 }
 
 function axisDisplay(m: Measure | undefined, axis: NumericAxis): string {
@@ -69,6 +68,7 @@ function describeQuery(q: Query): string {
   if (q.fuel_family) bits.push(q.fuel_family.endsWith("*")
     ? `${q.fuel_family.slice(0, -1)} family (including blends and variants)` : q.fuel_family);
   if (q.flow_direction) bits.push(`${q.flow_direction} flow`);
+  if (q.fuel_form) bits.push(`sample form: ${q.fuel_form}`);
   if (q.geometry_class) bits.push(GEOMETRY_LABEL[q.geometry_class] ?? q.geometry_class);
   if (q.investigation) bits.push(q.investigation);
   return bits.join(" · ") || "all tests";
@@ -163,10 +163,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   const [tolerances, setTolerances] = useState(() => tolerancesFromParams(new URLSearchParams(params.toString())));
   const [individual, setIndividual] = useState(params.get("individual") === "1");
   const [loadError, setLoadError] = useState(false);
-  const [q, setQ] = useState<Query>(() => {
-    const fromUrl = queryFromParams(new URLSearchParams(params.toString()));
-    return Object.keys(fromUrl).length ? fromUrl : PRESETS[0].q;
-  });
+  const [q, setQ] = useState<Query>(() => initialExplorerQuery(new URLSearchParams(params.toString()), PRESETS[0].q));
   const [form, setForm] = useState<Form>(() => toForm(q));
   const [selected, setSelected] = useState<string | null>(params.get("run"));
   const [comparisonIds, setComparisonIds] = useState<string[]>(() => params.getAll("compare").slice(0, 2));
@@ -174,7 +171,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   const [comparisonVaried, setComparisonVaried] = useState(params.get("compare_varied") ?? "");
   const [tier, setTier] = useState<RunView["tier"]>("match");
   const [yAxis, setYAxis] = useState<"flow_cm_s" | "pressure_atm">("flow_cm_s");
-  const [quantity, setQuantity] = useState("spread_rate");
+  const [seriesKey, setSeriesKey] = useState("");
   const [outcomeX, setOutcomeX] = useState<NumericAxis>("flow_cm_s");
 
   useEffect(() => {
@@ -236,8 +233,6 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
     setQ(next);
     setForm(toForm(next));
     setSelected(null);
-    const p = queryToParams(next).toString();
-    window.history.replaceState(null, "", `${window.location.pathname}${p ? `?${p}` : ""}`);
   }, []);
 
   const onSubmit = (e: FormEvent) => {
@@ -255,9 +250,9 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
   const emphasis = (id: string): Emphasis => tierOf.get(id) ?? (catOnly.has(id) ? "other" : "dim");
 
   const mapPoints: Point[] = useMemo(() => {
-    if (!runs) return [];
+    if (!pool) return [];
     const out: Point[] = [];
-    for (const r of runs) {
+    for (const r of pool) {
       const x = span(r.conditions.o2_pct as Measure | undefined);
       if (!x) continue;
       const y = span(r.conditions[yAxis] as Measure | undefined);
@@ -274,47 +269,36 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runs, yAxis, colors, tierOf, catOnly]);
+  }, [pool, yAxis, colors, tierOf, catOnly]);
 
-  const noO2 = runs ? runs.filter((r) => !span(r.conditions.o2_pct as Measure | undefined)).length : 0;
+  const noO2 = pool ? pool.filter((r) => !span(r.conditions.o2_pct as Measure | undefined)).length : 0;
 
-  const outcomeQuantities = useMemo(() => {
-    const c = new Map<string, number>();
-    for (const r of runs ?? [])
-      if (catOnly.has(r.id)) for (const o of r.outcomes) if (o.measure?.min !== undefined) c.set(o.quantity, (c.get(o.quantity) ?? 0) + 1);
-    return [...c.entries()].sort((a, b) => b[1] - a[1]);
-  }, [runs, catOnly]);
-  useEffect(() => {
-    if (outcomeQuantities.length && !outcomeQuantities.some(([k]) => k === quantity)) setQuantity(outcomeQuantities[0][0]);
-  }, [outcomeQuantities, quantity]);
+  const series = useMemo(() => outcomeSeries((pool ?? []).filter(r => catOnly.has(r.id)), investigations), [pool, catOnly, investigations]);
+  const activeSeries = series.find(s => s.key === seriesKey) ?? series.find(s => s.quantity === "spread_rate") ?? series[0];
+  const quantity = activeSeries?.quantity ?? "spread_rate";
 
   const outcomePoints: Point[] = useMemo(() => {
     const out: Point[] = [];
-    for (const r of runs ?? []) {
-      if (!catOnly.has(r.id)) continue;
-      r.outcomes.forEach((o, i) => {
-        if (o.quantity !== quantity || o.measure?.min === undefined) return;
+    for (const { run: r, outcome: o, index: i } of activeSeries?.entries ?? []) {
         const atX = outcomeX === "flow_cm_s" && o.at?.flow_cm_s !== undefined ? { lo: o.at.flow_cm_s, hi: o.at.flow_cm_s } : null;
         const x = atX ?? span(r.conditions[outcomeX] as Measure | undefined);
-        if (!x) return;
-        const m = o.measure;
+        if (!x) continue;
+        const m = o.measure!;
         out.push({
           id: `${r.id}#${i}`,
           x,
           y: { lo: m.min!, hi: m.max!, vals: m.value === undefined ? m.values : undefined },
           color: colors[r.investigation],
-          emphasis: emphasis(r.id) === "dim" ? "other" : emphasis(r.id),
+          // The plot supplies context across numeric conditions; a run-level
+          // search match does not establish each per-flow outcome as a match.
+          emphasis: "other",
           title: `${r.id} (${invIndex[r.investigation]?.name})\n${QUANTITY_LABEL[quantity] ?? quantity}: ${outcomeText(o)}`,
         });
-      });
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [runs, catOnly, quantity, outcomeX, colors, tierOf]);
-  const outcomeUnit = useMemo(() => {
-    for (const r of runs ?? []) for (const o of r.outcomes) if (o.quantity === quantity && o.measure?.unit) return o.measure.unit;
-    return "";
-  }, [runs, quantity]);
+  }, [activeSeries, quantity, outcomeX, colors, invIndex]);
+  const outcomeUnit = activeSeries?.unit ?? "";
 
   const selectedRun = runs?.find((r) => r.id === selected) ?? null;
   const tol = (k: NumericAxis, v?: number): [number, number] | undefined => {
@@ -338,7 +322,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
         <form onSubmit={onSubmit} className="space-y-3 border border-border border-t-2 border-t-primary bg-card p-4 sm:p-5">
           <h2 className="font-display text-lg">Ask the data</h2>
           <p className="text-xs text-muted-foreground">Leave a field empty to not constrain it.</p>
-          {(["o2_pct", "flow_cm_s", "pressure_atm"] as NumericAxis[]).map((k) => (
+          {(Object.keys(NUMERIC_AXES) as NumericAxis[]).map((k) => (
             <label key={k} className="block text-sm">
               <span className="text-muted-foreground">
                 {NUMERIC_AXES[k].label} ({NUMERIC_AXES[k].unit}) · ±{NUMERIC_AXES[k].kind === "rel" ? `${(tolerances[k] ?? NUMERIC_AXES[k].tol) * 100}%` : `${tolerances[k] ?? NUMERIC_AXES[k].tol} ${NUMERIC_AXES[k].unit}`}
@@ -356,14 +340,15 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
           <details className="space-y-2 border-t pt-3">
             <summary className="cursor-pointer text-sm font-medium">Advanced: search tolerances and record types</summary>
             <p className="text-xs text-muted-foreground">Search heuristics, not safety margins. Changes apply immediately.</p>
-            {(["o2_pct", "pressure_atm"] as const).map(axis => (
+            {(Object.keys(NUMERIC_AXES) as NumericAxis[]).map(axis => (
               <label key={axis} className="block text-sm">
-                ? {NUMERIC_AXES[axis].label} ({axis === "o2_pct" ? "percentage points" : "atm"})
-                <input type="number" min="0" step="any" value={tolerances[axis] ?? NUMERIC_AXES[axis].tol}
-                  onChange={e => { const n = e.target.valueAsNumber; if (Number.isFinite(n) && n >= 0) setTolerances({ ...tolerances, [axis]: n }); }}
+                ± {NUMERIC_AXES[axis].label} ({NUMERIC_AXES[axis].kind === "rel" ? "% of target" : axis === "o2_pct" ? "percentage points" : NUMERIC_AXES[axis].unit})
+                <input type="number" min="0" step="any" value={(tolerances[axis] ?? NUMERIC_AXES[axis].tol) * (NUMERIC_AXES[axis].kind === "rel" ? 100 : 1)}
+                  onChange={e => { const n = e.target.valueAsNumber; if (Number.isFinite(n) && n >= 0) setTolerances({ ...tolerances, [axis]: n / (NUMERIC_AXES[axis].kind === "rel" ? 100 : 1) }); }}
                   className="mt-1 w-full rounded-md border bg-background px-2 py-1.5" />
               </label>
             ))}
+            <button type="button" className="text-sm text-primary underline" onClick={() => setTolerances({})}>Restore default search tolerances</button>
             <label className="flex gap-2 text-sm"><input type="checkbox" checked={individual} onChange={e => setIndividual(e.target.checked)} />Individual tests and test points only</label>
           </details>
           <label className="block text-sm">
@@ -374,6 +359,8 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               className="mt-1 w-full rounded-md border bg-background px-2 py-1.5"
             >
               <option value="">any</option>
+              {form.fuel_family && !fuelFamilies.some(([f]) => f === form.fuel_family) && !fuelGroups.some(([f]) => `${f}*` === form.fuel_family) &&
+                <option value={form.fuel_family}>{form.fuel_family} (requested filter)</option>}
               <optgroup label="Exact materials and compositions">{fuelFamilies.map(([f, n]) => (
                 <option key={f} value={f}>
                   {f} ({n})
@@ -393,6 +380,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               className="mt-1 w-full rounded-md border bg-background px-2 py-1.5"
             >
               <option value="">any</option>
+              {form.geometry_class && !(form.geometry_class in GEOMETRY_LABEL) && <option value={form.geometry_class}>{form.geometry_class} (requested filter)</option>}
               {Object.entries(GEOMETRY_LABEL).map(([k, v]) => (
                 <option key={k} value={k}>
                   {v}
@@ -408,10 +396,16 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               className="mt-1 w-full rounded-md border bg-background px-2 py-1.5"
             >
               <option value="">any</option>
+              {form.flow_direction && !["opposed", "concurrent", "coflow"].includes(form.flow_direction) && <option value={form.flow_direction}>{form.flow_direction} (requested filter)</option>}
               <option value="opposed">opposed</option>
               <option value="concurrent">concurrent</option>
               <option value="coflow">coflow</option>
             </select>
+          </label>
+          <label className="block text-sm">
+            <span className="text-muted-foreground">Sample form</span>
+            <input value={form.fuel_form} onChange={e => setForm({ ...form, fuel_form: e.target.value })}
+              className="mt-1 w-full rounded-md border bg-background px-2 py-1.5" placeholder="any" />
           </label>
           <label className="block text-sm">
             <span className="text-muted-foreground">Investigation</span>
@@ -421,6 +415,7 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
               className="mt-1 w-full rounded-md border bg-background px-2 py-1.5"
             >
               <option value="">all</option>
+              {form.investigation && !investigations.some(i => i.id === form.investigation) && <option value={form.investigation}>{form.investigation} (requested filter)</option>}
               {investigations.map((i) => (
                 <option key={i.id} value={i.id}>
                   {i.name}
@@ -571,22 +566,22 @@ export function Explorer({ investigations, basePath }: { investigations: Investi
           </section>
         )}
 
-        {result && outcomeQuantities.length > 0 && (
+        {result && series.length > 0 && (
           <section className="border border-border bg-card p-4 sm:p-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="font-display text-lg">Results against conditions</h2>
                 <p className="text-xs text-muted-foreground">
-                  Recorded numeric outcomes from tests passing your material / geometry filters. Source-processed workbook results are labeled separately.
+                  Recorded numeric outcomes passing your categorical filters and record scope, across numeric conditions. Each series uses one geometry class and one reported unit; it is not a ranking or a controlled comparison.
                   Where a test reports a result per flow setting, each is plotted at its own flow.
-                  Reported ranges show source intervals; measurement uncertainty is shown in test details and tooltips, without error bars.
+                  Reported ranges show source intervals, without pairing values across axes; measurement uncertainty is shown in test details and tooltips, without error bars. Censored bounds and disputed outcomes are omitted from this plot and retained in test details and exports.
                 </p>
               </div>
               <div className="flex min-w-0 max-w-full flex-wrap gap-2 text-sm">
-                <select aria-label="Outcome quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="min-w-0 max-w-full rounded-md border bg-background px-2 py-1">
-                  {outcomeQuantities.map(([k, n]) => (
-                    <option key={k} value={k}>
-                      {QUANTITY_LABEL[k] ?? k} ({n})
+                <select aria-label="Outcome series" value={activeSeries?.key ?? ""} onChange={(e) => setSeriesKey(e.target.value)} className="min-w-0 max-w-full rounded-md border bg-background px-2 py-1">
+                  {series.map(s => (
+                    <option key={s.key} value={s.key}>
+                      {QUANTITY_LABEL[s.quantity] ?? s.quantity} · {GEOMETRY_LABEL[s.geometry] ?? s.geometry} · {s.unit} ({s.entries.length})
                     </option>
                   ))}
                 </select>

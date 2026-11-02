@@ -8,7 +8,7 @@ import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import siteLogo from "@/app/icon.png";
 
-const links = [["/", "Dashboard"], ["/explore/", "Test explorer"], ["/chat/", "Ask a question"], ["/docs/", "Source library"]] as const;
+const links = [["/", "Dashboard"], ["/decide/", "Find relevant evidence"], ["/explore/", "Test explorer"], ["/chat/", "Ask a question"], ["/docs/", "Source library"]] as const;
 
 export function WorkspaceNav({ title = "Flame in Freefall" }: { title?: string }) {
   const pathname = usePathname();

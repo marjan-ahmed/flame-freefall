@@ -319,7 +319,7 @@ export const RANKABLE: Record<string, string[]> = {
 /** Explicit scalars only; never synthesize observations from ranges. */
 function outcomeValue(o: import("./psi-types").Outcome): number | null {
   const m = o.measure;
-  if (!m || m.flags?.includes("source_definition_unresolved")) return null;
+  if (!m || m.detection_limit || m.flags?.includes("source_definition_unresolved")) return null;
   if (m.value !== undefined && m.value !== null && Number.isFinite(m.value) && !m.values?.length) {
     if ((m.min ?? m.value) === (m.max ?? m.value)) return m.value;
   }
@@ -327,6 +327,11 @@ function outcomeValue(o: import("./psi-types").Outcome): number | null {
 }
 
 export type RankRow = {
+  row_kind: "individual_observation";
+  comparison_status: "not_audited";
+  value: number;
+  raw: string;
+  source_index: number;
   fuel_family: string;
   n: number;
   min: number;
@@ -351,10 +356,13 @@ export type RankResult =
       coverage: Coverage[];
       excluded: Record<string, number>;
       method: string;
+      mode: "individual_observations";
+      method_version: string;
     };
 
-/** Rank materials within ONE geometry class by a measured quantity, at
- * conditions given by q. TypeScript twin of psi_query.rank() — both are
+/** Sort individual observations within ONE geometry class. Full search
+ * matches do not establish comparable setups or pooled material estimates.
+ * TypeScript twin of psi_query.rank() — both are
  * pinned to psi-data/query-fixtures.json's rank_cases. */
 export function rank(
   runs: SlimRun[],
@@ -369,14 +377,16 @@ export function rank(
   if (!rankable.includes(quantity)) {
     return { error: `${JSON.stringify(quantity)} is not a rankable result for ${JSON.stringify(geometryClass)}`, rankable };
   }
+  if (q.geometry_class && q.geometry_class !== geometryClass) {
+    return { error: "The requested geometry class conflicts with the ranking class; query unchanged.", rankable };
+  }
   const invs: InvIndex = Object.fromEntries(investigations.map((i) => [i.id, i]));
   const fullQ: Query = { ...q, geometry_class: geometryClass };
   const result = query(runs, investigations, fullQ);
 
-  const byMaterial = new Map<string, { run_id: string; investigation: string; fuel_family: string; conditions: Record<string, unknown>; value: number; unit?: string }[]>();
+  const byMaterial = new Map<string, { run_id: string; investigation: string; fuel_family: string; conditions: Record<string, unknown>; value: number; raw: string; source_index: number; unit?: string }[]>();
   const excluded: Record<string, number> = { incomplete_conditions: result.partial.length };
   const exclude = (reason: string) => { excluded[reason] = (excluded[reason] ?? 0) + 1; };
-  const targetFlow = (q as Record<string, unknown>).flow_cm_s !== undefined ? Number((q as Record<string, unknown>).flow_cm_s) : 0.0;
   for (const tier of ["match"] as const) {
     for (const v of result[tier]) {
       if (!["test", "test-point"].includes(v.run.granularity)) { exclude("summary_or_envelope"); continue; }
@@ -385,37 +395,39 @@ export function rank(
         && ["no", "no ignition", "false"].includes((o.text ?? "").trim().toLowerCase()))) {
         exclude("did_not_ignite"); continue;
       }
-      // A run may report this quantity at several flow settings; one
-      // contribution per run, the entry nearest the requested flow (0 if
-      // none given) — tie-broken by the flow value itself, order-independent
-      // so this never has to rely on matching Python's outcomes ordering.
+      // Keep at most one unambiguously selected observation per test.
       let candidates = (v.run.outcomes ?? []).filter((o) => o.quantity === quantity && outcomeValue(o) !== null);
       if (!candidates.length) { exclude("no_scalar_outcome"); continue; }
-      if (candidates.length > 1 && q.flow_cm_s === undefined) { exclude("multiple_outcome_conditions"); continue; }
-      if (q.flow_cm_s !== undefined) {
-        const flowTolerance = NUMERIC_AXES.flow_cm_s.tol;
-        candidates = candidates.filter((o) => o.at?.flow_cm_s === undefined
-          || Math.abs(o.at.flow_cm_s - targetFlow) <= (Math.abs(targetFlow) || 1) * flowTolerance + TOLERANCE_EPS);
-        if (!candidates.length) { exclude("outcome_outside_flow_window"); continue; }
+      candidates = candidates.filter(o => o.measure?.unit);
+      if (!candidates.length) { exclude("missing_outcome_unit"); continue; }
+      const requestedAxes = new Set(Object.keys(q).filter(k => k in NUMERIC_AXES));
+      const distance = (axis: string, value: number) => normDistance(axis as NumericAxis, Number(q[axis as NumericAxis]), { min: value, max: value } as Measure, NUMERIC_AXES[axis as NumericAxis].tol)!;
+      candidates = candidates.filter(o => Object.entries(o.at ?? {}).every(([axis, value]) =>
+        !requestedAxes.has(axis) || (Number.isFinite(value) && distance(axis, value) <= 1 + TOLERANCE_EPS)));
+      if (!candidates.length) { exclude("outcome_outside_query_window"); continue; }
+      if (candidates.length > 1 && candidates.some(o => Object.keys(o.at ?? {}).some(axis => !requestedAxes.has(axis)))) {
+        exclude("multiple_outcome_conditions"); continue;
       }
-      const flowOf = (o: (typeof candidates)[number]) => (o.at?.flow_cm_s ?? targetFlow) as number;
-      const chosen = candidates.reduce((best, o) => {
-        const d = Math.abs(flowOf(o) - targetFlow);
-        const bd = Math.abs(flowOf(best) - targetFlow);
-        return d < bd || (d === bd && flowOf(o) < flowOf(best)) ? o : best;
-      });
+      const outcomeDistance = (o: (typeof candidates)[number]) => Object.entries(o.at ?? {}).reduce((sum, [axis, value]) =>
+        sum + (requestedAxes.has(axis) ? distance(axis, value) : 0), 0);
+      const bestDistance = Math.min(...candidates.map(outcomeDistance));
+      const nearest = candidates.filter(o => Math.abs(outcomeDistance(o) - bestDistance) <= TOLERANCE_EPS);
+      if (nearest.length !== 1) { exclude("ambiguous_outcome"); continue; }
+      const chosen = nearest[0];
       const val = outcomeValue(chosen)!;
       const fam = (catValue(v.run, "fuel_family", invs) ?? "unassigned") as string;
       const conditions: Record<string, unknown> = {};
       for (const key of Object.keys(v.run.conditions).sort(cmp)) {
         const c = v.run.conditions[key];
         conditions[key] = typeof c.value === "string" ? c.value
-          : Object.fromEntries(["value", "min", "max", "unit", "values", "flags"].filter((k) => k in c).map((k) => [k, (c as Record<string, unknown>)[k]]));
+          : Object.fromEntries(["value", "min", "max", "unit", "values", "flags", "uncertainty", "detection_limit", "interval_kind"].filter((k) => k in c).map((k) => [k, (c as Record<string, unknown>)[k]]));
       }
       if (chosen.at) conditions.outcome_at = chosen.at;
-      const key = JSON.stringify([fam, v.run.investigation, conditions, chosen.measure?.unit]);
-      const list = byMaterial.get(key) ?? [];
-      list.push({ run_id: v.run.id, investigation: invs[v.run.investigation].name, fuel_family: fam, conditions, value: val, unit: chosen.measure?.unit });
+      // Equal recorded metadata, including equally missing fields, never
+      // establishes physical equivalence. Each run remains one observation.
+      const key = v.run.id;
+      const list = [{ run_id: v.run.id, investigation: invs[v.run.investigation].name, fuel_family: fam, conditions, value: val,
+        raw: chosen.measure!.raw, source_index: chosen.source, unit: chosen.measure?.unit }];
       byMaterial.set(key, list);
     }
   }
@@ -426,6 +438,9 @@ export function rank(
     const n = vals.length;
     const median = n % 2 ? vals[(n - 1) / 2] : (vals[n / 2 - 1] + vals[n / 2]) / 2;
     rows.push({
+      row_kind: "individual_observation", comparison_status: "not_audited",
+      value: entries[0].value, raw: entries[0].raw, source_index: entries[0].source_index,
+      // Legacy fields remain for export compatibility; n is always one.
       fuel_family: entries[0].fuel_family,
       n,
       min: Math.round(vals[0] * 10000) / 10000,
@@ -437,7 +452,7 @@ export function rank(
       investigations: [...new Set(entries.map((e) => e.investigation))].sort(cmp),
     });
   }
-  rows.sort((a, b) => (direction === "desc" ? b.median - a.median : a.median - b.median) || cmp(a.fuel_family, b.fuel_family) || cmp(a.runs[0], b.runs[0]));
+  rows.sort((a, b) => cmp(a.unit ?? "", b.unit ?? "") || (direction === "desc" ? b.value - a.value : a.value - b.value) || cmp(a.fuel_family, b.fuel_family) || cmp(a.runs[0], b.runs[0]));
 
   // "Untested at these conditions" means no match/partial run at all under
   // this query's OWN filters (categorical + numeric) -- not "every family in
@@ -467,7 +482,8 @@ export function rank(
     rows: rows.slice(0, limit),
     total_ranked: rows.length,
     excluded,
-    method: "Full-match individual tests; scalar outcomes only; separate investigation, recorded-condition and unit strata. Descriptive comparison, not a safety ranking.",
+    mode: "individual_observations", method_version: "sorted-observations-v1",
+    method: "Sorted individual observations, grouped by reported unit. One eligible scalar outcome per full-match test; no pooled material estimates. Recorded setups remain separate, missing metadata is unknown, and physical comparability is not established. Not a safety ranking.",
     untested,
     coverage: result.coverage,
   };

@@ -110,10 +110,18 @@ def test_rank_untested_excludes_families_with_runs_at_these_conditions():
 
 # ── WARNING (modeling): non-ignition tests ranked as burn time 0 s ───────────
 
-@pytest.mark.xfail(strict=True, reason="CFI-G 'No ignition' rows carry burn_time=0 as a measured value; owner decision")
 def test_rank_burn_time_excludes_tests_that_never_ignited():
-    # Lunar preset: propane n=8, median 6.0 s — 4 of the 8 are hot_ignition='no', burn time '0'.
-    # Among ignited tests only, the median is 43.5 s.
-    r = psi_query.rank(psi_atmospheres.query_for("lunar"), "burn_time", "gaseous-flames")
-    rows = {x["fuel_family"]: x for x in r["rows"]}
-    assert rows["propane"]["min"] > 0
+    # Non-ignition zeros are retained in source records but never sorted as
+    # measured flame lifetimes. This defect is fixed; the strict xfail is removed.
+    q = psi_atmospheres.query_for("lunar")
+    runs, invs = psi_query.load()
+    by_id = {run["id"]: run for run in runs}
+    matches = psi_query.query({**q, "geometry_class": "gaseous-flames"})["match"]
+    no_ignition = {v["id"] for v in matches if any(
+        o["quantity"] in ("hot_ignition", "ignited") and str(o.get("text", "")).strip().lower() in ("no", "no ignition", "false")
+        for o in by_id[v["id"]]["outcomes"])}
+    assert no_ignition, "Real Lunar-window records must exercise the non-ignition guard"
+    r = psi_query.rank(q, "burn_time", "gaseous-flames", limit=len(runs))
+    assert r["rows"] and all(row["n"] == 1 for row in r["rows"])
+    assert not no_ignition.intersection(run_id for row in r["rows"] for run_id in row["runs"])
+    assert r["excluded"]["did_not_ignite"] == len(no_ignition)

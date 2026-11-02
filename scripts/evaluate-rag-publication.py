@@ -28,7 +28,17 @@ CASES = [
     ("FLEX-2 R377 hot cool flame burning rate constants", "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results"),
     ("FLEX cool flame R694 n-octane helium dilution", "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results"),
     ("R383 printed nitrogen oxygen atmosphere inconsistent", "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results"),
+    ("DAFT low alcohol reference dust first run comparison", "knowledge/literature/daft-cabin-aerosol"),
+    ("DAFT instruments Expedition 10 reference source Expedition 13", "knowledge/literature/daft-cabin-aerosol"),
+    ("LUCI Coriolis flame deflection away from fuel axis", "knowledge/literature/luci-rotating-rocket"),
+    ("LUCI preheat length shrink rate and flame base tracking", "knowledge/literature/luci-rotating-rocket"),
 ]
+EXPANDED_DETAILS = {
+    "DAFT low alcohol reference dust first run comparison": "low alcohol",
+    "DAFT instruments Expedition 10 reference source Expedition 13": "expedition 13",
+    "LUCI Coriolis flame deflection away from fuel axis": "coriolis",
+    "LUCI preheat length shrink rate and flame base tracking": "preheat",
+}
 CONTROLS = ["What is the recommended insulin dose for a child?", "Who won the 2026 football World Cup?",
     "How should a LOX-methane rocket injector be dimensioned?",
     "What is the Apollo 11 descent engine thrust curve?",
@@ -48,6 +58,7 @@ async def evaluate(url):
         async with ClientSession(transport[0], transport[1]) as session:
             await session.initialize()
             for query, expected in [*CASES, *((q, None) for q in CONTROLS)]:
+                print(f"Checking retrieval: {query}", flush=True)
                 started = time.perf_counter()
                 reply = await session.call_tool("search", arguments={"query": query, "k": 5})
                 body = getattr(reply, "structured_content", None) or getattr(reply, "structuredContent", None)
@@ -62,20 +73,32 @@ async def evaluate(url):
                 if expected:
                     rank = ids.index(expected) + 1 if expected in ids else None
                     row.update(expected_document=expected, target_rank=rank, target_found_at_5=rank is not None)
+                    if query in EXPANDED_DETAILS:
+                        passages = " ".join(h.get("content", "") for h in hits
+                            if h["provenance"]["stable_id"] == expected).lower()
+                        row["expanded_detail_retrieved"] = EXPANDED_DETAILS[query] in " ".join(passages.split())
                     results.append(row)
                 else:
                     row["correct_abstention"] = body.get("abstained") is True
                     controls.append(row)
     generations = sorted({r["generation"] for r in results if r["generation"] is not None})
-    return {"verified_at": datetime.now(timezone.utc).isoformat(),
-        "scope": "Configured Neon corpus verified through local MCP and cached Sentence Transformers. Not a public-web deployment test or independent expert retrieval validation.",
-        "endpoint": url, "health": health, "generations_verified": generations,
-        "approved_documents": 23, "published_chunks": 270,
-        "ingest": ({"generation": 9, "nodes": 32, "chunks": 270, "embedded": 15, "carried": 255,
+    lock = json.loads((ROOT / "build.lock.json").read_text(encoding="utf-8"))
+    receipt_path = ROOT / "research/rag-ingest-receipt.json"
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8")) if receipt_path.exists() else None
+    if receipt is not None and generations != [receipt.get("generation")]:
+        receipt = None
+    if receipt is None and generations == [9]:
+        receipt = {"generation": 9, "nodes": 32, "chunks": 270, "embedded": 15, "carried": 255,
                    "failed": 0, "active_generation_flipped": True,
                    "receipt_source": "Observed ksor ingest run 11; applies only to generation 9"}
-                   if generations == [9] else None),
-        "build_id": json.loads((ROOT / "build.lock.json").read_text(encoding="utf-8")).get("build_id"),
+    passed = all(r["target_found_at_5"] and r.get("expanded_detail_retrieved", True) for r in results) and all(r["correct_abstention"] for r in controls)
+    return {"verified_at": datetime.now(timezone.utc).isoformat(), "passed": passed,
+        "scope": ("Local MCP corpus check; not public deployment or independent expert validation." if root.startswith(("http://127.0.0.1", "http://localhost")) else "Public MCP retrieval check; not model-answer correctness or independent expert validation."),
+        "endpoint": url, "health": health, "generations_verified": generations,
+        "approved_documents": sum(d["status"] == "stable" for d in lock["documents"]),
+        "published_chunks": receipt["chunks"] if receipt else None,
+        "ingest": receipt,
+        "build_id": lock.get("build_id"),
         "dataset_sha256": hashlib.sha256((ROOT / "psi-data/derived/runs.json").read_bytes()).hexdigest(),
         "retrieval_cases": results, "out_of_scope_controls": controls,
         "target_document_hit_rate_at_5": sum(r["target_found_at_5"] for r in results) / len(results),
@@ -87,7 +110,13 @@ async def evaluate(url):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--url", default="http://127.0.0.1:8080/mcp")
+    parser.add_argument("--output", default="research/rag-publication.json", help="Write a new evaluation artifact; failed checks never replace an older successful report.")
+    parser.add_argument("--timeout", type=float, default=240, help="Overall evaluation timeout in seconds.")
     args = parser.parse_args()
-    result = asyncio.run(evaluate(args.url))
-    (ROOT / "research/rag-publication.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    if not 0 < args.timeout < 3600:
+        parser.error("--timeout must be positive and below 3600 seconds")
+    result = asyncio.run(asyncio.wait_for(evaluate(args.url), timeout=args.timeout))
+    (ROOT / args.output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"Verified generations {result['generations_verified']}; target hits {sum(r['target_found_at_5'] for r in result['retrieval_cases'])}/{len(CASES)}; correct out-of-scope abstentions {result['correct_control_abstentions']}/{len(CONTROLS)}")
+    if not result["passed"]:
+        raise SystemExit(1)

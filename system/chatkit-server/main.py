@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import io
 import json
+import math
 import os
 import sys
 import uuid
@@ -348,6 +349,9 @@ class ToolCallVisibilityHooks(RunHooks):
         self._task_index: dict[str, int] = {}
 
     def _describe_args(self, context) -> str:
+        guard = getattr(getattr(context, "context", None), "_guard", None)
+        if getattr(context, "tool_name", None) in {tool.name for tool in PSI_TOOLS} and getattr(guard, "request_text", None) is not None:
+            return "Checking the current request; the interpreted filters and any corrections are shown in the evidence widgets."
         raw = getattr(context, "tool_arguments", None)
         if not raw:
             return ""
@@ -491,9 +495,18 @@ async def _uniquify_fake_item_ids(
 # explanation", after a failed search). Keep in sync with the tone of that
 # prompt instruction but never rely on the model reproducing it.
 TOOL_FAILURE_ABSTENTION_TEXT = (
-    "The record couldn't be checked just now — the search or read call to it "
-    "failed. I can't give a grounded answer to this question at the moment; "
+    "An evidence tool failed, so this question could not be fully checked. "
+    "I can't give a grounded answer to this question at the moment; "
     "please try again shortly."
+)
+INVALID_QUERY_TEXT = (
+    "A supplied search condition could not be interpreted or was outside its physical range. "
+    "The query was stopped instead of dropping that condition. Please restate the conditions "
+    "with their units, or use the Explorer to set them explicitly."
+)
+CITATION_FAILURE_TEXT = (
+    "The generated explanation did not pass the evidence citation check and was withheld. "
+    "Use the source-linked evidence cards above to inspect the reported findings."
 )
 
 # Streamed as a Card, not chat text, when EVERY model provider fails for a
@@ -506,59 +519,77 @@ TOOL_FAILURE_ABSTENTION_TEXT = (
 # "degrade honestly instead of crashing" guarantee TOOL_FAILURE_ABSTENTION_TEXT
 # already gives search/read failures, extended to a full model-call failure.
 MODEL_UNAVAILABLE_TEXT = (
-    "The assistant can't reach any model provider right now (rate limit or "
-    "quota exhausted on every configured provider). This isn't a bug in your "
-    "question — please try again in a few minutes."
+    "The assistant could not complete this response. Please try again. "
+    "Any evidence cards already shown remain available for source inspection; "
+    "you can also continue the search in the Explorer."
 )
+
+
+PSI_EVIDENCE_HANDOFF_TEXT = "Use the evidence widgets to inspect the interpreted request, source records, missing metadata and any request clarification. Measurements and citations are rendered there directly from the evidence."
 
 
 async def _guard_response_text(
     ctx: AgentContext, events: AsyncIterator[ThreadStreamEvent],
 ) -> AsyncIterator[ThreadStreamEvent]:
-    """Two guarantees a prompt instruction alone cannot make, both enforced
-    from signals ctx._guard (turn_guard.TurnGuard) already computed during
-    the run -- the same "render from code, not from what the model says"
-    principle the citation cards above already use. This function's own job
-    is ONLY the chatkit wire-event matching; all classification logic lives
-    in TurnGuard.
+    """Hold model text until tool use for the whole turn is known.
 
-    1. If ctx._guard.should_override_reply() is set (a search/read call
-       genuinely failed this turn), every piece of the model's own final
-       text is swapped for TOOL_FAILURE_ABSTENTION_TEXT. on_tool_end always
-       runs before the model's follow-up text is generated in the same
-       turn, so by the time any assistant-message text event reaches this
-       wrapper the flag, if it's going to be set at all, already is --
-       there is no race.
+    PSI values render only in code-owned widgets; even pre-tool prose cannot
+    escape before a later PSI call. Narrative-only replies retain text and
+    independently streamed source cards. Final items are guarded too, so
+    persistence cannot restore the model prose that the stream withheld.
+    """
+    held: list[ThreadStreamEvent] = []
 
-    2. Otherwise, if query_test_runs ran this turn, the model's finished
-       text is checked for a cited run id that isn't in the payload it was
-       given. Unlike case 1 this is left as a loud server-log warning
-       rather than a text edit: surgically removing one fabricated citation
-       from a token stream that already reached the client is a much
-       larger change to this streaming path than swapping the whole
-       message, so detection stops here for now rather than risking the
-       success path."""
-    replaced_indices: set[int] = set()
+    def checked(text: str) -> str:
+        failure = ctx._guard.should_override_reply()
+        if failure:
+            return INVALID_QUERY_TEXT if failure.endswith("_invalid_arguments") else TOOL_FAILURE_ABSTENTION_TEXT
+        if ctx._guard.psi_tool_used:
+            return PSI_EVIDENCE_HANDOFF_TEXT
+        fabricated = ctx._guard.check_citations(text)
+        if fabricated:
+            print(f"[citation-check] explanation withheld: {sorted(fabricated)}")
+            return CITATION_FAILURE_TEXT
+        return text
+
     async for event in events:
+        update = getattr(event, "update", None)
+        item = getattr(event, "item", None)
+        if str(getattr(update, "type", "")).startswith("assistant_message.") or getattr(item, "type", None) == "assistant_message":
+            held.append(event)
+        else:
+            yield event
+    # Reuse the model item's event structure/id for ChatKit persistence while
+    # replacing every textual representation of a PSI answer, including deltas.
+    checked_parts: dict[tuple[str, int], str] = {}
+    for event in held:
+        update = getattr(event, "update", None)
+        if getattr(update, "type", None) == "assistant_message.content_part.done":
+            checked_parts[(event.item_id, update.content_index)] = checked(update.content.text or "")
+        item = getattr(event, "item", None)
+        if getattr(item, "type", None) == "assistant_message":
+            for index, content in enumerate(item.content):
+                checked_parts[(item.id, index)] = checked(content.text)
+    sent_parts: set[tuple[str, int]] = set()
+    for event in held:
         update = getattr(event, "update", None)
         utype = getattr(update, "type", None)
         if utype == "assistant_message.content_part.text_delta":
-            if ctx._guard.should_override_reply():
-                idx = update.content_index
-                if idx not in replaced_indices:
-                    replaced_indices.add(idx)
-                    update.delta = TOOL_FAILURE_ABSTENTION_TEXT
-                else:
-                    update.delta = ""
+            key = (event.item_id, update.content_index)
+            if key in sent_parts:
+                continue
+            # Never release unvalidated fragments, even on a non-PSI turn.
+            update.delta = checked_parts.get(key, checked(""))
+            sent_parts.add(key)
         elif utype == "assistant_message.content_part.done":
-            if ctx._guard.should_override_reply():
-                update.content.text = TOOL_FAILURE_ABSTENTION_TEXT
-            else:
-                fabricated = ctx._guard.check_citations(update.content.text or "")
-                if fabricated:
-                    print(f"[citation-check] fabricated run id(s) in reply, not present in "
-                          f"query_test_runs payload: {sorted(fabricated)} (valid ids this turn: "
-                          f"{sorted(ctx._guard.valid_run_ids)})")
+            update.content.text = checked(update.content.text or "")
+        elif utype == "assistant_message.content_part.added":
+            if update.content.text:
+                update.content.text = checked(update.content.text)
+        item = getattr(event, "item", None)
+        if getattr(item, "type", None) == "assistant_message":
+            for content in item.content:
+                content.text = checked(content.text)
         yield event
 
 
@@ -663,17 +694,25 @@ def _site_for(request: Request) -> str | None:
 
 
 def _clean_query(raw: dict) -> dict:
-    """Action payloads come back from the browser: keep only known keys with
-    well-typed values, never pass anything else into the query."""
+    """Validate browser actions without dropping a supplied constraint."""
     q = {}
     for k, v in raw.items():
         if k in psi_widgets.psi_query.NUMERIC_AXES:
             try:
-                q[k] = float(v)
+                number = float(v)
             except (TypeError, ValueError):
-                continue
+                raise ValueError(f"Invalid condition: {k}") from None
+            if isinstance(v, bool) or not math.isfinite(number):
+                raise ValueError(f"Invalid condition: {k}")
+            if ((k == "o2_pct" and not 0 <= number <= 100)
+                    or (k == "pressure_atm" and number <= 0)
+                    or (k == "flow_cm_s" and number < 0)):
+                raise ValueError(f"Invalid condition: {k}")
+            q[k] = number
         elif k in psi_widgets.psi_query.CATEGORICAL_AXES and isinstance(v, str) and len(v) < 80:
             q[k] = v
+        else:
+            raise ValueError(f"Invalid condition: {k}")
     return q
 
 
@@ -770,7 +809,10 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
         await self._maybe_update_thread_title(thread, context, input_user_message)
 
         agent_context = AgentContext(thread=thread, store=self.store, request_context=context)
-        agent_context._guard = TurnGuard()  # type: ignore[attr-defined]
+        # Current-turn text only: prior questions and uploaded source text cannot
+        # supply an unstated pressure, geometry or flow-direction constraint.
+        current_message = input_user_message or next((item for item in reversed(recent_items) if isinstance(item, UserMessageItem)), None)
+        agent_context._guard = TurnGuard(request_text=_item_text(current_message))  # type: ignore[attr-defined]
         result = Runner.run_streamed(assistant, input_items, context=agent_context, hooks=tool_call_hooks)
         context["_active_agent_run"] = result
 
@@ -793,7 +835,7 @@ class FlameFreefallChatKitServer(ChatKitServer[dict]):
             # reply the user should be able to read like any other answer,
             # not a distinct widget component (the widgets are reserved for
             # actual PSI evidence/data, per the user's own feedback).
-            print(f"[respond] every model provider failed: {exc!r}")
+            print(f"[respond] response generation failed: {exc!r}")
             yield ThreadItemDoneEvent(
                 item=AssistantMessageItem(
                     id=self.store.generate_item_id("message", thread, context),

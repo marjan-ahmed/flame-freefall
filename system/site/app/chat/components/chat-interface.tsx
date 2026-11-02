@@ -107,25 +107,24 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
         },
         {
           label: "Where are the gaps?",
-          prompt: "Show me the gap map for PMMA: which O2 and flow conditions has nobody tested?",
+          prompt: "Show the indexed PMMA evidence coverage by oxygen and flow, keeping missing conditions distinct from untested regions.",
         },
         {
           label: "SAFFIRE vs BASS-II fabric",
           prompt: "Compare SAFFIRE and BASS-II tests on cotton-fiberglass (SIBAL) fabric near 21% O2 and 20 cm/s.",
         },
         {
-          label: "Screen for a Lunar atmosphere",
+          label: "Evidence near a Lunar atmosphere",
           prompt:
-            "NASA-STD-6001B says materials must be evaluated at the worst-case atmosphere they'll see. Is there PSI data " +
-            "near the Lunar surface habitat atmosphere (34% O2, ~0.56 atm), and which solid-fuel materials rank fastest-" +
-            "spreading there?",
+            "Show indexed evidence near the cited proposed Lunar atmosphere. Separate direct solid-material tests, " +
+            "BRE emulation and incomplete conditions; do not infer safety or Lunar-gravity equivalence.",
         },
       ],
     },
     composer: {
       placeholder: "Ask about an experiment, material, or test condition…",
       attachments: {
-        enabled: true,
+        enabled: false,
         maxSize: 20 * 1024 * 1024,
         maxCount: 3,
         accept: { "application/pdf": [".pdf"], "image/*": [".png", ".jpg", ".jpeg"] },
@@ -182,7 +181,7 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
         },
         {
           id: "show_mission_readiness",
-          label: "Mission Readiness",
+          label: "Atmosphere Coverage",
           shortLabel: "Readiness",
           placeholderOverride: "Atmosphere: iss, gateway, or lunar…",
           icon: "clock",
@@ -211,11 +210,12 @@ export function ChatInterface({ title }: { title: string }): ReactElement {
           <h1>Ask about the evidence.</h1>
           <p>Ask about an investigation, compare test conditions, or inspect an individual result.</p>
           <div className="atlas-rail-section"><h2>Continue your research</h2>
+            <Link href="/decide/">Build an evidence dossier<span>Record your question, shortlist and next source checks</span></Link>
             <Link href="/explore/">Explore the test table<span>Filter conditions and inspect source rows</span></Link>
             <Link href="/explore/investigations/">Browse investigations<span>Compare experimental geometry and coverage</span></Link>
             <Link href="/docs/">Read the source record<span>Open governed findings and source notes</span></Link>
           </div>
-          <p className="atlas-rail-note">Use conversation history to return to a question. Source records remain available in the Explorer.</p>
+          <p className="atlas-rail-note">Chat history is temporary. Save a reproducible evidence dossier to retain your question, source records and search settings.</p>
         </aside>
         <div id="workspace-content" className="atlas-chat-canvas"><ChatKit control={control} className="h-full w-full" /></div>
       </div>

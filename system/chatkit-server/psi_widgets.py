@@ -105,7 +105,7 @@ def explorer_url(q: dict, run: str | None = None, site: str | None = None) -> st
     it per request from the Referer, checked against the CORS allowlist), so the
     link opens the Explorer on that same deployment — localhost in dev, GitHub
     Pages in production. SITE_URL is only the fallback."""
-    params = {k: v for k, v in q.items()}
+    params = {"search": "1", **q}
     if run:
         params["run"] = run
     return f"{(site or SITE_URL).rstrip('/')}/explore/?{urlencode(params)}"
@@ -754,8 +754,8 @@ def test_widget(run_id: str, site: str | None = None) -> Card:
     near_q: dict = {}
     for axis in ("o2_pct", "flow_cm_s", "pressure_atm"):
         m = _measure(run, axis)
-        if m:
-            near_q[axis] = round((m["min"] + m["max"]) / 2, 2) if m.get("value") is None else m["value"]
+        if m and isinstance(m.get("value"), (int, float)) and math.isfinite(m["value"]) and m.get("min") == m.get("max") and not m.get("values") and not m.get("detection_limit"):
+            near_q[axis] = m["value"]
     fam = (run["conditions"].get("fuel_family") or {}).get("value")
     if fam:
         near_q["fuel_family"] = fam
@@ -920,18 +920,37 @@ def results_summary(q: dict, quantity: str | None = None, x_axis: str = "flow_cm
 
 
 # ── 6. ranking ───────────────────────────────────────────────────────────────
-# Materials ranked by a measured result, within ONE geometry class (never
-# across classes — folder = geometry class = comparability, see AGENTS.md).
-# psi_query.rank() does the aggregation; this only draws it.
+# Sorted individual measurements, within ONE geometry class and unit group.
+# A shared geometry is necessary but does not establish comparable setups.
+# No pooled material leaderboard or median-of-one display is constructed.
 
-RANK_BAR_MAX = 220
+def _rank_setup(conditions: dict, geometry_class: str) -> str:
+    keys = ["apparatus", "confinement", "gravity", "instrument", "measurement_method",
+            "o2_pct", "pressure_atm", "flow_cm_s"]
+    keys += {"solid-fuel": ["fuel_form", "thickness_mm", "diameter_mm", "flow_direction"],
+             "droplet-combustion": ["droplet_d0_mm", "fuel_form"],
+             "gaseous-flames": ["burner_diameter_mm", "flame_type", "oxidizer_stream_o2_pct"]}.get(geometry_class, [])
+    def text(key):
+        c = conditions.get(key)
+        if isinstance(c, str):
+            return c
+        if isinstance(c, dict):
+            unit = f" {c['unit']}" if c.get("unit") else ""
+            if c.get("values"):
+                return "; ".join(_fmt(x) for x in c["values"]) + unit
+            if c.get("min") is not None and c.get("max") is not None and c["min"] != c["max"]:
+                return f"{_fmt(c['min'])}–{_fmt(c['max'])}{unit}"
+            if c.get("value") is not None:
+                return _fmt(c["value"]) + unit
+        return "not recorded"
+    return "; ".join(f"{key.replace('_', ' ')}: {text(key)}" for key in keys)
 
 
 def rank_widget(q: dict, quantity: str, geometry_class: str, direction: str = "desc", limit: int = 10) -> Card:
     r = psi_query.rank(q, quantity, geometry_class, direction, limit)
     qlabel = QUANTITY_LABEL.get(quantity, quantity.replace("_", " "))
     gc_label = GEOMETRY_LABEL.get(geometry_class, geometry_class)
-    children = [Title(value=f"{qlabel}, grouped test results", size="md"),
+    children = [Title(value=f"{qlabel}, sorted individual observations", size="md"),
                 Caption(value=f"{gc_label} · {query_title(q) if q else 'no conditions given'}")]
     full_q = {**q, "geometry_class": geometry_class}
 
@@ -948,27 +967,25 @@ def rank_widget(q: dict, quantity: str, geometry_class: str, direction: str = "d
     if not rows:
         children.append(Text(value="No eligible scalar outcomes in full-match individual tests. Review incomplete, interval and conflicted evidence in the Explorer.", size="sm"))
     else:
-        top_val = max(row["median"] for row in rows) or 1.0
-        for i, row in enumerate(rows, start=1):
+        children.append(Caption(value="Each row is one test observation. Setups differ or are unknown; value order is not a material, safety or performance leaderboard.", size="sm"))
+        for row in rows:
             unit = f" {row['unit']}" if row.get("unit") else ""
-            bar_w = max(6, round(RANK_BAR_MAX * row["median"] / top_val)) if top_val else 6
             children.append(Row(gap=2, align="center", wrap="wrap", children=[
-                Box(width=22, children=[Caption(value=f"{i}.", size="sm", color="tertiary")]),
                 Col(gap=1, flex=1, minWidth=180, children=[
                     Row(gap=2, align="center", wrap="wrap", children=[
                         Text(value=row["fuel_family"], size="sm", weight="semibold"),
-                        Badge(label=f"n={row['n']}", color="secondary", size="sm"),
+                        Badge(label="single observation", color="secondary", size="sm"),
                         *([Badge(label=iv, color="secondary", variant="outline", size="sm") for iv in row["investigations"][:2]]),
                     ]),
-                    Box(width=bar_w, height=10, radius="sm", background=PALETTE[(i - 1) % len(PALETTE)]),
-                    Caption(value=f"median {_fmt(row['median'])}{unit} · range {_fmt(row['min'])}–{_fmt(row['max'])}{unit}",
+                    Caption(value=f"Reported observation: {_fmt(row['value'])}{unit}; original cell {row['raw']}",
                             size="sm", color="tertiary"),
-                    Caption(value="Contributing runs: " + ", ".join(row["runs"]), size="sm", color="tertiary"),
+                    Caption(value=f"Run {row['runs'][0]}; outcome source index {row['source_index']}", size="sm", color="tertiary"),
+                    Caption(value="Recorded setup (not an equivalence audit): " + _rank_setup(row["conditions"], geometry_class), size="sm", color="tertiary"),
                 ]),
-                Button(label="Evidence", size="xs", variant="ghost",
-                       onClickAction=action("evidence", q={**full_q, "fuel_family": row["fuel_family"]})),
+                Button(label="Inspect observation", size="xs", variant="ghost",
+                       onClickAction=action("test", id=row["runs"][0])),
             ]))
-        children.append(Caption(value=r["method"] + " Missing setup metadata may still limit comparability.",
+        children.append(Caption(value=r["method"],
                                 size="sm", color="tertiary"))
     children.append(Caption(value="Excluded records: " + ", ".join(f"{k.replace('_', ' ')} {v}" for k, v in r["excluded"].items()), size="sm", color="tertiary"))
     if r.get("untested"):

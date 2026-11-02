@@ -1,0 +1,20 @@
+{
+  "verified_at": "2026-10-31T13:44:09.566966+00:00",
+  "generation": 10,
+  "nodes": 32,
+  "documents": 23,
+  "chunks": 284,
+  "embedded": 20,
+  "carried": 264,
+  "failed": 0,
+  "navigation_chunks_not_searchable": 14,
+  "active_generation_flipped": true,
+  "receipt_source": "Observed successful ksor ingest run 12; applies only to generation 10",
+  "source_commit": "d30f6dea3bbb55a4367d08fac9c832e913e9c60f-dirty",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dimensions": 1536,
+  "revised_documents": [
+    "knowledge/literature/daft-cabin-aerosol",
+    "knowledge/literature/luci-rotating-rocket"
+  ]
+}

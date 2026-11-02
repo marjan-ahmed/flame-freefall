@@ -1,0 +1,13 @@
+{
+  "left_id": "saffire-iv-vi:VI-3",
+  "right_id": "saffire-iv-vi:VI-4",
+  "quantity": "max_temp_sfu_outlet",
+  "source_extraction": "investigation_reports/_converted/Saffire-ICES-2024-ICES-365-accepted final.md",
+  "source_url": "https://ntrs.nasa.gov/citations/20240002981",
+  "source_table": "Table 2",
+  "outcome_values": [77, 57],
+  "shared_fields": ["geometry_class", "record_type", "fuel_family", "gravity", "flow_direction", "apparatus", "confinement", "flow_cm_s", "length_cm", "duct_width_cm", "duct_height_cm", "duct_length_cm"],
+  "different_fields": ["fuel", "o2_pct", "pressure_atm"],
+  "missing_fields": ["instrument", "measurement_method", "fuel_form", "thickness_mm", "width_cm"],
+  "next_step_codes": ["INSPECT_MISSING_METADATA", "MULTIPLE_SETUP_DIFFERENCES", "DESCRIPTIVE_ONLY"]
+}

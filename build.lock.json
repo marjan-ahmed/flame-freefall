@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "build_id": "sha256:a1209d56ca5b1b04de70317b6abc77c99656f0664ed1384b1d61f8e1d42f0e1b",
+  "build_id": "sha256:037e9a8ea3a1e3093f95cb1c62c812bd53716135103fd7244331cf5ba92b02de",
   "ksor_version": "0.0.60",
   "okf": {
     "version": "0.2",
@@ -8,8 +8,8 @@
     "spec_sha256": "26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101"
   },
   "source_commit": "fc69456683cc2829c0c69ec4c59a0acb472c99b8",
-  "dirty": false,
-  "as_of": "2026-10-31T12:57:37.259Z",
+  "dirty": true,
+  "as_of": "2026-11-02T12:45:52.274Z",
   "drafts": "hidden",
   "instance_sha256": "6a5d6e8646d8a842f619891dcb5815d2354b6e4289755e778c380d4e70e44144",
   "policy_sha256": "b1bfb30888527d4e42b54c533274885cbafa343617bc1c2d6f4365fa4f7a0106",
@@ -257,8 +257,17 @@
       ]
     },
     {
+      "path": "investigations/solid-fuel/saffire-attribution-correction.md",
+      "sha256": "115c65411aec773d32e27a30253a870673214424399e399294d9fff15e521e6a",
+      "status": "draft",
+      "audience": [
+        "public"
+      ],
+      "admitted": []
+    },
+    {
       "path": "literature/daft-cabin-aerosol.md",
-      "sha256": "9e7494455c328f9a68e7b4f8c61c7391899a13e344ceb91b027babe3a82cf9be",
+      "sha256": "11c1343796a837ec53747cfed9212d4201ad8055aa58e5e74ac67d589bee7229",
       "status": "stable",
       "audience": [
         "public"
@@ -269,7 +278,7 @@
     },
     {
       "path": "literature/luci-rotating-rocket.md",
-      "sha256": "0e7f45c7fb6328b9667b999e786084ae41fdbd1ed4af730664361031cdd5b079",
+      "sha256": "2b02d83aacb017bf4f4146533ac20a2207afb000642646073490459cfed29e32",
       "status": "stable",
       "audience": [
         "public"
@@ -366,11 +375,11 @@
     },
     {
       "path": "literature/daft-cabin-aerosol.summary.md",
-      "sha256": "1d4a7013c5f245fefb3fdc65a554742b1a1eba8580b49c0ae165000c1bfe0526"
+      "sha256": "d69d58128fe3bf82860a5cd6ca0bdb2dbf2193a5f260e2133442cde733c8d2de"
     },
     {
       "path": "literature/luci-rotating-rocket.summary.md",
-      "sha256": "ee48b6de163bd56d09f04255e55325b5b41799f30df9992954d7df4d78c1ca61"
+      "sha256": "6f14193411ca1792a3b4f1d76cfdaec9ea392923012fb75a95e63658efa01aa5"
     }
   ],
   "assets": [],
@@ -409,17 +418,17 @@
     },
     {
       "path": "investigations/solid-fuel/index.md",
-      "sha256": "4d88076226982a4cf07abdf7b769f7279d0bafcc18188e7a81e4ce632e1a08af"
+      "sha256": "ef6dfc79c95a5295ec2585bdc434c7bbd098f42ddd5d48abe8f06175d5f84a3d"
     },
     {
       "path": "literature/index.md",
-      "sha256": "2c84298688e11c2aa354757ab5a0898d8d017b18472b1ff1db8543f5405b1df9"
+      "sha256": "24ace9de85ea1f52a23be1ec17ba2d9f1cd0bf9ac3c0434d91c782ea92b87280"
     }
   ],
   "bundles": [
     {
       "viewer": "public",
-      "sha256": "9e77bf8820ae99ce0f560799aafb8415dddb0ff7a59e5072edc732bb38d5a474",
+      "sha256": "52ff99603e225cee41286a35da05dd7b6c63fa050ad9b3ee07c7abf9b54ba49f",
       "files": 56
     }
   ]

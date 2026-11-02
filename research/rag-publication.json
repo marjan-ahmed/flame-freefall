@@ -1,162 +1,173 @@
 {
-  "verified_at": "2026-10-31T12:59:14.281838+00:00",
-  "scope": "Configured Neon corpus verified through local MCP and cached Sentence Transformers. Not a public-web deployment test or independent expert retrieval validation.",
-  "endpoint": "http://127.0.0.1:8080/mcp",
+  "verified_at": "2026-11-02T12:17:27.042825+00:00",
+  "passed": true,
+  "scope": "Public MCP retrieval check; not model-answer correctness or independent expert validation.",
+  "endpoint": "https://flamefreefall-sor.vercel.app/mcp",
   "health": {
     "corpus_id": "flame-freefall",
     "store": "reachable",
     "boot_checks": "passed",
-    "generation": "9 \u00b7 32 nodes \u00b7 source d27c01214f29aaa21df9aad29cdaa8be8289b81d-dirty",
+    "generation": "10 \u00b7 32 nodes \u00b7 source d30f6dea3bbb55a4367d08fac9c832e913e9c60f-dirty",
     "abstain_gate": "floor 0.415 \u2014 below it, this record abstains",
     "embedding_space": "sentence-transformers/all-MiniLM-L6-v2/d1536 ok",
     "auth": "disabled"
   },
   "generations_verified": [
-    9
+    10
   ],
   "approved_documents": 23,
-  "published_chunks": 270,
+  "published_chunks": 284,
   "ingest": {
-    "generation": 9,
+    "verified_at": "2026-10-31T13:44:09.566966+00:00",
+    "generation": 10,
     "nodes": 32,
-    "chunks": 270,
-    "embedded": 15,
-    "carried": 255,
+    "documents": 23,
+    "chunks": 284,
+    "embedded": 20,
+    "carried": 264,
     "failed": 0,
+    "navigation_chunks_not_searchable": 14,
     "active_generation_flipped": true,
-    "receipt_source": "Observed ksor ingest run 11; applies only to generation 9"
+    "receipt_source": "Observed successful ksor ingest run 12; applies only to generation 10",
+    "source_commit": "d30f6dea3bbb55a4367d08fac9c832e913e9c60f-dirty",
+    "model": "sentence-transformers/all-MiniLM-L6-v2",
+    "dimensions": 1536,
+    "revised_documents": [
+      "knowledge/literature/daft-cabin-aerosol",
+      "knowledge/literature/luci-rotating-rocket"
+    ]
   },
-  "build_id": "sha256:a1209d56ca5b1b04de70317b6abc77c99656f0664ed1384b1d61f8e1d42f0e1b",
-  "dataset_sha256": "3286c2da58bd7c85704551d1021f8bd9c9f1564ed368fa236725b4c01fd3fcb2",
+  "build_id": "sha256:3e219e28512371f7629e3883cab311e15801217b3bc9ae273d52de81014fdd66",
+  "dataset_sha256": "7c7143cb7c7385d0be5dd97ce2041218305f7cfd5b1b88f15fec9fb27365e031",
   "retrieval_cases": [
     {
       "query": "LUCI rotating sounding rocket PMMA flame spread",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.6296541094779968,
+      "top_cosine": 0.6141466268388407,
       "retrieved_documents": [
         "knowledge/literature/luci-rotating-rocket",
         "knowledge/literature/luci-rotating-rocket",
         "knowledge/investigations/solid-fuel/bass-ii",
-        "knowledge/investigations/gaseous-flames/acme-s-flame",
-        "knowledge/investigations/solid-fuel/bass-ii"
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/investigations/gaseous-flames/acme-s-flame"
       ],
-      "latency_ms": 7713.58,
+      "latency_ms": 25209.16,
       "expected_document": "knowledge/literature/luci-rotating-rocket",
       "target_rank": 1,
       "target_found_at_5": true
     },
     {
       "query": "LUCI partial gravity oxygen concentration fitted spread rate",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.521532416343689,
+      "top_cosine": 0.4625488221645355,
       "retrieved_documents": [
-        "knowledge/literature/luci-rotating-rocket",
         "knowledge/literature/luci-rotating-rocket",
         "knowledge/investigations/solid-fuel/bass-ii",
         "knowledge/data-sources/psi-experimental-tables",
-        "knowledge/investigations/gaseous-flames/acme"
+        "knowledge/investigations/gaseous-flames/acme",
+        "knowledge/investigations/solid-fuel/saffire"
       ],
-      "latency_ms": 4544.26,
+      "latency_ms": 924.04,
       "expected_document": "knowledge/literature/luci-rotating-rocket",
       "target_rank": 1,
       "target_found_at_5": true
     },
     {
       "query": "lunar gravity centrifugal force spinning vehicle flammability",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.7693413862782335,
+      "top_cosine": 0.6779537200927734,
       "retrieved_documents": [
         "knowledge/literature/luci-rotating-rocket",
         "knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety",
-        "knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety",
+        "knowledge/literature/luci-rotating-rocket",
         "knowledge/literature/luci-rotating-rocket",
         "knowledge/foundations/decadal-survey/miller-spacecraft-materials-fire-safety"
       ],
-      "latency_ms": 3349.71,
+      "latency_ms": 1053.45,
       "expected_document": "knowledge/literature/luci-rotating-rocket",
       "target_rank": 1,
       "target_found_at_5": true
     },
     {
       "query": "DAFT cabin aerosol P-Trak Dust Trak background averages",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.7598289251327515,
+      "top_cosine": 0.7009273767471313,
       "retrieved_documents": [
         "knowledge/literature/daft-cabin-aerosol",
         "knowledge/literature/daft-cabin-aerosol",
         "knowledge/literature/daft-cabin-aerosol",
-        "knowledge/investigations/smoke-aerosol/same-r",
-        "knowledge/investigations/smoke-aerosol/same-r"
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol"
       ],
-      "latency_ms": 3405.85,
+      "latency_ms": 952.65,
       "expected_document": "knowledge/literature/daft-cabin-aerosol",
       "target_rank": 1,
       "target_found_at_5": true
     },
     {
       "query": "Velcro separation deliberately generated cabin aerosol DAFT",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.6634405851364136,
+      "top_cosine": 0.5810188747666925,
       "retrieved_documents": [
         "knowledge/literature/daft-cabin-aerosol",
         "knowledge/literature/daft-cabin-aerosol",
         "knowledge/literature/daft-cabin-aerosol",
-        "knowledge/investigations/smoke-aerosol/same-r",
-        "knowledge/investigations/smoke-aerosol/same-r"
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol"
       ],
-      "latency_ms": 3502.56,
+      "latency_ms": 993.57,
       "expected_document": "knowledge/literature/daft-cabin-aerosol",
       "target_rank": 1,
       "target_found_at_5": true
     },
     {
       "query": "DAFT average cabin air less than 0.005 mg/m3",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.6775875495426399,
+      "top_cosine": 0.6507366091452019,
       "retrieved_documents": [
         "knowledge/literature/daft-cabin-aerosol",
         "knowledge/literature/daft-cabin-aerosol",
         "knowledge/literature/daft-cabin-aerosol",
-        "knowledge/investigations/solid-fuel/bass-ii",
-        "knowledge/investigations/smoke-aerosol/same-r"
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol"
       ],
-      "latency_ms": 3385.77,
+      "latency_ms": 909.87,
       "expected_document": "knowledge/literature/daft-cabin-aerosol",
       "target_rank": 1,
       "target_found_at_5": true
     },
     {
       "query": "FLEX-2 R377 hot cool flame burning rate constants",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.6306885104961102,
+      "top_cosine": 0.6306886452846923,
       "retrieved_documents": [
         "knowledge/investigations/droplet-combustion/cfi",
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
@@ -164,19 +175,19 @@
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results"
       ],
-      "latency_ms": 3217.44,
+      "latency_ms": 868.49,
       "expected_document": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
       "target_rank": 2,
       "target_found_at_5": true
     },
     {
       "query": "FLEX cool flame R694 n-octane helium dilution",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.583051323890686,
+      "top_cosine": 0.5830513586432562,
       "retrieved_documents": [
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
         "knowledge/investigations/droplet-combustion/cfi",
@@ -184,132 +195,216 @@
         "knowledge/investigations/droplet-combustion/cfi",
         "knowledge/investigations/droplet-combustion/cfi"
       ],
-      "latency_ms": 3080.2,
+      "latency_ms": 1087.26,
       "expected_document": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
       "target_rank": 1,
       "target_found_at_5": true
     },
     {
       "query": "R383 printed nitrogen oxygen atmosphere inconsistent",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": false,
-      "top_cosine": 0.48182541240302335,
+      "top_cosine": 0.48182541348631225,
       "retrieved_documents": [
         "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
         "knowledge/investigations/gaseous-flames/acme-bre",
+        "knowledge/literature/luci-rotating-rocket",
         "knowledge/investigations/solid-fuel/bass",
-        "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
-        "knowledge/investigations/smoke-aerosol/same-r"
+        "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results"
       ],
-      "latency_ms": 3513.46,
+      "latency_ms": 885.93,
       "expected_document": "knowledge/investigations/droplet-combustion/flex-2-cool-flame-results",
       "target_rank": 1,
       "target_found_at_5": true
+    },
+    {
+      "query": "DAFT low alcohol reference dust first run comparison",
+      "generation": 10,
+      "gate": {
+        "floor": 0.415
+      },
+      "abstained": false,
+      "top_cosine": 0.7342543005943298,
+      "retrieved_documents": [
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol"
+      ],
+      "latency_ms": 882.11,
+      "expected_document": "knowledge/literature/daft-cabin-aerosol",
+      "target_rank": 1,
+      "target_found_at_5": true,
+      "expanded_detail_retrieved": true
+    },
+    {
+      "query": "DAFT instruments Expedition 10 reference source Expedition 13",
+      "generation": 10,
+      "gate": {
+        "floor": 0.415
+      },
+      "abstained": false,
+      "top_cosine": 0.4817014767260699,
+      "retrieved_documents": [
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/investigations/solid-fuel/bass-ii-requirements",
+        "knowledge/literature/daft-cabin-aerosol",
+        "knowledge/literature/daft-cabin-aerosol"
+      ],
+      "latency_ms": 1235.37,
+      "expected_document": "knowledge/literature/daft-cabin-aerosol",
+      "target_rank": 1,
+      "target_found_at_5": true,
+      "expanded_detail_retrieved": true
+    },
+    {
+      "query": "LUCI Coriolis flame deflection away from fuel axis",
+      "generation": 10,
+      "gate": {
+        "floor": 0.415
+      },
+      "abstained": false,
+      "top_cosine": 0.5904648655930091,
+      "retrieved_documents": [
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket"
+      ],
+      "latency_ms": 895.68,
+      "expected_document": "knowledge/literature/luci-rotating-rocket",
+      "target_rank": 1,
+      "target_found_at_5": true,
+      "expanded_detail_retrieved": true
+    },
+    {
+      "query": "LUCI preheat length shrink rate and flame base tracking",
+      "generation": 10,
+      "gate": {
+        "floor": 0.415
+      },
+      "abstained": false,
+      "top_cosine": 0.7289796092802173,
+      "retrieved_documents": [
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket",
+        "knowledge/literature/luci-rotating-rocket"
+      ],
+      "latency_ms": 966.12,
+      "expected_document": "knowledge/literature/luci-rotating-rocket",
+      "target_rank": 1,
+      "target_found_at_5": true,
+      "expanded_detail_retrieved": true
     }
   ],
   "out_of_scope_controls": [
     {
       "query": "What is the recommended insulin dose for a child?",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
-      "top_cosine": 0.10960925043793812,
+      "top_cosine": 0.10960927187231995,
       "retrieved_documents": [],
-      "latency_ms": 2987.69,
+      "latency_ms": 916.64,
       "correct_abstention": true
     },
     {
       "query": "Who won the 2026 football World Cup?",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
-      "top_cosine": 0.1892720944123215,
+      "top_cosine": 0.1892721298553912,
       "retrieved_documents": [],
-      "latency_ms": 2888.74,
+      "latency_ms": 861.8,
       "correct_abstention": true
     },
     {
       "query": "How should a LOX-methane rocket injector be dimensioned?",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
-      "top_cosine": 0.3523252010345459,
+      "top_cosine": 0.35904679772397285,
       "retrieved_documents": [],
-      "latency_ms": 2899.5,
+      "latency_ms": 1155.91,
       "correct_abstention": true
     },
     {
       "query": "What is the Apollo 11 descent engine thrust curve?",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
-      "top_cosine": 0.3259253301002185,
+      "top_cosine": 0.3630008615851923,
       "retrieved_documents": [],
-      "latency_ms": 3339.21,
+      "latency_ms": 1137.28,
       "correct_abstention": true
     },
     {
       "query": "Give a patient-specific diabetes medication schedule.",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
-      "top_cosine": 0.11844819784164429,
+      "top_cosine": 0.11844818333100204,
       "retrieved_documents": [],
-      "latency_ms": 3134.56,
+      "latency_ms": 855.39,
       "correct_abstention": true
     },
     {
       "query": "What are the compressive strength values for lunar basalt concrete?",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
-      "top_cosine": 0.3954314540788044,
+      "top_cosine": 0.39543142427648914,
       "retrieved_documents": [],
-      "latency_ms": 3016.32,
+      "latency_ms": 1198.3,
       "correct_abstention": true
     },
     {
       "query": "How are comet orbital elements calculated?",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
-      "top_cosine": 0.2569863498210907,
+      "top_cosine": 0.25698643922805786,
       "retrieved_documents": [],
-      "latency_ms": 3192.07,
+      "latency_ms": 904.29,
       "correct_abstention": true
     },
     {
       "query": "What is the 2026 income tax allowance in Canada?",
-      "generation": 9,
+      "generation": 10,
       "gate": {
         "floor": 0.415
       },
       "abstained": true,
       "top_cosine": 0.2577190245557417,
       "retrieved_documents": [],
-      "latency_ms": 3763.89,
+      "latency_ms": 845.41,
       "correct_abstention": true
     }
   ],
   "target_document_hit_rate_at_5": 1.0,
-  "mean_reciprocal_target_rank_at_5": 0.9444444444444444,
+  "mean_reciprocal_target_rank_at_5": 0.9615384615384616,
   "correct_control_abstentions": 8,
   "limitations": "Question labels are internal engineering expectations. Target-document hits do not establish passage-level precision, answer correctness, or scientific validity. The 0.415 floor was measured on separate calibration probes; these held-out checks do not establish universal out-of-domain reliability. Structured measurements remain in deterministic PSI tools, not an ungoverned vector dump."
 }

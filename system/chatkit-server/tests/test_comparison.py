@@ -50,3 +50,13 @@ def test_comparison_policy():
         got = compare_runs(c["left"], c["right"], c["investigations"], c["quantity"], c["varied_axis"])
         assert got["status"] == c["status"], c["name"]
         assert got["can_compare"] == (c["status"] in ("condition_matched", "controlled_difference"))
+
+
+def test_nonfinite_measurements_cannot_establish_comparability():
+    for invalid in (float("inf"), float("nan"), True):
+        c = cases()[0]
+        for side in ("left", "right"):
+            c[side]["conditions"]["pressure_atm"].update(value=invalid, min=invalid, max=invalid)
+        got = compare_runs(c["left"], c["right"], c["investigations"], c["quantity"])
+        assert not got["can_compare"]
+        assert "pressure_atm" in got["unknown_or_conflicted"]

@@ -1,0 +1,48 @@
+{
+  "checked_at": "2026-11-02T12:21:12.652Z",
+  "read_only": true,
+  "passed": false,
+  "expected_dataset_sha256": "7c7143cb7c7385d0be5dd97ce2041218305f7cfd5b1b88f15fec9fb27365e031",
+  "checks": [
+    {
+      "name": "site",
+      "url": "https://marjan-ahmed.github.io/flame-freefall/",
+      "status": 200,
+      "reachable": true
+    },
+    {
+      "name": "decision_workflow",
+      "url": "https://marjan-ahmed.github.io/flame-freefall/decide/",
+      "status": 404,
+      "reachable": false
+    },
+    {
+      "name": "dataset",
+      "url": "https://marjan-ahmed.github.io/flame-freefall/psi/runs.json",
+      "status": 200,
+      "reachable": true,
+      "dataset_sha256": "3286c2da58bd7c85704551d1021f8bd9c9f1564ed368fa236725b4c01fd3fcb2",
+      "records": 1951,
+      "matches_local_dataset": false
+    },
+    {
+      "name": "chat_health",
+      "url": "https://flame-freefall-site.vercel.app/health",
+      "status": 200,
+      "reachable": true
+    },
+    {
+      "name": "corpus_health",
+      "url": "https://flamefreefall-sor.vercel.app/health",
+      "status": 200,
+      "reachable": true
+    },
+    {
+      "name": "corpus_ready",
+      "url": "https://flamefreefall-sor.vercel.app/ready",
+      "status": 200,
+      "reachable": true
+    }
+  ],
+  "limitations": "HTTP health is not retrieval correctness, answer validation or evidence that local code was deployed. A mismatching dataset or missing route requires publication and a fresh check; this command never publishes."
+}

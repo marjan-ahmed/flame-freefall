@@ -1,0 +1,267 @@
+{
+  "checked_at": "2026-11-02T12:48:55.925Z",
+  "dataset": {
+    "generated_at": "2026-11-02T12:14:31+00:00",
+    "sha256": "7c7143cb7c7385d0be5dd97ce2041218305f7cfd5b1b88f15fec9fb27365e031"
+  },
+  "passed": true,
+  "cases": [
+    {
+      "id": "prevention-lunar",
+      "question": "Which experiments inform a material study near the proposed Lunar atmosphere?",
+      "task": "Shortlist direct SAFFIRE evidence and indirect BRE evidence; explain the retrieval sensitivity and next source checks.",
+      "forbidden_inferences": [
+        "A full atmosphere match establishes material safety",
+        "BRE is a measured solid specimen",
+        "Microgravity validates Lunar gravity"
+      ],
+      "passed": true,
+      "observed": {
+        "selected_ids": [
+          "acme-bre",
+          "saffire-iv-vi"
+        ],
+        "sensitivity": [
+          {
+            "label": "Current window",
+            "query": {
+              "o2_pct": 34,
+              "pressure_atm": 0.5576
+            },
+            "tolerances": {
+              "o2_pct": 1.5,
+              "pressure_atm": 0.09999999999999999,
+              "flow_cm_s": 0.3
+            },
+            "investigations": [
+              {
+                "id": "saffire-iv-vi",
+                "geometry": "solid-fuel",
+                "full": 0,
+                "incomplete": 0
+              },
+              {
+                "id": "acme-bre",
+                "geometry": "gaseous-flames",
+                "full": 1,
+                "incomplete": 0
+              }
+            ]
+          },
+          {
+            "label": "Half pressure tolerance",
+            "query": {
+              "o2_pct": 34,
+              "pressure_atm": 0.5576
+            },
+            "tolerances": {
+              "o2_pct": 1.5,
+              "pressure_atm": 0.049999999999999996,
+              "flow_cm_s": 0.3
+            },
+            "investigations": [
+              {
+                "id": "saffire-iv-vi",
+                "geometry": "solid-fuel",
+                "full": 0,
+                "incomplete": 0
+              },
+              {
+                "id": "acme-bre",
+                "geometry": "gaseous-flames",
+                "full": 1,
+                "incomplete": 0
+              }
+            ]
+          },
+          {
+            "label": "Double oxygen tolerance",
+            "query": {
+              "o2_pct": 34,
+              "pressure_atm": 0.5576
+            },
+            "tolerances": {
+              "o2_pct": 3,
+              "pressure_atm": 0.09999999999999999,
+              "flow_cm_s": 0.3
+            },
+            "investigations": [
+              {
+                "id": "saffire-iv-vi",
+                "geometry": "solid-fuel",
+                "full": 1,
+                "incomplete": 0
+              },
+              {
+                "id": "acme-bre",
+                "geometry": "gaseous-flames",
+                "full": 1,
+                "incomplete": 0
+              }
+            ]
+          }
+        ],
+        "audit_status": "insufficient_metadata",
+        "audit_source": [
+          {
+            "kind": "report",
+            "table": "Table 2",
+            "line": 102,
+            "doc": "knowledge/investigations/solid-fuel/saffire",
+            "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+            "doc_status": "stable",
+            "source_id": "saffire-vi-ices-2024",
+            "title": "Preliminary Results from the Saffire VI Experiment",
+            "url": "https://ntrs.nasa.gov/citations/20240002981"
+          },
+          {
+            "kind": "report",
+            "table": "Table 2",
+            "line": 103,
+            "doc": "knowledge/investigations/solid-fuel/saffire",
+            "doc_title": "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment",
+            "doc_status": "stable",
+            "source_id": "saffire-vi-ices-2024",
+            "title": "Preliminary Results from the Saffire VI Experiment",
+            "url": "https://ntrs.nasa.gov/citations/20240002981"
+          }
+        ],
+        "next_steps": [
+          {
+            "code": "INSPECT_MISSING_METADATA",
+            "fields": [
+              "instrument",
+              "measurement_method",
+              "fuel_form",
+              "thickness_mm",
+              "width_cm"
+            ],
+            "text": "Inspect the linked original sources for these missing or ambiguous fields. The source may not contain the value; do not fill it by inference."
+          },
+          {
+            "code": "MULTIPLE_SETUP_DIFFERENCES",
+            "fields": [
+              "fuel",
+              "o2_pct",
+              "pressure_atm"
+            ],
+            "text": "These recorded conditions differ beyond the nominated varied condition. Their effects cannot be isolated by this pair."
+          },
+          {
+            "code": "DESCRIPTIVE_ONLY",
+            "fields": [],
+            "text": "Use this audit to explain shared evidence, setup differences and the remaining source checks. It does not estimate a treatment effect, statistical significance, material safety or gravity equivalence."
+          }
+        ]
+      }
+    },
+    {
+      "id": "detection-observations",
+      "question": "Which smoke observations and instrument channels inform an early-warning study?",
+      "task": "Inspect SAME-R relationships and source columns; explain why an identifier group is not a replicate count.",
+      "forbidden_inferences": [
+        "Every suffix denotes an aged sample",
+        "All observations are independent tests",
+        "Instrument voltage is calibrated smoke concentration"
+      ],
+      "passed": true,
+      "observed": {
+        "identifier_summary": {
+          "observations": 109,
+          "resolved_identifier_groups": 65,
+          "ambiguous_observations": 2,
+          "unclassified_observations": 0,
+          "independence": "unknown",
+          "method_version": "same-r-source-identifiers-v1",
+          "limitation": "Identifier groups are derived from source test-number stems. They do not establish shared specimens, independent experiments or replicates. No observations are merged."
+        },
+        "example_record_id": "PSI-101:SAME #51",
+        "instrument": {
+          "value": "ISS detector scattering channel",
+          "raw": "ISS Detector Scatter (volts)",
+          "basis": "exact source workbook column, not inferred from investigation identity",
+          "source": 2,
+          "quote": "ISS Detector Scatter (volts)"
+        },
+        "source": {
+          "kind": "psi-workbook",
+          "dataset": "PSI-101",
+          "file": "Combined SAMER Results 06 02 14.xlsx",
+          "sheet": "Reduced Data with ISS Det",
+          "row": 33,
+          "quote": "ISS Detector Scatter (volts)"
+        },
+        "calibration": "unknown",
+        "independence": "unknown"
+      }
+    },
+    {
+      "id": "suppression-methods",
+      "question": "What supports comparison of FLEX burning-rate measurements under different conditions?",
+      "task": "Inspect the selected outcome method and source definition, then explain the remaining comparison blockers.",
+      "forbidden_inferences": [
+        "One campaign method applies to every outcome",
+        "An extrapolated extinction diameter is an exact measured point",
+        "The catalog identifies a universally best suppressant"
+      ],
+      "passed": true,
+      "observed": {
+        "record_ids": [
+          "PSI-69:FLEX-001",
+          "PSI-69:FLEX-002"
+        ],
+        "metadata": {
+          "instrument": {
+            "value": "HiBMs backlit droplet imaging",
+            "raw": "The backlit HiBMs view of the droplet provides the droplet size and droplet dynamics as a function of time.",
+            "basis": "source-defined instrument for this outcome only",
+            "source": 2,
+            "quote": "The backlit HiBMs view of the droplet provides the droplet size and droplet dynamics as a function of time."
+          },
+          "measurement_method": {
+            "value": "Average linear fit of droplet diameter squared versus time",
+            "raw": "Burning rate-average burning rate constant from a linear fit",
+            "basis": "Table IX outcome definition; supporting fit-axis fragment retained in source",
+            "source": 2,
+            "quote": "Burning rate-average burning rate constant from a linear fit"
+          }
+        },
+        "comparison_status": "insufficient_metadata",
+        "blockers": [
+          "flow_direction",
+          "apparatus",
+          "confinement"
+        ],
+        "differences": [
+          "pressure_atm",
+          "droplet_d0_mm"
+        ],
+        "next_steps": [
+          {
+            "code": "INSPECT_MISSING_METADATA",
+            "fields": [
+              "flow_direction",
+              "apparatus",
+              "confinement"
+            ],
+            "text": "Inspect the linked original sources for these missing or ambiguous fields. The source may not contain the value; do not fill it by inference."
+          },
+          {
+            "code": "MULTIPLE_SETUP_DIFFERENCES",
+            "fields": [
+              "pressure_atm",
+              "droplet_d0_mm"
+            ],
+            "text": "These recorded conditions differ beyond the nominated varied condition. Their effects cannot be isolated by this pair."
+          },
+          {
+            "code": "DESCRIPTIVE_ONLY",
+            "fields": [],
+            "text": "Use this audit to explain shared evidence, setup differences and the remaining source checks. It does not estimate a treatment effect, statistical significance, material safety or gravity equivalence."
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": "Executable internal source/data checks. No researcher was observed; no independent relevance labels, acceptance, safety validation or treatment effect is established."
+}

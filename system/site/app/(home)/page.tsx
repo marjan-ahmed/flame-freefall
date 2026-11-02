@@ -72,6 +72,8 @@ export default function HomePage(): ReactElement {
           Dataset generated {new Date(psiGeneratedAt()).toISOString().slice(0, 10)}.
         </p>
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm">
+          <Link className="text-primary underline" href="/decide/">Find relevant evidence</Link>
+          <Link className="text-primary underline" href="/explore/?compare=saffire-iv-vi%3AVI-3&compare=saffire-iv-vi%3AVI-4&compare_quantity=max_temp_sfu_outlet">Worked audit: two SAFFIRE PMMA records</Link>
           <Link className="text-primary underline" href="/explore/?investigation=saffire-iv-vi&run=saffire-iv-vi%3AVI-3">Inspect SAFFIRE temperature, gas and smoke-threshold evidence</Link>
           <Link className="text-primary underline" href="/explore/?investigation=flex-2">Inspect FLEX-2 fuel envelopes and literature outcomes</Link>
         </div>

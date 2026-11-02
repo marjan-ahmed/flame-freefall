@@ -35,9 +35,10 @@ export function ReadinessCards({ readiness }: { readiness: ReadinessSummary[] })
                 <li
                   key={c.geometryClass}
                   className={"border px-2 py-1 text-xs " + (c.covered ? "ksor-coverage-ok" : "ksor-coverage-gap")}
-                  title={`${c.match} at conditions, ${c.partial} partial`}
+                  title="Full means every requested condition is reported within the search window. Incomplete records do not establish atmosphere coverage."
                 >
-                  {c.label} {c.covered ? `(${c.match + c.partial})` : "— gap"}
+                  <span className="block font-medium">{c.label}</span>
+                  <span className="block">{c.match} full / {c.partial} incomplete</span>
                 </li>
               ))}
             </ul>

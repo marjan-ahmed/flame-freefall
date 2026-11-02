@@ -20,7 +20,9 @@ answer the user can steer without another model call.
 from __future__ import annotations
 
 import functools
+import inspect
 import json
+import math
 import time
 from typing import Literal
 
@@ -30,6 +32,8 @@ from chatkit.agents import AgentContext
 import psi_atmospheres
 import psi_query
 import psi_widgets
+from request_intent import bind_query, parse_request, QUERY_KEYS
+from chatkit.widgets import Card, Caption, Text, Markdown
 
 GeometryClass = Literal["solid-fuel", "droplet-combustion", "gaseous-flames", "smoke-aerosol"]
 FlowDirection = Literal["opposed", "concurrent", "coflow", "stagnation"]
@@ -56,9 +60,9 @@ _recent_calls: dict[tuple[str, str], float] = {}  # (thread id, tool+args) → l
 # strings. An instruction cannot fix this (the model does not see its own
 # argument types as wrong), so this is the code-level guarantee: each tool's
 # on_invoke_tool is wrapped to rewrite the raw JSON to schema-typed values
-# first — numeric strings to floats, null-ish strings to "key absent",
-# out-of-vocabulary enum strings dropped, real JSON passed through.
-_NULLISH_STRINGS = {"", "null", "none", "nan", "undefined"}
+# first — numeric strings to floats, null-ish strings to "key absent".
+# Invalid supplied numbers or categorical constraints stop the call.
+_NULLISH_STRINGS = {"", "null", "none", "undefined"}
 
 
 def _prop_variants(prop: dict) -> list[dict]:
@@ -110,9 +114,8 @@ def _normalize_tool_args(tool_name: str, props: dict, required: set[str], raw_js
 
     Invalid JSON is returned untouched so the SDK raises its own consistent
     "Invalid JSON input" error; a dict always comes back, so pydantic never
-    sees a string where the schema says number. Dropping an unparseable
-    numeric axis widens the query — and the evidence widget always shows the
-    query it actually answered, so the broadening is visible, never silent.
+    sees a string where the schema says number. An invalid supplied constraint
+    must fail closed: omitting it would answer a different scientific question.
     """
     try:
         parsed = json.loads(raw_json) if raw_json and raw_json.strip() else {}
@@ -123,6 +126,8 @@ def _normalize_tool_args(tool_name: str, props: dict, required: set[str], raw_js
     out: dict = {}
     for key, value in parsed.items():
         prop = props.get(key)
+        if prop is None:
+            raise ValueError(f"Unknown argument {key!r}; no query was executed.")
         kind = _schema_kind(prop) if prop is not None else "unknown"
         if isinstance(value, str):
             s = value.strip()
@@ -137,16 +142,26 @@ def _normalize_tool_args(tool_name: str, props: dict, required: set[str], raw_js
                 try:
                     out[key] = float(s)
                 except ValueError:
-                    pass  # unparseable number -> omit this axis
-                continue
+                    raise ValueError(f"{key} must be a finite number; no query was executed.") from None
+                value = out[key]
             if kind == "enum":
                 if s in _schema_enum_values(prop):
                     out[key] = s
+                else:
+                    raise ValueError(f"Unrecognized {key}; no query was executed.")
                 continue
-            out[key] = s
+            if kind != "number":
+                out[key] = s
         else:
             out[key] = value  # JSON-native number/bool/null/list: schema-valid
-    return json.dumps(out)
+        if kind == "number" and value is not None:
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise ValueError(f"{key} must be a finite number; no query was executed.")
+            if ((key == "o2_pct" and not 0 <= value <= 100)
+                    or (key == "pressure_atm" and value <= 0)
+                    or (key == "flow_cm_s" and value < 0)):
+                raise ValueError(f"{key} is outside its physical range; no query was executed.")
+    return json.dumps(out, allow_nan=False)
 
 
 def _harden_args(tool) -> None:
@@ -163,8 +178,23 @@ def _harden_args(tool) -> None:
 
     @functools.wraps(invoke)
     async def wrapper(ctx, input_json: str):
+        guard = getattr(getattr(ctx, "context", None), "_guard", None)
+        if callable(getattr(guard, "record_psi_tool", None)):
+            guard.record_psi_tool(tool.name)
+        guard = getattr(getattr(ctx, "context", None), "_guard", None)
+        if guard is not None:
+            # Aggregate tools expose no per-run citations. An invented citation
+            # must still be rejected when this turn returned no individual ids.
+            guard.record_valid_run_ids(set())
         try:
-            result = await invoke(ctx, _normalize_tool_args(tool.name, props, required, input_json))
+            normalized = _normalize_tool_args(tool.name, props, required, input_json)
+        except ValueError as exc:
+            guard = getattr(getattr(ctx, "context", None), "_guard", None)
+            if guard is not None:
+                guard.record_tool_result(tool.name, {"error": "invalid_arguments"})
+            return json.dumps({"error": "invalid_arguments", "message": str(exc)})
+        try:
+            result = await invoke(ctx, normalized)
         except Exception:
             guard = getattr(getattr(ctx, "context", None), "_guard", None)
             if guard is not None:
@@ -214,8 +244,59 @@ def _guarded(fn):
     name -- see TurnGuard._classify_failure -- so no guard changes needed."""
     @functools.wraps(fn)
     async def wrapper(ctx: RunContextWrapper[AgentContext], *args, **kwargs):
+        guard = ctx.context._guard
+        if callable(getattr(guard, "record_psi_tool", None)):
+            guard.record_psi_tool(fn.__name__)
         try:
-            return await fn(ctx, *args, **kwargs)
+            if fn.__name__ in {"show_test_details", "compare_test_runs"} and getattr(guard, "request_text", None) is not None:
+                supplied = inspect.signature(fn).bind_partial(ctx, *args, **kwargs).arguments
+                permitted = {v.casefold() for v in guard.valid_run_ids}
+                for key in ("run_id", "left_id", "right_id"):
+                    identifier = supplied.get(key)
+                    if identifier and identifier.casefold() not in guard.request_text.casefold() and identifier.casefold() not in permitted:
+                        await ctx.context.stream_widget(Card(children=[Text(value="Choose a canonical record ID from the evidence or Explorer. No unrequested record was selected.", size="sm"), Markdown(value=f"[Choose records in the Explorer]({psi_widgets.explorer_url({}, site=_site(ctx))})")]))
+                        return "Evidence request interpreted as unsupported or ambiguous; no query was executed."
+            if fn.__name__ in {"show_gap_map", "plot_results", "rank_results", "show_mission_readiness", "compare_investigations"} and getattr(guard, "request_text", None) is not None:
+                signature = inspect.signature(fn)
+                bound = signature.bind_partial(ctx, *args, **kwargs)
+                intent = parse_request(guard.request_text)
+                errors = list(intent.errors)
+                if fn.__name__ == "compare_investigations":
+                    errors = [e for e in errors if not e.startswith("More than one investigation")]
+                    _, invs = psi_query.load()
+                    allowed = set().union(*(psi_query._investigation_ids(n, invs) for n in intent.investigations))
+                    for name in bound.arguments.get("investigations") or []:
+                        resolved = psi_query._investigation_ids(name, invs)
+                        if not resolved or not resolved.issubset(allowed):
+                            errors.append("An investigation was not explicitly named. No comparison was executed.")
+                    bound.arguments["investigations"] = intent.investigations or None
+                if "atmosphere" in signature.parameters:
+                    if intent.atmosphere:
+                        bound.arguments["atmosphere"] = intent.atmosphere
+                    elif signature.parameters["atmosphere"].default is inspect.Parameter.empty:
+                        errors.append("Choose a cited named atmosphere or use explicit conditions in the Explorer.")
+                    else:
+                        bound.arguments["atmosphere"] = None
+                preset = psi_atmospheres.query_for(intent.atmosphere) if intent.atmosphere else {}
+                for key in QUERY_KEYS:
+                    if key in signature.parameters:
+                        if key not in intent.query and signature.parameters[key].default is inspect.Parameter.empty:
+                            errors.append(f"State {key} explicitly; it cannot be selected from a typical setup.")
+                        else:
+                            bound.arguments[key] = intent.query.get(key)
+                    elif key in intent.query and not (fn.__name__ == "compare_investigations" and key == "investigation") and intent.query[key] != preset.get(key):
+                        errors.append(f"This view cannot apply requested {key}; use the Explorer rather than dropping that condition.")
+                if errors:
+                    await ctx.context.stream_widget(Card(children=[Text(value="The evidence request needs clarification. No query was executed.", size="sm"), *[Caption(value=e, size="sm") for e in dict.fromkeys(errors)], Markdown(value=f"[Set explicit conditions in the Explorer]({psi_widgets.explorer_url({}, site=_site(ctx))})")]))
+                    return "Evidence request interpreted as unsupported or ambiguous; no query was executed."
+                await ctx.context.stream_widget(Card(children=[Text(value="Applied request filters: " + ", ".join(f"{k}={v}" for k, v in intent.query.items()), size="sm")]))
+                args, kwargs = bound.args[1:], bound.kwargs
+            result = await fn(ctx, *args, **kwargs)
+            # Plain tool refusals must also reach the reader deterministically,
+            # because model prose after a PSI tool is never displayed.
+            if isinstance(result, str) and not result.startswith(("Widget shown", "You already showed", "Evidence request interpreted")):
+                await ctx.context.stream_widget(Card(children=[Text(value=result, size="sm")]))
+            return result
         except Exception:
             ctx.context._guard.record_tool_result(fn.__name__, None)
             raise
@@ -225,13 +306,10 @@ def _guarded(fn):
 def _reply(repeat: bool, instructions: str, payload: dict, cite_run_ids: bool = True) -> str:
     head = ("You already showed this exact widget; do not call the tool again. " if repeat
             else "Widget shown to the user. ")
-    cite = (" Cite run ids in parentheses using the FULL id exactly as given in each "
-            "result's \"id\" field, e.g. (PSI-25:M18) — never drop the ':M18' part and cite just the dataset "
-            "(PSI-25) on its own, and never reuse one citation for two different runs; no other citation markup; "
-            "no tables." if cite_run_ids else
-            " This payload has no per-run \"id\" field — do not write any parenthetical run-id citation "
-            "(nothing like (PSI-25:M18)) in this reply; no other citation markup; no tables.")
-    return head + instructions + cite + "\n" + json.dumps(payload, ensure_ascii=False)
+    # These linguistic instructions only avoid wasting model tokens; the stream
+    # guard is the guarantee and replaces all PSI-turn model prose with a fixed
+    # handoff. Counts, measurements, citations and corrections live in widgets.
+    return head + "The server supplies the final evidence handoff. Do not restate measurements or citations; do not call another tool.\n" + json.dumps(payload, ensure_ascii=False)
 
 
 @function_tool(
@@ -257,6 +335,24 @@ async def query_test_runs(
 ) -> str:
     q = _q(o2_pct=o2_pct, flow_cm_s=flow_cm_s, pressure_atm=pressure_atm, fuel_family=fuel_family,
            geometry_class=geometry_class, flow_direction=flow_direction, investigation=investigation)
+    request_text = getattr(ctx.context._guard, "request_text", None)
+    if request_text is not None:
+        intent, corrections = bind_query(request_text, q)
+        if intent.errors:
+            await ctx.context.stream_widget(Card(children=[
+                Text(value="The evidence request needs clarification. No query was executed.", size="sm"),
+                *[Caption(value=error, size="sm") for error in dict.fromkeys(intent.errors)],
+                Markdown(value=f"[Set explicit conditions in the Explorer]({psi_widgets.explorer_url({}, site=_site(ctx))})"),
+            ]))
+            return "Evidence request interpreted as unsupported or ambiguous; no query was executed."
+        q = intent.query
+        children = [Text(value="Interpreted request: " + ", ".join(f"{k}={v}" for k, v in q.items()), size="sm")]
+        if corrections:
+            children.append(Caption(value="Unsupported additions or omissions in the proposed query were corrected from your message: " + ", ".join(corrections) + ". Only the displayed filters were applied.", size="sm"))
+        if intent.atmosphere:
+            preset = psi_atmospheres.ATMOSPHERES[intent.atmosphere]
+            children.append(Caption(value=f"Named atmosphere source: {preset['doc']}. {preset['quote']} Explicit conditions override the preset.", size="sm"))
+        await ctx.context.stream_widget(Card(children=children))
     if not q:
         return "Please narrow your question — at least one condition (O₂ %, flow cm/s, pressure atm, fuel, geometry, investigation) is required to query the PSI test table."
     result = psi_query.query(q)
@@ -285,7 +381,7 @@ async def query_test_runs(
 @function_tool(
     description_override=(
         "Show the GAP MAP: a grid of O2 bands × flow (or pressure) bands, each cell shaded by how many tests were "
-        "run there, the user's target outlined, empty cells = conditions never tested. Use when the user asks what "
+        "run there, the user's target outlined; empty cells mean no indexed records in the current plotted subset, not absence of all research. Use when the user asks what "
         "has or hasn't been tested, where the gaps are, or how well conditions are covered. Filters narrow it to a "
         "fuel / geometry / investigation."
     )
@@ -419,9 +515,9 @@ async def plot_results(
 
 @function_tool(
     description_override=(
-        "RANK materials within ONE geometry class by a measured result — highest or lowest first. Use for "
+        "Sort individual measured observations within ONE geometry class — highest or lowest first. Use for "
         "'which material burns fastest/slowest', 'rank fuels by...', or any question that names an order. Never "
-        "compares across geometry classes. quantity must fit geometry_class: solid-fuel -> spread_rate; "
+        "compares across geometry classes or establishes a material leaderboard. No pooling, safety ranking or comparability claim. quantity must fit geometry_class: solid-fuel -> spread_rate; "
         "droplet-combustion -> burning_rate_k or extinction_diameter; gaseous-flames -> burn_time or "
         "peak_burner_temp_c. atmosphere: a named mission atmosphere ('iss', 'gateway' for the Lunar Gateway, "
         "'lunar' for a Lunar surface habitat) — use this when the user names a mission, the ISS, the Gateway, the "
@@ -462,11 +558,7 @@ async def rank_results(
         return _reply(repeat, "Reply in at most 40 words: say this quantity can't be ranked for this geometry "
                               "class and name what CAN be ranked instead (the \"rankable\" list). Do not invent "
                               "a ranking.", payload, cite_run_ids=False)
-    return _reply(repeat, "Reply in at most 90 words: name the top few materials in rank order with their median "
-                          "value exactly as given (never compute your own average or rank order) — each is a "
-                          "median over n runs (given per material), not one test's number, so refer to materials "
-                          "by name, never by a run id. Mention at most one 'untested_at_these_conditions' "
-                          "material worth noting.", payload, cite_run_ids=False)
+    return _reply(repeat, "Direct the reader to the sorted individual observations and their exact-run source links. No material median, pooled cohort, safety leaderboard or comparability claim.", payload, cite_run_ids=False)
 
 
 @function_tool(

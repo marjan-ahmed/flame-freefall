@@ -14,9 +14,9 @@ export function ExperimentAtlas({ investigations }: { investigations: Investigat
     <div className="research-intro">
       <span className="research-label"><span /> NASA microgravity combustion</span>
       <h1>Find the evidence.<br />Understand fire in space.</h1>
-      <p>Explore NASA microgravity combustion research. Find relevant tests, compare measured outcomes, and follow each result to its source.</p>
+      <p>Find experiments that inform your fire-safety question. Inspect measurements, audit comparison limits, and export the evidence behind your next research step.</p>
       <div className="research-actions">
-        <Link href="/explore/" className="research-primary">Explore test data <ArrowUpRight size={18} /></Link>
+        <Link href="/decide/" className="research-primary">Find relevant evidence <ArrowUpRight size={18} /></Link>
         <Link href="/chat/" className="research-secondary flame-blue-action">Ask a research question <ArrowUpRight size={18} /></Link>
       </div>
       <div className="research-paths">

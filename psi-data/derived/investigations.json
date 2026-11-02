@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-31T12:54:38+00:00",
+ "generated_at": "2026-11-02T12:14:31+00:00",
  "generator": "system/psi-ingest",
  "investigations": [
   {
@@ -358,7 +358,7 @@
    "granularity": {
     "test": 276
    },
-   "runs_with_report_data": 275,
+   "runs_with_report_data": 276,
    "runs_with_outcomes": 276,
    "conflicts": 0,
    "outcome_quantities": {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactElement } from "react";
+import { Fragment, useEffect, useState, type ReactElement } from "react";
 
 import type { Investigation, Measure, SlimRun } from "@/lib/psi-types";
 
@@ -62,7 +62,7 @@ export function RunDetail({
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            {investigation?.name} · {run.granularity === "test" ? "individual test" : run.granularity}
+            {investigation?.name} · {run.observation_relationship ? "source observation" : run.granularity === "test" ? "individual test" : run.granularity}
             {run.date ? ` · ${run.date}` : ""}
           </p>
           <h3 className="font-mono text-lg font-semibold">{run.id}</h3>
@@ -73,6 +73,15 @@ export function RunDetail({
           </button>
         )}
       </header>
+
+      {run.observation_relationship && <section className="mt-4 border-l-2 border-border pl-3" aria-label="Observation relationship">
+        <h4 className="font-semibold">Observation and source identifier</h4>
+        <p>Source test label: {run.observation_relationship.source_label}; material: {run.observation_relationship.material ?? "unreported"}.</p>
+        <p>Description as written: {run.observation_relationship.description || "not reported"}. Aging role: {run.observation_relationship.role}.</p>
+        <p>{run.observation_relationship.status === "ambiguous_identifier" ? "Ambiguous identifier: these observations are not grouped." : `Derived identifier group: ${run.observation_relationship.group_id}. Related labels: ${run.observation_relationship.related_source_labels.join(", ")}.`}</p>
+        <p className="mt-2 text-muted-foreground">{run.observation_relationship.basis}. Independence remains unknown. {run.observation_relationship.role_basis}.</p>
+        <p className="mt-1 text-xs">Source {run.observation_relationship.source + 1}: {sourceLabel(run, run.observation_relationship.source, investigation)}</p>
+      </section>}
 
       <section className="mt-3">
         <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sources</h4>
@@ -114,7 +123,7 @@ export function RunDetail({
                   {s.descriptor && !s.url ? (
                     <span className="block text-xs text-muted-foreground">{s.descriptor}</span>
                   ) : null}
-                  {s.scope ? <span className="block text-xs text-muted-foreground">{s.scope}: inherited apparatus metadata, not test-specific conditions</span> : null}
+                  {s.scope ? <span className="block text-xs text-muted-foreground">Scope: {s.scope}</span> : null}
                 </>
               ) : (
                 <>
@@ -154,10 +163,12 @@ export function RunDetail({
       <section className="mt-4">
         <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Results</h4>
         {run.outcomes.length ? (
-          <table className="mt-1 w-full text-xs">
+          <table className="mt-1 w-full table-fixed text-xs">
+            <colgroup><col className="w-[30%]" /><col className="w-[20%]" /><col className="w-[50%]" /></colgroup>
             <tbody>
               {run.outcomes.map((o, i) => (
-                <tr key={i} className="border-b last:border-0 align-top">
+                <Fragment key={i}>
+                <tr className="border-b last:border-0 align-top">
                   <td className="py-1 pr-2 text-muted-foreground">{QUANTITY_LABEL[o.quantity] ?? o.quantity}</td>
                   <td className="py-1 pr-2 font-semibold">{outcomeText(o)}</td>
                   <td className="py-1 text-muted-foreground">
@@ -167,6 +178,10 @@ export function RunDetail({
                     {o.note ? ` · ${o.note}` : ""}
                   </td>
                 </tr>
+                {!!Object.keys(o.metadata ?? {}).length && <tr><td colSpan={3} className="border-b pb-3">
+                  {Object.entries(o.metadata ?? {}).map(([field, meta]) => <details key={field} className="mt-2"><summary>{field.replaceAll("_", " ")}: {meta.value} (outcome-specific)</summary><p className="mt-1">{meta.quote}</p><p className="mt-1">{meta.basis}</p><p className="mt-1">Source {meta.source + 1}: {sourceLabel(run, meta.source, investigation)}</p></details>)}
+                </td></tr>}
+                </Fragment>
               ))}
             </tbody>
           </table>

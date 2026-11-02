@@ -27,6 +27,31 @@ def _size(card) -> int:
     return len(card.model_dump_json())
 
 
+def test_unconstrained_explorer_link_cannot_acquire_default_numeric_conditions():
+    from urllib.parse import parse_qs, urlparse
+    p = parse_qs(urlparse(w.explorer_url({}, site="https://example.org/flame-freefall")).query)
+    assert p == {"search": ["1"]}
+
+
+def test_similar_test_actions_do_not_invent_midpoints_from_ranges():
+    card = w.test_widget("PSI-25:M18").model_dump()
+    def walk(node):
+        if isinstance(node, dict):
+            if node.get("type") in ("psi.evidence", "psi.gap_map"):
+                yield node
+            for child in node.values():
+                yield from walk(child)
+        elif isinstance(node, list):
+            for child in node:
+                yield from walk(child)
+    actions = list(walk(card))
+    assert actions
+    for action in actions:
+        q = action["payload"]["q"]
+        assert "o2_pct" not in q and "flow_cm_s" not in q
+        assert q["fuel_family"] == "PMMA"
+
+
 def test_pairwise_audit_is_rendered_by_code_with_sources_and_export_link():
     runs, invs = psi_query.load()
     index = {r["id"]: r for r in runs}
@@ -127,8 +152,12 @@ def test_compare_is_horizontal_and_cited():
 
 def test_action_router_rejects_junk():
     assert main._action_widget("nope", {}) is None
-    assert main._clean_query({"o2_pct": "15", "fuel_family": "PMMA", "evil": "x", "flow_cm_s": "abc"}) == {
+    assert main._clean_query({"o2_pct": "15", "fuel_family": "PMMA"}) == {
         "o2_pct": 15.0, "fuel_family": "PMMA"}
+    for invalid in ({"evil": "x"}, {"flow_cm_s": "abc"}, {"o2_pct": float("nan")},
+                    {"o2_pct": True}, {"pressure_atm": -1}):
+        with pytest.raises(ValueError):
+            main._clean_query(invalid)
     assert main._action_widget("gap_map", {"q": {"o2_pct": 15}, "y": "../../etc"}) is not None
 
 
@@ -191,6 +220,17 @@ def test_rank_widget_never_mixes_geometry_classes():
     for row in r["rows"]:
         for run_id in row["runs"]:
             assert invs[by_id[run_id]["investigation"]]["geometry_class"] == "droplet-combustion"
+
+
+def test_rank_widget_shows_observations_setup_unknowns_and_exact_run_actions():
+    card = json.loads(w.rank_widget({}, "peak_burner_temp_c", "gaseous-flames").model_dump_json())
+    text = json.dumps(card)
+    assert "sorted individual observations" in text
+    assert "single observation" in text
+    assert "median " not in text
+    assert "instrument: not recorded" in text
+    assert "not an equivalence audit" in text
+    assert '"type": "psi.test"' in text
 
 
 def test_rank_action_router_wires_up():

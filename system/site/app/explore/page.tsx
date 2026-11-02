@@ -46,9 +46,9 @@ export default function ExplorePage(): ReactElement {
         <p className="mb-2 flex items-center gap-2 text-sm font-medium text-primary"><span className="size-2 rounded-full bg-primary" /> PSI test-data explorer</p>
         <h1 className="max-w-3xl font-display text-3xl tracking-tight text-balance sm:text-5xl">Find the tests that can answer your question</h1>
         <p className="mt-2 max-w-3xl text-muted-foreground">
-          {totals.investigations} NASA investigations, each published in its own table, format and units — normalized into one record per
-          test, with the original cell kept beside every value. Ask for a set of conditions and get the tests run there, the tests that come
-          close, and what nobody has tested yet. Nothing on this page is generated: every number traces to a PSI table line or a NASA report.
+          {totals.investigations} NASA investigations, each published in its own table, format and units — indexed with original cells and source references.
+          Search reported conditions, inspect incomplete or outside-window records, and identify gaps in this collection.
+          Values and derived views come from deterministic processing; the interface does not establish absence of research beyond this index.
         </p>
         <dl className="mt-6 grid grid-cols-2 divide-x divide-y divide-border border-y border-border sm:grid-cols-3 lg:grid-cols-6 lg:divide-y-0">
           <Figure n={totals.investigations} label="investigations" />

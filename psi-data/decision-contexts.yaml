@@ -1,0 +1,203 @@
+version: 1
+review: internal review only
+assignments:
+  - investigation: cfi
+    job: detection
+    relevance: indirect
+    doc: knowledge/investigations/droplet-combustion/cfi
+    quote: >-
+      FLEX series of experiments showed for the first time that quasi-steady stable flames can be established surrounding a droplet in microgravity under certain conditions, without a visible flame at temperatures in the range of 700 to 900 K
+    rationale: Non-visible droplet flames motivate checking detection modalities; this is not a detector performance test or an alarm specification.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: cfi
+    job: suppression
+    relevance: indirect
+    doc: knowledge/investigations/droplet-combustion/cfi
+    quote: >-
+      Because cool-flame chemistry depends on fuel structure, pressure and
+      temperature, CFI tested three fuel combinations at ambient pressures up to 5
+      atmospheres, with and without helium.
+    rationale: Cool-flame persistence and gas-composition dependence provide mechanistic context for extinction research, without demonstrating a selected suppressant.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: acme-cld
+    job: detection
+    relevance: indirect
+    doc: knowledge/investigations/gaseous-flames/acme
+    quote: microgravity flames contain five to eight times more soot than equivalent normal-gravity flames; are taller and wider
+    rationale: Soot production is source context for detection research; no detector sensitivity or cabin alarm response is established by this finding.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: acme-flame-design
+    job: suppression
+    relevance: indirect
+    doc: knowledge/investigations/gaseous-flames/acme
+    quote: large flames grow until extinguishing from radiative heat loss, via an oscillatory partial-extinguish/reform mode of growing magnitude
+    rationale: Radiative extinction and reformation inform mechanisms that must be checked in extinction research; no suppression-system effectiveness is inferred.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: acme-efield
+    job: suppression
+    relevance: indirect
+    doc: knowledge/investigations/gaseous-flames/acme
+    quote: highly diluted flames can be stabilized with very weak electric fields
+    rationale: Flame stabilization is indirect context for extinction limits, not evidence that electric fields suppress spacecraft fires or emulate Lunar gravity.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: acme-s-flame
+    job: suppression
+    relevance: indirect
+    doc: knowledge/investigations/gaseous-flames/acme-s-flame
+    quote: >-
+      Identify the extinction limits for both radiative and convective
+      extinction (high and low system Damköhler numbers).
+    rationale: A stated extinction-research objective supports indirect mechanistic relevance; the gas burner is not a solid-material or fire-extinguisher test.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: acme-s-flame
+    job: prevention
+    relevance: indirect
+    doc: knowledge/investigations/gaseous-flames/acme-s-flame
+    quote: >-
+      near these dual flammability
+      boundaries, flame-front instabilities may appear.
+    rationale: Flammability-boundary mechanisms are indirect context; the result does not establish a material screening threshold or qualification.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: spice
+    job: detection
+    relevance: indirect
+    doc: knowledge/investigations/gaseous-flames/spice
+    quote: >-
+      SPICE measured laminar smoke points of non-buoyant laminar jet
+      diffusion flames in co-flowing air aboard the International Space Station
+    rationale: Soot-onset measurements provide emissions context, not a smoke-detector threshold or cabin transport measurement.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-02T12:04:35Z
+  - investigation: saffire-1
+    job: prevention
+    relevance: direct
+    doc: knowledge/investigations/solid-fuel/saffire
+    quote: >-
+      Saffire-1 assessed flame spread of a large-scale microgravity
+      fire (spread rate, mass consumption, heat release) and verified oxygen
+      flammability limits in low gravity
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+  - investigation: saffire-2
+    job: prevention
+    relevance: direct
+    doc: knowledge/investigations/solid-fuel/saffire
+    quote: >-
+      Saffire-2 repeated this at a higher flow
+      speed and with additional materials, intended to validate spacecraft
+      fire-response modeling and evaluate NASA's normal-gravity material
+      flammability screening test for low-gravity conditions.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+  - investigation: saffire-iv-vi
+    job: prevention
+    relevance: direct
+    doc: knowledge/investigations/solid-fuel/saffire
+    quote: >-
+      Saffire VI was the sixth and final flight of NASA's Spacecraft Fire Safety
+      Demonstration Project, conducted on an orbiting Cygnus resupply vehicle after
+      it departed the ISS. It examined concurrent flame spread over large samples
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+  - investigation: flex-2
+    job: suppression
+    relevance: indirect
+    doc: knowledge/investigations/droplet-combustion/flex-2
+    quote: >-
+      **Pure fuel experiments** (decane and ethanol): determine diffusive and
+      radiative flame extinction boundaries in atmospheres containing N2 or He at
+      pressures ranging from 0.5 atm to 3.0 atm
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+    evidence:
+      - kind: report-only-agent
+        quote: >-
+          states what FLEX-2 was designed to measure and the envelope of conditions it
+          > planned — "Detailed experimental test points are not provided at this time."
+          > It contains no flight results. Nothing here says what was actually flown.
+  - investigation: bass
+    job: prevention
+    relevance: direct
+    doc: knowledge/investigations/solid-fuel/bass
+    quote: >-
+      Begin to bridge the gap between the normal-gravity NASA-STD-6001 Test#1
+      method, ground-based microgravity tests, and actual material flammability
+      in space
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+  - investigation: bass-ii
+    job: prevention
+    relevance: direct
+    doc: knowledge/investigations/solid-fuel/bass-ii
+    quote: >-
+      BASS-II set out to identify the actual worst case
+      for material flammability in spacecraft environments, and to compare it
+      against the terrestrial upward-burning screening test.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+  - investigation: acme-bre
+    job: prevention
+    relevance: indirect
+    doc: knowledge/investigations/gaseous-flames/acme-bre
+    quote: >-
+      While BRE's results are still preliminary, they suggest that NASA may want to increase use of its alternative flammability Test 2, with the cone calorimeter.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+  - investigation: same
+    job: detection
+    relevance: direct
+    doc: knowledge/investigations/smoke-aerosol/same
+    quote: >-
+      SAME characterized the size
+      distribution of smoke particulate produced in low gravity from overheated
+      spacecraft materials, in the Microgravity Science Glovebox (MSG) on the
+      International Space Station (ISS), to inform the design of next-generation
+      smoke detectors.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+    evidence:
+      - kind: instrument
+        quote: ISS and space shuttle smoke detectors built into the apparatus
+  - investigation: same-r
+    job: detection
+    relevance: direct
+    doc: knowledge/investigations/smoke-aerosol/same-r
+    quote: >-
+      A new instrument, **M-pass** (developed in-house at GRC), replaced one of the
+      two Commercial Diagnostic Enclosures used in SAME.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+    evidence:
+      - kind: instrument
+        quote: >-
+          A new instrument, **M-pass** (developed in-house at GRC), replaced one of the
+          two Commercial Diagnostic Enclosures used in SAME.
+  - investigation: flex
+    job: suppression
+    relevance: direct
+    doc: knowledge/investigations/droplet-combustion/flex
+    quote: oxygen diluted with nitrogen, with carbon dioxide, with helium, and with mixtures of these (see full table below)
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+  - investigation: bass
+    job: suppression
+    relevance: direct
+    doc: knowledge/investigations/solid-fuel/bass
+    quote: >-
+      The nitrogen-suppression objective is described in the requirements but no
+      suppression result appears in the poster.
+    checked_by: process:decision-mapping-check-v1
+    checked_at: 2026-11-01T21:21:09Z
+    evidence:
+      - kind: report-only-agent
+        quote: >-
+          The plan reused the on-orbit SPICE glovebox hardware with four changes:
+          replaceable solid fuel samples, an adjustable igniter, a nitrogen gas jet for
+          flame extinguishment, and a way to shut off the flow completely.

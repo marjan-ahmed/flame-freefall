@@ -1,0 +1,43 @@
+{
+  "dataset": {
+    "generated_at": "2026-11-02T12:14:31+00:00",
+    "sha256": "7c7143cb7c7385d0be5dd97ce2041218305f7cfd5b1b88f15fec9fb27365e031"
+  },
+  "status": "awaiting_independent_review",
+  "reviewer": null,
+  "reviewed_at": null,
+  "instructions": "Complete the tasks without assuming the application is correct. Record source IDs, applicability limits and next evidence to obtain. Expected automated outputs are in a separate engineering report, not independent ground truth.",
+  "tasks": [
+    {
+      "id": "prevention-lunar",
+      "question": "Which experiments inform a material study near the proposed Lunar atmosphere?",
+      "task": "Shortlist direct SAFFIRE evidence and indirect BRE evidence; explain the retrieval sensitivity and next source checks.",
+      "researcher_answer": null,
+      "cited_sources": null,
+      "unsupported_inferences": null,
+      "completion_seconds": null,
+      "task_completed": null
+    },
+    {
+      "id": "detection-observations",
+      "question": "Which smoke observations and instrument channels inform an early-warning study?",
+      "task": "Inspect SAME-R relationships and source columns; explain why an identifier group is not a replicate count.",
+      "researcher_answer": null,
+      "cited_sources": null,
+      "unsupported_inferences": null,
+      "completion_seconds": null,
+      "task_completed": null
+    },
+    {
+      "id": "suppression-methods",
+      "question": "What supports comparison of FLEX burning-rate measurements under different conditions?",
+      "task": "Inspect the selected outcome method and source definition, then explain the remaining comparison blockers.",
+      "researcher_answer": null,
+      "cited_sources": null,
+      "unsupported_inferences": null,
+      "completion_seconds": null,
+      "task_completed": null
+    }
+  ],
+  "approval": null
+}

@@ -1,4 +1,4 @@
 # Literature
 
-* [DAFT: cabin aerosol campaign observations](daft-cabin-aerosol.md) - Published cabin aerosol bounds and campaign context, separate from combustion test records.
-* [LUCI: flammability results from a rotating sounding rocket](luci-rotating-rocket.md) - Published partial-gravity observations, kept separate from individual PSI test records.
+* [DAFT: background aerosol measurements and instrument feasibility](daft-cabin-aerosol.md) - Expanded source-based account of the DAFT flight sequence, cabin aerosol bounds, reference-dust trials and measurement limitations.
+* [LUCI: rotating-platform methods, flame tracking and comparison results](luci-rotating-rocket.md) - Expanded source-based account of the LUCI apparatus, partial-gravity and ground observations, fitted spread rates and interpretation limits.

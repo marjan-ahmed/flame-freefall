@@ -62,8 +62,9 @@ summaries retain their missing pressure; it is never inferred from another test.
   summaries, unknown axes and disputed axes remain searchable but are not plotted
   as measured pairs. An empty cell is an absence in this plotted subset.
 - Rankings are exploratory measurement summaries, not flammability or safety
-  rankings. Complete-condition matches with scalar, unambiguous outcomes are
-  separated by investigation and recorded setup; incomplete conditions, conflicting
+  rankings. Each eligible measurement remains an individual observation, with no
+  pooled material estimates. Complete-condition matches with scalar, unambiguous outcomes
+  retain investigation and recorded setup; incomplete conditions, conflicting
   outcomes and no-ignition burn times are excluded. Every contributing ID is retained.
 - Ambient conditions in NASA-STD-6001B are a reference definition, not a universal
   material certification atmosphere. See the [NASA standard](https://standards.nasa.gov/standard/nasa/nasa-std-6001).
@@ -73,10 +74,40 @@ summaries retain their missing pressure; it is never inferred from another test.
 See [method and export dictionary](docs/evidence-method.md) and the
 [demonstration script](DEMO.md) for reproducible interpretation.
 
+## Research workflow in the current implementation
+
+Start at `/decide/`: record a research question, select the explicit conditions
+and a measurement focus, then shortlist investigations. The evidence dossier
+preserves classification quotes, source-linked records, unknown conditions,
+retrieval sensitivity and next source checks. Its versioned export contains the
+shortlist plus the complete evidence appendix. Local changes require publication
+before this route or behavior is available on the public site.
+
+The worked SAFFIRE comparison audits two real records, their source-indexed
+outlet temperatures and their setup differences. Missing instrument/method fields
+continue to block a condition-matched claim. This is a useful source audit, not
+a newly established controlled comparison.
+
+Outcome-specific metadata identifies the FLEX burning-rate imaging/fit method
+and SAME-R detector channels without applying those methods to unrelated
+quantities. SAME-R identifier groups retain separate observations, ambiguous
+cross-material identifiers and unknown independence. `npm run evaluate:research`
+checks three reproducible source-linked tasks and produces an unreviewed
+researcher packet; it does not manufacture expert acceptance.
+
+PSI chat measurements render in deterministic widgets. Current-message condition
+binding prevents silent model-added pressure or flow-direction filters; ambiguous
+requests are refused rather than guessed. PSI-turn model prose is withheld,
+including text generated before a tool call. Narrative document answers retain
+their separate source-cited path. Chat history is temporary; exported dossiers
+are the reproducible record of a selection. Uploads are not offered in this workflow.
+
 ## Current evidence and scientific review
 
 The owner approved the FLEX-2 cool-flame, LUCI and DAFT literature documents on
-2026-10-31. All 23 governed documents are stable. FLEX-2 literature rates remain
+2026-10-31. There are 23 stable governed documents. The owner approved the
+SAFFIRE SIBAL cross-check attribution correction from VI-3 to VI-2 on
+2026-11-02. FLEX-2 literature rates remain
 attached to planned fuel envelopes, while LUCI rotating-platform observations
 and DAFT cabin-aerosol bounds remain separate from individual PSI tests.
 
@@ -93,13 +124,16 @@ analysis and retained as flagged source evidence. This is an internal source-bas
 not NASA endorsement, independent scientific peer review or predictive validation.
 
 The vector publication manifest is [research/rag-publication.json](research/rag-publication.json).
-The configured Neon corpus is published as generation 9: 23 documents and 270
-chunks, with 15 newly embedded chunks and no embedding failures. Direct MCP
-verification found the expected document in the top five for all nine internal
-source-anchored queries. A 0.415 retrieval floor was measured using 16 relevant
-and 12 out-of-scope calibration probes. Separate checks retained all nine target
-documents and correctly abstained on eight unrelated questions. This is bounded
-engineering validation, not universal semantic reliability. Pushes to `main`
+The ingest receipt records generation 10: 23 documents and 284 chunks,
+with 20 newly embedded chunks and no embedding failures. A fresh public MCP
+evaluation verified generation 10, retrieved the expected document for all 13
+target questions, found all four requested expanded-detail phrases and abstained
+on all eight out-of-scope controls. The saved publication report records the
+endpoint, time, dataset fingerprint and individual results. These document and
+phrase checks do not establish answer correctness or independent scientific
+review. A 0.415 retrieval floor was measured using 16 relevant and 12 out-of-scope
+calibration probes. These are bounded engineering checks, not universal semantic
+reliability. Pushes to `main`
 trigger the configured deployment workflows; their outcome must be checked
 separately from local validation and vector publication.
 

@@ -1,7 +1,10 @@
 """Pairwise comparability audit. Missing metadata never means equivalence."""
 from __future__ import annotations
 
-VERSION = "comparability-v1"
+import math
+import re
+
+VERSION = "comparability-v2"
 BASE = ("fuel_family", "fuel", "gravity", "flow_direction", "apparatus", "confinement", "instrument", "measurement_method")
 AXES = {
     "solid-fuel": ("o2_pct", "pressure_atm", "flow_cm_s", "fuel_form"),
@@ -19,14 +22,37 @@ def _value(c):
     v = c.get("value")
     if isinstance(v, str):
         return {"value": v, "unit": None, "raw": c.get("raw", v)}
-    if v is None or c.get("min", v) != c.get("max", v) or c.get("detection_limit") or any(f in c.get("flags", []) for f in ("multi", "source_definition_unresolved")):
+    if v is None or not isinstance(v, (int, float)) or isinstance(v, bool) or not math.isfinite(v) or c.get("min", v) != c.get("max", v) or c.get("detection_limit") or any(f in c.get("flags", []) for f in ("multi", "source_definition_unresolved")):
         return {"value": None, "raw": c.get("raw", "not reported"), "unit": c.get("unit")}
     return {"value": v, "unit": c.get("unit"), "raw": c.get("raw", str(v)),
             **({"uncertainty": c["uncertainty"]} if c.get("uncertainty") else {})}
 
 
+def _method_value(run, outcome, field):
+    """Selected-outcome provenance wins; an invalid pointer never falls back."""
+    metadata = outcome.get("metadata", {}) if outcome else {}
+    if field not in metadata:
+        return _value(run["conditions"].get(field))
+    c = metadata[field]
+    if not isinstance(c, dict):
+        return None
+    index, quote = c.get("source"), c.get("quote")
+    if not isinstance(index, int) or isinstance(index, bool) or not 0 <= index < len(run.get("sources", [])) or not isinstance(quote, str) or not quote.strip():
+        return None
+    source = run["sources"][index]
+    norm = lambda s: re.sub(r"\s+", " ", s).strip()
+    if not isinstance(source, dict) or not isinstance(source.get("quote"), str) or source.get("kind") not in ("report", "psi-workbook") or norm(quote) not in norm(source["quote"]):
+        return None
+    result = _value(c)
+    return {**result, "source": index, "quote": quote} if result is not None else None
+
+
 def compare_runs(left: dict, right: dict, investigations: dict, quantity: str, varied_axis: str | None = None) -> dict:
     lc, rc = left["conditions"], right["conditions"]
+    selected = []
+    for run in (left, right):
+        outcomes = [o for o in run["outcomes"] if o["quantity"] == quantity]
+        selected.append(outcomes[0] if len(outcomes) == 1 else None)
     lg = investigations[left["investigation"]]["geometry_class"]
     rg = investigations[right["investigation"]]["geometry_class"]
     fields = list(dict.fromkeys((*BASE, *AXES.get(lg, ()), *AXES.get(rg, ()),
@@ -55,11 +81,10 @@ def compare_runs(left: dict, right: dict, investigations: dict, quantity: str, v
           _value({"value": "individual" if right["granularity"] in ("test", "test-point") else right["granularity"]}))
     conflicts = {c["field"] for r in (left, right) for c in r.get("conflicts", [])}
     for field in fields:
-        check(field, _value(lc.get(field)), _value(rc.get(field)), field in conflicts)
-    selected = []
-    for run in (left, right):
-        outcomes = [o for o in run["outcomes"] if o["quantity"] == quantity]
-        selected.append(outcomes[0] if len(outcomes) == 1 else None)
+        if field in ("instrument", "measurement_method"):
+            check(field, _method_value(left, selected[0], field), _method_value(right, selected[1], field), field in conflicts)
+        else:
+            check(field, _value(lc.get(field)), _value(rc.get(field)), field in conflicts)
     check("outcome:" + quantity, _value(selected[0].get("measure")) if selected[0] else None,
           _value(selected[1].get("measure")) if selected[1] else None, "outcome:" + quantity in conflicts)
     # A per-outcome condition overrides a run-wide envelope. It cannot be
@@ -88,3 +113,44 @@ def compare_runs(left: dict, right: dict, investigations: dict, quantity: str, v
             else "controlled_difference" if differences else "condition_matched",
             "outcomes": selected, "limitations": "Descriptive comparison only. Missing metadata blocks a condition-matched claim; "
             "reported ranges are not uncertainty intervals. No statistical-significance, predictive or safety claim."}
+
+
+def comparison_audit(left: dict, right: dict, investigations: dict, quantity: str, varied_axis: str | None = None) -> dict:
+    """Separate useful sourced observations from an unsupported equivalence claim.
+
+    This is additive to comparability-v1; its strict required fields and output
+    remain unchanged. Keep the TypeScript comparisonAudit twin in sync.
+    """
+    assessment = compare_runs(left, right, investigations, quantity, varied_axis)
+    setup = [c for c in assessment["checks"] if not c["field"].startswith("outcome:")]
+    shared = [c for c in setup if c["status"] == "match"]
+    differences = [c for c in setup if c["status"] == "different"]
+    missing = [c for c in assessment["checks"] if c["status"] == "unknown"]
+    conflicts = [c for c in assessment["checks"] if c["status"] == "source-conflict"]
+    sourced_outcomes = []
+    for run, outcome in zip((left, right), assessment["outcomes"]):
+        index = outcome.get("source") if outcome else None
+        sources = run.get("sources", [])
+        source = sources[index] if isinstance(index, int) and not isinstance(index, bool) and 0 <= index < len(sources) else None
+        sourced_outcomes.append({"run_id": run["id"], "outcome": outcome, "source_index": index, "source": source})
+    steps = []
+    if missing:
+        steps.append({"code": "INSPECT_MISSING_METADATA", "fields": [c["field"] for c in missing], "text": "Inspect the linked original sources for these missing or ambiguous fields. The source may not contain the value; do not fill it by inference."})
+    if conflicts:
+        steps.append({"code": "REVIEW_RETAINED_CONFLICTS", "fields": [c["field"] for c in conflicts], "text": "Inspect both retained source values before using the disputed field."})
+    unexplained = [c for c in differences if c["field"].removeprefix("outcome_at:") != varied_axis]
+    if unexplained:
+        steps.append({"code": "MULTIPLE_SETUP_DIFFERENCES", "fields": [c["field"] for c in unexplained], "text": "These recorded conditions differ beyond the nominated varied condition. Their effects cannot be isolated by this pair."})
+    selection = [f for f in assessment["unknown_or_conflicted"] if f in ("geometry_class", "same_record", "non_individual_record", "invalid_varied_axis")]
+    if selection:
+        steps.append({"code": "REVIEW_SELECTION", "fields": selection, "text": "Choose distinct individual records in one geometry class and a supported varied condition before considering a matched comparison."})
+    both_sourced = all(o["outcome"] is not None and o["source"] is not None for o in sourced_outcomes)
+    if not both_sourced:
+        steps.append({"code": "INSPECT_OUTCOME_SOURCES", "fields": ["outcome:" + quantity], "text": "One or both records lack a single selected outcome with a valid source index. Inspect the original records; no missing outcome or citation is supplied."})
+    steps.append({"code": "DESCRIPTIVE_ONLY", "fields": [], "text": "Use this audit to explain shared evidence, setup differences and the remaining source checks. It does not estimate a treatment effect, statistical significance, material safety or gravity equivalence."})
+    return {"method_version": "comparison-audit-v1", "assessment": assessment,
+            "research_result": "Two source-linked outcomes are available for inspection. Shared facts and recorded differences are separated below; the strict comparability assessment still applies." if both_sourced else "The audit identifies recorded facts and the source checks needed before comparing the selected outcomes.",
+            "shared_facts": shared, "recorded_differences": differences, "missing_or_ambiguous": missing, "conflicted_checks": conflicts,
+            "retained_conflicts": [{"run_id": run["id"], **c} for run in (left, right) for c in run.get("conflicts", [])],
+            "sourced_outcomes": sourced_outcomes, "next_steps": steps,
+            "limitations": "An evidence audit is not a controlled experiment. Shared recorded fields do not establish equivalence; unrecorded details remain unknown. No subtraction, ratio, causal effect or safety ranking is inferred from this pair."}

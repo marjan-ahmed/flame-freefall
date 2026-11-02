@@ -106,7 +106,7 @@ def write_report(result):
     for c in result["saffire_conditional_energy_checks"]:
         lines.append(f"| {c['run_id']} | {c['total_imaging_kJ']} | {c['conditional_maximum_kJ']} | {c['exceeds_conditional_maximum']} |")
     lines += ["", "Source: [SAFFIRE preliminary results, Table 2](https://ntrs.nasa.gov/citations/20240002981). Do not silently correct a published value. Method labels, integration periods and possible source errors need clarification before model fitting.", "",
-        "The governed SAFFIRE prose labels the SIBAL cross-check VI-3, while the original report and Table 1 identify that SIBAL sample as VI-2. Structured records use the table identities. This narrative discrepancy needs governed correction and must not support the VI-3 PMMA result.", "",
+        "The owner-approved governed SAFFIRE prose now identifies the SIBAL cross-check as VI-2, consistent with the original report and sample table. Structured records retain the table identities; this SIBAL cross-check must not support the VI-3 PMMA result.", "",
         "## Detection and partial-gravity interpretation", "",
         "Camera non-detection applies to the imagers used in the FLEX study; it is not a demonstrated performance criterion for every crew camera.", "",
         "The SAFFIRE VI-3 threshold-crossing observation uses a report-selected concentration threshold and the reported timeline. It is not a demonstrated ignition-to-alarm delay or universal detector response specification. Remote temperature maxima and source-outlet maxima are not necessarily simultaneous; their difference is not an instantaneous thermal gradient.", "",

@@ -3,11 +3,11 @@ type: Document
 title: "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment"
 description: Preliminary results from the final flight (Saffire VI) of NASA's Spacecraft Fire Safety Demonstration Project, with the earlier Saffire-1/Saffire-2 large-scale flammability tests as supporting background and comparison.
 status: stable
-generated: { by: "claude-code/sonnet-5", at: 2026-09-21T19:56:58Z }
+generated: { by: "codex", at: 2026-11-02T12:49:15Z }
 ksor:
   audience: [public]
   owner: human:you
-  approval: { by: human:you, at: 2026-09-21T19:56:58Z }
+  approval: { by: human:you, at: 2026-11-02T12:49:15Z }
 order: 21
 geometry_class: solid-fuel
 sources:
@@ -103,7 +103,7 @@ flights.[^saffire-vi-ices-2024]
 | VI-4 | 1-sided PMMA | 1200 | 1507 | 830 | — | — | 57 | 21 | 8117 | 3.37 | 320 |
 
 Empty cells are cases where the source reports the corresponding
-measurement was not available. The VI-3 (SIBAL)
+measurement was not available. The VI-2 (SIBAL)
 sample is the one case where both the imaging-based and O₂-consumption-based
 heat-release methods were used and cross-checked — they agreed within
 15%.[^saffire-vi-ices-2024]

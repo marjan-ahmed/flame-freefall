@@ -49,6 +49,7 @@ export type Outcome = {
   at?: Record<string, number>;
   note?: string;
   confirmed_by?: number[];
+  metadata?: Record<string, Category & { source: number; quote: string }>;
 };
 
 export type Conflict = {
@@ -66,6 +67,17 @@ type RunBase = {
   outcomes: Outcome[];
   conflicts?: Conflict[];
   notes?: string[];
+  observation_relationship?: ObservationRelationship;
+};
+
+export type ObservationRelationship = {
+  method_version: "same-r-source-identifiers-v1";
+  basis: string; source: number; source_field: string; source_label: string;
+  description: string; role: "aged" | "unaged" | "unspecified";
+  role_basis: string; base_test_number: string | null; material: string | null;
+  group_id: string | null; independence: "unknown";
+  status: "identifier_grouped" | "ambiguous_identifier";
+  related_source_labels: string[];
 };
 
 export type Run = RunBase & { sources: Source[]; raw: Record<string, string>[] };

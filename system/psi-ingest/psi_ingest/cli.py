@@ -122,6 +122,8 @@ def run(repo_root: Path = REPO_ROOT, write: bool = True, *, include_review: bool
     merge_saffire_detection(ctx, runs)
     from .apparatus import enrich_apparatus
     enrich_apparatus(ctx, runs)
+    from .measurement_methods import enrich_measurement_methods
+    enrich_measurement_methods(ctx, runs)
     report: dict = {}
     assign_ids(runs, ctx.registry, report)
 

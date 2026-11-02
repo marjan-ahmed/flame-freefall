@@ -62,9 +62,9 @@ generated and committed; never hand-edit them.
   per-investigation coverage and `relaxed` (same conditions, other
   materials). Categorical filters are hard. Fuel identities match exactly
   (SIBAL is an explicit alias); a trailing `*` deliberately requests a broader
-  family including blends and variants. `rank()` aggregates eligible full-match
-  individual runs per material and compatible conditions (n, min, median, max,
-  every contributing run id) within
+  family including blends and variants. `rank()` sorts eligible full-match
+  individual observations without pooling material estimates (legacy n/min/median/max
+  fields describe one observation, with n=1); incompatible units stay separate within
   ONE geometry class (`RANKABLE` names which (class, quantity) pairs have
   enough data — never ranks across classes). `readiness()` reports
   match/partial/near coverage per geometry class near a named mission

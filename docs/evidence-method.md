@@ -28,10 +28,60 @@ no conflict on either axis. One eligible record occupies one cell. All exclusion
 remain available in the Explorer. A pressure/oxygen grid cannot assess the usefulness
 of smoke-detection investigations whose atmospheric metadata is absent.
 
-Rankings summarize scalar, non-conflicting results among full matches, grouped by
-material, investigation and recorded setup. Missing setup fields do not establish
-compatibility. Sorted measurements are not a universal ranking of material safety;
-users must inspect apparatus, endpoint definition, flow and gravity before comparing.
+Sorted measurements (`sorted-observations-v1`) retain each eligible individual
+record as one observation. No records are pooled on the basis of equal recorded
+fields: missing setup or method metadata cannot establish a replicate cohort.
+Each row exposes its raw value, unit, source index, setup and record ID. Different
+units form separate ordering groups. Legacy `n/min/median/max` fields remain for
+compatibility, with `n=1`; they are not material distributions. Conflicts, censored
+values, unresolved definitions, ambiguous outcome sweeps and missing units are
+excluded. This is not a ranking of material safety or a comparability assessment.
+
+## Research dossier and comparison audit
+
+`/decide/` records a research question verbatim and applies only the explicit
+controls. Measurement focus changes cited-outcome availability counts, not the
+condition query. Select investigations to preserve a shortlist and deterministic
+source-check actions. Missing metadata, outside-window observations and BRE
+emulation retain their distinct meanings. Indexed observations are not necessarily
+independent experimental replicates.
+
+The `fire-safety-decision` schema version 2 wraps the unchanged evidence payload.
+`dossier` contains the question, focused measurement, selected investigations,
+record IDs, selection warnings and reason-coded next steps. `sensitivity` records
+current, halved-pressure-tolerance and doubled-oxygen-tolerance retrieval windows
+when those axes are requested. These are availability checks, not safety margins
+or changes to the experiments. Each investigation/geometry remains separate.
+URL state restores the question, focus, filters and shortlist.
+
+`comparison-audit-v1` adds shared recorded facts, setup differences, unknowns,
+retained conflicts, source-indexed outcomes and next steps to the existing strict
+comparability assessment. The real SAFFIRE VI-3 / VI-4 outlet-temperature example
+supports source inspection while still abstaining from a condition-matched claim.
+It does not subtract outcomes, attribute a causal effect or fill missing methods.
+
+The underlying `comparability-v2` assessment reads instrument/method metadata
+from the selected outcome when available. Each field must retain a valid run-local
+source index and a quote present in that source. Invalid outcome metadata remains
+unknown rather than falling back to a campaign-wide claim. FLEX burning-rate
+constants have a source-defined HiBMs imaging and linear-fit method; this does not
+supply a method for extinction diameters. SAME-R channels identify instruments
+and published processing, while calibration methods remain unknown.
+
+`observation_relationship` preserves source test labels, material, description,
+derived identifier groups and explicit aging descriptions for SAME-R. Identifier
+collisions across materials remain ungrouped. Independence is always unknown;
+neither a suffix nor a repeated identifier establishes a replicate or shared
+specimen. No rows are merged. `npm run evaluate:research` verifies three bounded
+engineering scenarios and writes a researcher-review packet with blank answers
+and no approval. It is not independent scientific validation.
+
+PSI chat turns bind lookup conditions to a bounded deterministic interpretation
+of the current user message. Unsupported or ambiguous conditions are refused with
+an Explorer link. The model's numerical prose is withheld at the stream/persistence
+boundary; measurements and corrections appear in code-owned widgets. Narrative
+document replies remain a separate, source-cited path, not a universal correctness
+guarantee. Context-dependent follow-ups may require restating explicit conditions.
 
 ## JSON download
 
@@ -94,10 +144,13 @@ Reproduce the internal audit with the backend Python environment:
 .\system\chatkit-server\.venv\Scripts\python.exe scripts/evaluate-rag-publication.py
 ```
 
-The second command requires the embedding service and local MCP door. Results
-are recorded under `research/`. Retrieval hit rate on internal source-anchored
+The second command defaults to the local MCP door. To check the published corpus,
+pass `--url https://flamefreefall-sor.vercel.app/mcp --timeout 240`. Results are
+recorded under `research/`. The refreshed public generation-10 check found all
+13 target documents, all four checked expanded-detail phrases and all eight
+expected control abstentions. Retrieval hit rate on internal source-anchored
 questions is an engineering check, not an expert relevance benchmark. The
-retrieval floor is 0.415, measured on a separate 16/12 calibration set. The
-held-out checks retrieved all nine target documents and abstained on all eight
-out-of-scope controls. These measurements do not establish universal abstention
-or model-answer correctness.
+retrieval floor is 0.415, measured on a separate 16/12 calibration set. These
+measurements do not establish universal abstention or model-answer correctness.
+`npm run verify:release` separately checks public routes and dataset identity;
+neither command publishes local code.

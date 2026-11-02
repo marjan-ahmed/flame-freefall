@@ -50,6 +50,54 @@ test("source quarantine excludes values from ranked aggregates", () => {
   assert.ok(!("error" in after) && after.total_ranked === 0);
 });
 
+test("ranking rejects censored points, contradictory outcome conditions and ambiguous sweeps", () => {
+  const baseline = rank(runs, investigations, {}, "burning_rate_k", "droplet-combustion");
+  assert.ok(!("error" in baseline));
+  const sample = () => {
+    const record = structuredClone(runs.find((r: { id: string }) => r.id === baseline.rows[0].runs[0]));
+    record.outcomes = [record.outcomes.find((o: { quantity: string }) => o.quantity === "burning_rate_k")];
+    return record;
+  };
+  const result = (record: ReturnType<typeof sample>, q: Query = {}) => {
+    const r = rank([record], investigations, q, "burning_rate_k", "droplet-combustion");
+    assert.ok(!("error" in r));
+    return r;
+  };
+  const bounded = sample();
+  bounded.outcomes[0].measure.detection_limit = { operator: "<", value: 1, raw: "<1" };
+  assert.equal(result(bounded).total_ranked, 0);
+  const unitless = sample();
+  delete unitless.outcomes[0].measure.unit;
+  assert.equal(result(unitless).excluded.missing_outcome_unit, 1);
+  assert.ok("error" in rank(runs, investigations, { geometry_class: "solid-fuel" }, "burning_rate_k", "droplet-combustion"));
+  const pressure = sample();
+  pressure.conditions.pressure_atm = { value: 1, min: 1, max: 1, raw: "1", unit: "atm" };
+  pressure.outcomes[0].at = { pressure_atm: .5 };
+  assert.equal(result(pressure, { pressure_atm: 1 }).excluded.outcome_outside_query_window, 1);
+  const duplicate = sample();
+  duplicate.conditions.flow_cm_s = { value: 5, min: 5, max: 5, raw: "5", unit: "cm/s" };
+  duplicate.outcomes[0].at = { flow_cm_s: 5 };
+  duplicate.outcomes.push(structuredClone(duplicate.outcomes[0]));
+  duplicate.outcomes[1].measure.value = 2;
+  duplicate.outcomes[1].measure.min = 2;
+  duplicate.outcomes[1].measure.max = 2;
+  assert.equal(result(duplicate, { flow_cm_s: 5 }).excluded.ambiguous_outcome, 1);
+  duplicate.outcomes.reverse();
+  assert.equal(result(duplicate, { flow_cm_s: 5 }).excluded.ambiguous_outcome, 1);
+  const sweep = sample();
+  sweep.outcomes[0].at = { pressure_atm: .5 };
+  sweep.outcomes.push(structuredClone(sweep.outcomes[0]));
+  sweep.outcomes[1].at.pressure_atm = 1;
+  assert.equal(result(sweep).excluded.multiple_outcome_conditions, 1);
+  const original = sample(), uncertain = structuredClone(original);
+  uncertain.id += "-uncertain";
+  uncertain.conditions.pressure_atm.uncertainty = { kind: "reported", plus: .05, raw: "±0.05" };
+  const strata = rank([original, uncertain], investigations, {}, "burning_rate_k", "droplet-combustion");
+  assert.ok(!("error" in strata));
+  assert.equal(strata.total_ranked, 2);
+  assert.ok(strata.rows.every(row => row.n === 1));
+});
+
 for (const c of cases) {
   test(c.name, () => {
     const r = query(runs, investigations, c.query, c.tolerances ?? {});
