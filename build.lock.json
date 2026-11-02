@@ -1,15 +1,15 @@
 {
   "format": 1,
-  "build_id": "sha256:037e9a8ea3a1e3093f95cb1c62c812bd53716135103fd7244331cf5ba92b02de",
+  "build_id": "sha256:d111098ac8981935d2c509efcdb1e0d3bc2e9a504667cbae7bbac6ba08ac9815",
   "ksor_version": "0.0.60",
   "okf": {
     "version": "0.2",
     "commit": "ad30107c31c06aec8a7d5636e0d1058118604e6f",
     "spec_sha256": "26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101"
   },
-  "source_commit": "fc69456683cc2829c0c69ec4c59a0acb472c99b8",
+  "source_commit": "8cdf46ac9b05af56b94e995cd1fd4ba522a3ea9f",
   "dirty": true,
-  "as_of": "2026-11-02T12:45:52.274Z",
+  "as_of": "2026-11-02T13:15:27.947Z",
   "drafts": "hidden",
   "instance_sha256": "6a5d6e8646d8a842f619891dcb5815d2354b6e4289755e778c380d4e70e44144",
   "policy_sha256": "b1bfb30888527d4e42b54c533274885cbafa343617bc1c2d6f4365fa4f7a0106",
@@ -247,7 +247,7 @@
     },
     {
       "path": "investigations/solid-fuel/saffire.md",
-      "sha256": "c6c0f410fde67aeb81536f397c4798819ed5b5ee69cc24f838ffcd40dc70366a",
+      "sha256": "8f3092b09f854c6e4c82e24f15a3e5d228938de1175aca560d2d6761b72813b2",
       "status": "stable",
       "audience": [
         "public"
@@ -255,15 +255,6 @@
       "admitted": [
         "public"
       ]
-    },
-    {
-      "path": "investigations/solid-fuel/saffire-attribution-correction.md",
-      "sha256": "115c65411aec773d32e27a30253a870673214424399e399294d9fff15e521e6a",
-      "status": "draft",
-      "audience": [
-        "public"
-      ],
-      "admitted": []
     },
     {
       "path": "literature/daft-cabin-aerosol.md",
@@ -418,7 +409,7 @@
     },
     {
       "path": "investigations/solid-fuel/index.md",
-      "sha256": "ef6dfc79c95a5295ec2585bdc434c7bbd098f42ddd5d48abe8f06175d5f84a3d"
+      "sha256": "4d88076226982a4cf07abdf7b769f7279d0bafcc18188e7a81e4ce632e1a08af"
     },
     {
       "path": "literature/index.md",
@@ -428,7 +419,7 @@
   "bundles": [
     {
       "viewer": "public",
-      "sha256": "52ff99603e225cee41286a35da05dd7b6c63fa050ad9b3ee07c7abf9b54ba49f",
+      "sha256": "e904c3a931da86b78a3b38451f2a04946b18839c05a206fc60dee2a65211562f",
       "files": 56
     }
   ]
