@@ -3,7 +3,7 @@ type: Document
 title: "SAFFIRE VI: Preliminary Results from the Spacecraft Fire Experiment"
 description: Preliminary results from the final flight (Saffire VI) of NASA's Spacecraft Fire Safety Demonstration Project, with the earlier Saffire-1/Saffire-2 large-scale flammability tests as supporting background and comparison.
 status: stable
-generated: { by: "codex", at: 2026-11-02T12:49:15Z }
+generated: { by: "process:codex", at: 2026-11-02T12:49:15Z }
 ksor:
   audience: [public]
   owner: human:you
