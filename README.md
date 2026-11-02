@@ -8,6 +8,13 @@ and the query that selected it. The deterministic Explorer works without an AI s
 [Explorer](https://marjan-ahmed.github.io/flame-freefall/explore/) ·
 [Governed record](https://marjan-ahmed.github.io/flame-freefall/docs/)
 
+**Code Nashai · Muhammad Marjan Ahmed, solo builder**
+
+[**View the seven-slide project demonstration (PDF)**](docs/presentation/flame-freefall-pitch.pdf) ·
+[Editable PowerPoint](docs/presentation/flame-freefall-pitch.pptx) ·
+[Slide preview](docs/presentation/contact-sheet.png) ·
+[Speaker notes and sources](docs/presentation/README.md)
+
 **Competition eligibility is unresolved.** This project existed before the November
 2026 hackathon. Technical improvements are not a claim of eligibility. See
 [submission gates and disclosure](SUBMISSION.md). Local changes do not update the
@@ -22,9 +29,9 @@ live deployment until published.
   &nbsp;·&nbsp;
   <a href="https://marjan-ahmed.github.io/flame-freefall/explore/">Test-data explorer</a>
   &nbsp;·&nbsp;
-  <a href="https://drive.google.com/file/d/1Y4UFMcmlY_sxeYVmw2GR1Ms9nt2vTRQD/view">Project demo Technical (PDF)</a>
+  <a href="docs/presentation/flame-freefall-pitch.pdf">Seven-slide project demo (PDF)</a>
     &nbsp;·&nbsp;
-  <a href="https://drive.google.com/file/d/1gPKFjobbKzjYHGvtgqURrIbNxRqa8aFO/view?usp=sharing"> Project Demo (PDF) </a>
+  <a href="docs/presentation/flame-freefall-pitch.pptx">Editable pitch deck</a>
 </p>
 
 Which indexed experiments overlap the proposed Lunar atmosphere, and how sensitive

@@ -2,6 +2,9 @@
 # the same commit hashes identically on Windows, macOS, and Linux.
 * text=auto
 *.md text eol=lf
+docs/presentation/*.pdf binary
+docs/presentation/*.pptx binary
+docs/presentation/**/*.png binary
 instance.md text eol=lf
 
 # Dataset fingerprints must identify the same bytes on Windows and Linux.

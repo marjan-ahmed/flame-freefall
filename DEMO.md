@@ -1,4 +1,10 @@
-# Evidence demonstration ? working script, eligibility unresolved
+# Evidence demonstration — working script, eligibility unresolved
+
+The current seven-slide demonstration is available as a
+[PDF](docs/presentation/flame-freefall-pitch.pdf) and
+[editable PowerPoint](docs/presentation/flame-freefall-pitch.pptx), with
+[speaker notes and sources](docs/presentation/README.md).
+The walkthrough below is an earlier, longer demonstration script.
 
 Use the built static site. This walkthrough works without a successful model call.
 The existing Drive pitch is a prior draft; its headline numbers and coverage framing

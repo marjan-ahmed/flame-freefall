@@ -1,0 +1,16 @@
+{
+  "slides": 7,
+  "dataset_sha256": "7c7143cb7c7385d0be5dd97ce2041218305f7cfd5b1b88f15fec9fb27365e031",
+  "records": 1951,
+  "test_and_test_point_records": 1838,
+  "source_revision": "47cdf73",
+  "scope": "Local code and data; no live application or deployment validation. Slides 4\u20135 are evidence walkthroughs, not UI screenshots.",
+  "artifacts": [
+    "flame-freefall-pitch.pdf",
+    "flame-freefall-pitch.pptx"
+  ],
+  "claims_checked": [
+    "record granularities",
+    "SAFFIRE Table 2 outlet temperatures and source indexes"
+  ]
+}
